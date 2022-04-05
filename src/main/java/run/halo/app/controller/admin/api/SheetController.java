@@ -59,9 +59,9 @@ public class SheetController {
      * Sheet controller.
      */
     public SheetController(SheetService sheetService,
-        AbstractStringCacheStore cacheStore,
-        OptionService optionService,
-        SheetAssembler sheetAssembler) {
+            AbstractStringCacheStore cacheStore,
+            OptionService optionService,
+            SheetAssembler sheetAssembler) {
         this.sheetService = sheetService;
         this.cacheStore = cacheStore;
         this.optionService = optionService;
@@ -78,7 +78,7 @@ public class SheetController {
     @GetMapping
     @ApiOperation("Gets a page of sheet")
     public Page<SheetListVO> pageBy(
-        @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
+            @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
         Page<Sheet> sheetPage = sheetService.pageBy(pageable);
         return sheetAssembler.convertToListVo(sheetPage);
     }
@@ -92,20 +92,17 @@ public class SheetController {
     @PostMapping
     @ApiOperation("Creates a sheet")
     public SheetDetailVO createBy(@RequestBody @Valid SheetParam sheetParam,
-        @RequestParam(value = "autoSave", required = false, defaultValue = "false")
-            Boolean autoSave) {
-        Sheet sheet =
-            sheetService.createBy(sheetParam.convertTo(), sheetParam.getSheetMetas(), autoSave);
+            @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
+        Sheet sheet = sheetService.createBy(sheetParam.convertTo(), sheetParam.getSheetMetas(), autoSave);
         return sheetAssembler.convertToDetailVo(sheet);
     }
 
     @PutMapping("{sheetId:\\d+}")
     @ApiOperation("Updates a sheet")
     public SheetDetailVO updateBy(
-        @PathVariable("sheetId") Integer sheetId,
-        @RequestBody @Valid SheetParam sheetParam,
-        @RequestParam(value = "autoSave", required = false, defaultValue = "false")
-            Boolean autoSave) {
+            @PathVariable("sheetId") Integer sheetId,
+            @RequestBody @Valid SheetParam sheetParam,
+            @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
         Sheet sheetToUpdate = sheetService.getWithLatestContentById(sheetId);
 
         sheetParam.update(sheetToUpdate);
@@ -118,8 +115,8 @@ public class SheetController {
     @PutMapping("{sheetId:\\d+}/{status}")
     @ApiOperation("Updates a sheet")
     public void updateStatusBy(
-        @PathVariable("sheetId") Integer sheetId,
-        @PathVariable("status") PostStatus status) {
+            @PathVariable("sheetId") Integer sheetId,
+            @PathVariable("status") PostStatus status) {
         Sheet sheet = sheetService.getById(sheetId);
 
         // Set status
@@ -132,14 +129,14 @@ public class SheetController {
     @PutMapping("{sheetId:\\d+}/status/draft/content")
     @ApiOperation("Updates draft")
     public BasePostDetailDTO updateDraftBy(
-        @PathVariable("sheetId") Integer sheetId,
-        @RequestBody PostContentParam contentParam) {
+            @PathVariable("sheetId") Integer sheetId,
+            @RequestBody PostContentParam contentParam) {
         Sheet sheetToUse = sheetService.getById(sheetId);
         String formattedContent = contentParam.decideContentBy(sheetToUse.getEditorType());
 
         // Update draft content
         Sheet sheet = sheetService.updateDraftContent(formattedContent,
-            contentParam.getOriginalContent(), sheetId);
+                contentParam.getOriginalContent(), sheetId);
         return sheetAssembler.convertToDetail(sheet);
     }
 
@@ -153,7 +150,7 @@ public class SheetController {
     @GetMapping("preview/{sheetId:\\d+}")
     @ApiOperation("Gets a sheet preview link")
     public String preview(@PathVariable("sheetId") Integer sheetId)
-        throws UnsupportedEncodingException {
+            throws UnsupportedEncodingException {
         Sheet sheet = sheetService.getById(sheetId);
 
         sheet.setSlug(URLEncoder.encode(sheet.getSlug(), StandardCharsets.UTF_8.name()));
@@ -172,8 +169,8 @@ public class SheetController {
         }
 
         previewUrl.append(sheetMinimalDTO.getFullPath())
-            .append("?token=")
-            .append(token);
+                .append("?token=")
+                .append(token);
 
         // build preview post url and return
         return previewUrl.toString();

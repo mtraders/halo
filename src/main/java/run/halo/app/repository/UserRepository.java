@@ -1,9 +1,10 @@
 package run.halo.app.repository;
 
 import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
-import run.halo.app.model.entity.Journal;
+
 import run.halo.app.model.entity.User;
 import run.halo.app.repository.base.BaseRepository;
 
