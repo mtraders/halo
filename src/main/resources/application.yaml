@@ -20,7 +20,7 @@ spring:
 
    # MySQL database configuration.
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/halo_dev?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://127.0.0.1:3306/halo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: 123456
     # H2 database configuration.
@@ -32,6 +32,10 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: false
+  redis:
+    port: 6379
+    database: 0
+    host: 127.0.0.1
   flyway:
     enabled: false
   servlet:
@@ -73,5 +77,5 @@ springfox:
 
 halo:
   download-timeout: 5m
-  cache: memory
+  cache: redis
   work-dir: ${user.home}/.halo/
