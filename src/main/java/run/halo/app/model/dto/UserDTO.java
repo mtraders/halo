@@ -7,6 +7,7 @@ import lombok.ToString;
 import run.halo.app.model.dto.base.OutputConverter;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.MFAType;
+import run.halo.app.model.enums.UserType;
 
 /**
  * User output dto.
@@ -32,6 +33,8 @@ public class UserDTO implements OutputConverter<UserDTO, User> {
     private String description;
 
     private MFAType mfaType;
+
+    private UserType userType;
 
     private Date createTime;
 
