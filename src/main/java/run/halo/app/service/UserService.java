@@ -9,6 +9,7 @@ import run.halo.app.exception.ForbiddenException;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.MFAType;
+import run.halo.app.model.enums.UserType;
 import run.halo.app.model.params.UserParam;
 import run.halo.app.model.params.UserQuery;
 import run.halo.app.service.base.CrudService;
@@ -128,6 +129,8 @@ public interface UserService extends CrudService<User, Integer> {
      * @param plainPassword plain password must not be blank
      */
     void setPassword(@NonNull User user, @NonNull String plainPassword);
+
+    void setUserType(@NonNull User user, @NonNull UserType userType);
 
     /**
      * verify user's email and username

@@ -24,6 +24,7 @@ import run.halo.app.model.entity.PostComment;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.UserType;
 import run.halo.app.model.params.CategoryParam;
 import run.halo.app.model.params.InstallParam;
 import run.halo.app.model.params.MenuParam;

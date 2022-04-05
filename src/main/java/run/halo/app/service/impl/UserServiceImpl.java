@@ -1,11 +1,15 @@
 package run.halo.app.service.impl;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -17,16 +21,21 @@ import run.halo.app.exception.BadRequestException;
 import run.halo.app.exception.ForbiddenException;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.exception.ServiceException;
+import run.halo.app.model.entity.Journal;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.MFAType;
+import run.halo.app.model.enums.UserType;
+import run.halo.app.model.params.JournalQuery;
 import run.halo.app.model.params.UserParam;
+import run.halo.app.model.params.UserQuery;
 import run.halo.app.repository.UserRepository;
 import run.halo.app.service.UserService;
 import run.halo.app.service.base.AbstractCrudService;
 import run.halo.app.utils.BCrypt;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.HaloUtils;
+import javax.persistence.criteria.Predicate;
 
 /**
  * UserService implementation class.
@@ -124,7 +133,7 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
         User user = userParam.convertTo();
 
         setPassword(user, userParam.getPassword());
-
+        user.setUserType(UserType.ADMIN);
         return create(user);
     }
 
@@ -189,6 +198,13 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
     }
 
     @Override
+    public void setUserType(@NonNull User user, @NonNull UserType userType) {
+        Assert.notNull(user, "User must not be null");
+        Assert.notNull(userType, "userType must not be blank");
+        user.setUserType(userType);
+    }
+
+    @Override
     public boolean verifyUser(String username, String password) {
         User user = getCurrentUser().orElseThrow(() -> new ServiceException("未查询到博主信息"));
         return user.getUsername().equals(username) && user.getEmail().equals(password);
@@ -213,5 +229,39 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
 
         return updatedUser;
 
+    }
+
+    @Override
+    public Page<User> pageBy(UserQuery userQuery, Pageable pageable) {
+        Assert.notNull(userQuery, "user query must not be null");
+        Assert.notNull(pageable, "Page info must not be null");
+        return userRepository.findAll(buildSpecByQuery(userQuery), pageable);
+    }
+
+    @NonNull
+    private Specification<User> buildSpecByQuery(@NonNull UserQuery userQuery) {
+        Assert.notNull(userQuery, "user query must not be null");
+
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new LinkedList<>();
+
+            if (userQuery.getUserType() != null) {
+                predicates.add(
+                    criteriaBuilder.equal(root.get("userType"), userQuery.getUserType()));
+            }
+
+            if (userQuery.getUsername() != null) {
+                // Format like condition
+                String likeCondition =
+                    String.format("%%%s%%", StringUtils.strip(userQuery.getUsername()));
+
+                // Build like predicate
+                Predicate contentLike = criteriaBuilder.like(root.get("content"), likeCondition);
+
+                predicates.add(criteriaBuilder.or(contentLike));
+            }
+
+            return query.where(predicates.toArray(new Predicate[0])).getRestriction();
+        };
     }
 }

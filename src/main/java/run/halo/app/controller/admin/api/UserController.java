@@ -33,6 +33,7 @@ import run.halo.app.model.support.UpdateCheck;
 import run.halo.app.model.vo.MultiFactorAuthVO;
 import run.halo.app.model.vo.PostCommentWithPostVO;
 import run.halo.app.service.UserService;
+import run.halo.app.service.assembler.UserAssembler;
 import run.halo.app.utils.HaloUtils;
 import run.halo.app.utils.TwoFactorAuthUtils;
 import run.halo.app.utils.ValidationUtils;
@@ -50,18 +51,21 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class UserController {
 
     private final UserService userService;
+    private final UserAssembler userAssembler;
 
-    public UserController(UserService userService) {
+
+    public UserController(UserService userService, UserAssembler userAssembler) {
         this.userService = userService;
+        this.userAssembler = userAssembler;
     }
 
     @GetMapping
     @ApiOperation("Lists Users")
-    public Page<PostCommentWithPostVO> pageBy(
+    public Page<UserDTO> pageBy(
         @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable,
         UserQuery userQuery) {
         Page<User> commentPage = userService.pageBy(userQuery, pageable);
-        return postCommentAssembler.convertToWithPostVo(commentPage);
+        return userAssembler.convertToWithUserVo(commentPage);
     }
 
 
