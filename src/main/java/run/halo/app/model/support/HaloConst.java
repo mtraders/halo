@@ -47,12 +47,12 @@ public class HaloConst {
     /**
      * Default theme name.
      */
-    public static final String DEFAULT_THEME_ID = "caicai_anatole";
+    public static final String DEFAULT_THEME_ID = "joe2.0";
 
     /**
      * Default theme directory name.
      */
-    public static final String DEFAULT_THEME_DIR_NAME = "anatole";
+    public static final String DEFAULT_THEME_DIR_NAME = "cern-site-theme-joe";
 
     /**
      * Default error path.
