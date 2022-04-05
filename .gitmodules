@@ -1,3 +1,6 @@
 [submodule "default-theme"]
 	path = src/main/resources/templates/themes/cern-site-theme-joe
     url = git@github.com:mtraders/cern-site-theme-joe.git
+[submodule "src/main/resources/templates/themes/cern-site-theme-joe"]
+	path = src/main/resources/templates/themes/cern-site-theme-joe
+	url = git@github.com:mtraders/cern-site-theme-joe.git
