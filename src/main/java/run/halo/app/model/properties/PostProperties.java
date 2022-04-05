@@ -47,7 +47,7 @@ public enum PostProperties implements PropertyEnum {
     RECYCLED_POST_CLEANING_ENABLED("recycled_post_cleaning_enabled", Boolean.class, "false"),
 
     /**
-     * Recycled post retention time
+     * Recycled post retention time.
      */
     RECYCLED_POST_RETENTION_TIME("recycled_post_retention_time", Integer.class, "30"),
 
@@ -55,7 +55,12 @@ public enum PostProperties implements PropertyEnum {
      * Recycled post retention time unit.
      */
     RECYCLED_POST_RETENTION_TIMEUNIT("recycled_post_retention_timeunit", TimeUnit.class,
-        TimeUnit.DAY.name());
+        TimeUnit.DAY.name()),
+
+    /**
+     * Does it need to be checked.
+     */
+    NEW_NEED_CHECK("comment_new_need_check", Boolean.class, "true");
 
     private final String value;
 

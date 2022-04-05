@@ -7,6 +7,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/cern/papers")
 public class PaperController {
     public PaperController() {}
-
-
 }

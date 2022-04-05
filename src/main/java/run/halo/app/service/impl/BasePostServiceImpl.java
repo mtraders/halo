@@ -291,6 +291,8 @@ public abstract class BasePostServiceImpl<POST extends BasePost>
     }
 
     /**
+     * create or update post by something.
+     *
      * @param post post for article
      * @return post with handled data
      */

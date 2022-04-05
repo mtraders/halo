@@ -20,9 +20,8 @@ import run.halo.app.exception.NotFoundException;
  */
 public interface CrudService<D, I> {
 
-
     /**
-     * List All
+     * List All.
      *
      * @return List
      */
@@ -30,7 +29,7 @@ public interface CrudService<D, I> {
     List<D> listAll();
 
     /**
-     * List all by sort
+     * List all by sort.
      *
      * @param sort sort
      * @return List
@@ -39,7 +38,7 @@ public interface CrudService<D, I> {
     List<D> listAll(@NonNull Sort sort);
 
     /**
-     * List all by pageable
+     * List all by pageable.
      *
      * @param pageable pageable
      * @return Page
@@ -48,7 +47,7 @@ public interface CrudService<D, I> {
     Page<D> listAll(@NonNull Pageable pageable);
 
     /**
-     * List all by ids
+     * List all by ids.
      *
      * @param ids ids
      * @return List
@@ -57,9 +56,9 @@ public interface CrudService<D, I> {
     List<D> listAllByIds(@Nullable Collection<I> ids);
 
     /**
-     * List all by ids and sort
+     * List all by ids and sort.
      *
-     * @param ids ids
+     * @param ids  ids
      * @param sort sort
      * @return List
      */
@@ -67,7 +66,7 @@ public interface CrudService<D, I> {
     List<D> listAllByIds(@Nullable Collection<I> ids, @NonNull Sort sort);
 
     /**
-     * Fetch by id
+     * Fetch by id.
      *
      * @param id id
      * @return Optional
@@ -76,7 +75,7 @@ public interface CrudService<D, I> {
     Optional<D> fetchById(@NonNull I id);
 
     /**
-     * Get by id
+     * Get by id.
      *
      * @param id id
      * @return DOMAIN
@@ -111,14 +110,14 @@ public interface CrudService<D, I> {
     void mustExistById(@NonNull I id);
 
     /**
-     * count all
+     * count all.
      *
      * @return long
      */
     long count();
 
     /**
-     * save by domain
+     * save by domain.
      *
      * @param domain domain
      * @return DOMAIN
@@ -128,7 +127,7 @@ public interface CrudService<D, I> {
     D create(@NonNull D domain);
 
     /**
-     * save by domains
+     * save by domains.
      *
      * @param domains domains
      * @return List
@@ -138,7 +137,7 @@ public interface CrudService<D, I> {
     List<D> createInBatch(@NonNull Collection<D> domains);
 
     /**
-     * Updates by domain
+     * Updates by domain.
      *
      * @param domain domain
      * @return DOMAIN
@@ -153,7 +152,7 @@ public interface CrudService<D, I> {
     void flush();
 
     /**
-     * Updates by domains
+     * Updates by domains.
      *
      * @param domains domains
      * @return List
@@ -163,7 +162,7 @@ public interface CrudService<D, I> {
     List<D> updateInBatch(@NonNull Collection<D> domains);
 
     /**
-     * Removes by id
+     * Removes by id.
      *
      * @param id id
      * @return DOMAIN
@@ -184,7 +183,7 @@ public interface CrudService<D, I> {
     D removeByIdOfNullable(@NonNull I id);
 
     /**
-     * Remove by domain
+     * Remove by domain.
      *
      * @param domain domain
      */
@@ -192,7 +191,7 @@ public interface CrudService<D, I> {
     void remove(@NonNull D domain);
 
     /**
-     * Remove by ids
+     * Remove by ids.
      *
      * @param ids ids
      */
@@ -200,7 +199,7 @@ public interface CrudService<D, I> {
     void removeInBatch(@NonNull Collection<I> ids);
 
     /**
-     * Remove all by domains
+     * Remove all by domains.
      *
      * @param domains domains
      */
@@ -208,7 +207,7 @@ public interface CrudService<D, I> {
     void removeAll(@NonNull Collection<D> domains);
 
     /**
-     * Remove all
+     * Remove all.
      */
     @Transactional
     void removeAll();

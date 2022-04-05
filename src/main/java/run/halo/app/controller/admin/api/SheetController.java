@@ -55,6 +55,9 @@ public class SheetController {
 
     private final SheetAssembler sheetAssembler;
 
+    /**
+     * Sheet controller.
+     */
     public SheetController(SheetService sheetService,
         AbstractStringCacheStore cacheStore,
         OptionService optionService,
