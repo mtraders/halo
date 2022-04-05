@@ -39,7 +39,7 @@ public interface PostService extends BasePostService<Post> {
     Page<Post> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable);
 
     /**
-     * Pages post by keyword
+     * Pages post by keyword.
      *
      * @param keyword keyword
      * @param pageable pageable
