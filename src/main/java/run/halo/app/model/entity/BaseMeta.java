@@ -43,13 +43,13 @@ public class BaseMeta extends BaseEntity {
     private Integer postId;
 
     /**
-     * meta key
+     * meta key.
      */
     @Column(name = "meta_key", nullable = false)
     private String key;
 
     /**
-     * meta value
+     * meta value.
      */
     @Column(name = "meta_value", length = 1023, nullable = false)
     private String value;

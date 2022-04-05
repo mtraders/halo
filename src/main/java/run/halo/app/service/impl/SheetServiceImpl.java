@@ -46,7 +46,7 @@ import run.halo.app.utils.ServiceUtils;
 @Slf4j
 @Service
 public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
-    implements SheetService {
+        implements SheetService {
 
     private final SheetRepository sheetRepository;
 
@@ -64,14 +64,26 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
     private final ContentPatchLogService sheetContentPatchLogService;
 
+    /**
+     * sheet service implementation.
+     *
+     * @param sheetRepository             sheet repository
+     * @param eventPublisher              event publisher
+     * @param sheetCommentService         sheet comment service
+     * @param sheetContentService         sheet content service
+     * @param sheetMetaService            sheet meta service
+     * @param themeService                theme service
+     * @param optionService               option service
+     * @param sheetContentPatchLogService sheet content patch patch log service
+     */
     public SheetServiceImpl(SheetRepository sheetRepository,
-        ApplicationEventPublisher eventPublisher,
-        SheetCommentService sheetCommentService,
-        ContentService sheetContentService,
-        SheetMetaService sheetMetaService,
-        ThemeService themeService,
-        OptionService optionService,
-        ContentPatchLogService sheetContentPatchLogService) {
+            ApplicationEventPublisher eventPublisher,
+            SheetCommentService sheetCommentService,
+            ContentService sheetContentService,
+            SheetMetaService sheetMetaService,
+            ThemeService themeService,
+            OptionService optionService,
+            ContentPatchLogService sheetContentPatchLogService) {
         super(sheetRepository, optionService, sheetContentService, sheetContentPatchLogService);
         this.sheetRepository = sheetRepository;
         this.eventPublisher = eventPublisher;
@@ -89,8 +101,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Sheet createdSheet = createOrUpdateBy(sheet);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent =
-                new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED,
+            LogEvent logEvent = new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED,
                     createdSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
@@ -103,14 +114,12 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Sheet createdSheet = createOrUpdateBy(sheet);
 
         // Create sheet meta data
-        List<SheetMeta> sheetMetaList =
-            sheetMetaService.createOrUpdateByPostId(sheet.getId(), metas);
+        List<SheetMeta> sheetMetaList = sheetMetaService.createOrUpdateByPostId(sheet.getId(), metas);
         log.debug("Created sheet metas: [{}]", sheetMetaList);
 
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent =
-                new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED,
+            LogEvent logEvent = new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED,
                     createdSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
@@ -123,8 +132,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Sheet updatedSheet = createOrUpdateBy(sheet);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent =
-                new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED,
+            LogEvent logEvent = new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED,
                     updatedSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
@@ -137,14 +145,12 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Sheet updatedSheet = createOrUpdateBy(sheet);
 
         // Create sheet meta data
-        List<SheetMeta> sheetMetaList =
-            sheetMetaService.createOrUpdateByPostId(updatedSheet.getId(), metas);
+        List<SheetMeta> sheetMetaList = sheetMetaService.createOrUpdateByPostId(updatedSheet.getId(), metas);
         log.debug("Created sheet metas: [{}]", sheetMetaList);
 
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent =
-                new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED,
+            LogEvent logEvent = new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED,
                     updatedSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
@@ -163,7 +169,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Assert.hasText(slug, "Sheet slug must not be blank");
 
         return sheetRepository.getBySlug(slug)
-            .orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
+                .orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
     }
 
     @Override
@@ -171,8 +177,8 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Sheet sheet = getById(postId);
         Content sheetContent = getContentById(postId);
         // Use the head pointer stored in the post content.
-        PatchedContent patchedContent =
-            sheetContentPatchLogService.getPatchedContentById(sheetContent.getHeadPatchLogId());
+        PatchedContent patchedContent = sheetContentPatchLogService
+                .getPatchedContentById(sheetContent.getHeadPatchLogId());
         sheet.setContent(patchedContent);
         return sheet;
     }
@@ -185,7 +191,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Optional<Sheet> postOptional = sheetRepository.getBySlugAndStatus(slug, status);
 
         return postOptional
-            .orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
+                .orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
     }
 
     @Override
@@ -232,8 +238,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
     @Override
     public List<IndependentSheetDTO> listIndependentSheets() {
 
-        String context =
-            (optionService.isEnabledAbsolutePath() ? optionService.getBlogBaseUrl() : "") + "/";
+        String context = (optionService.isEnabledAbsolutePath() ? optionService.getBlogBaseUrl() : "") + "/";
 
         // TODO 日后将重构该部分，提供接口用于拓展独立页面，以供插件系统使用。
 
@@ -285,7 +290,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
         // Log it
         eventPublisher.publishEvent(
-            new LogEvent(this, id.toString(), LogType.SHEET_DELETED, sheet.getTitle()));
+                new LogEvent(this, id.toString(), LogType.SHEET_DELETED, sheet.getTitle()));
 
         return sheet;
     }
