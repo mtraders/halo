@@ -3,28 +3,41 @@ package run.halo.app.controller.admin.api;
 import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.annotation.DisableOnCondition;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.exception.BadRequestException;
 import run.halo.app.model.dto.UserDTO;
+import run.halo.app.model.dto.post.BasePostSimpleDTO;
+import run.halo.app.model.entity.Post;
+import run.halo.app.model.entity.PostComment;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.MFAType;
+import run.halo.app.model.params.CommentQuery;
 import run.halo.app.model.params.MultiFactorAuthParam;
 import run.halo.app.model.params.PasswordParam;
+import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.params.UserParam;
+import run.halo.app.model.params.UserQuery;
 import run.halo.app.model.support.BaseResponse;
 import run.halo.app.model.support.UpdateCheck;
 import run.halo.app.model.vo.MultiFactorAuthVO;
+import run.halo.app.model.vo.PostCommentWithPostVO;
 import run.halo.app.service.UserService;
 import run.halo.app.utils.HaloUtils;
 import run.halo.app.utils.TwoFactorAuthUtils;
 import run.halo.app.utils.ValidationUtils;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * User controller.
@@ -41,6 +54,16 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @GetMapping
+    @ApiOperation("Lists Users")
+    public Page<PostCommentWithPostVO> pageBy(
+        @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable,
+        UserQuery userQuery) {
+        Page<User> commentPage = userService.pageBy(userQuery, pageable);
+        return postCommentAssembler.convertToWithPostVo(commentPage);
+    }
+
 
     @GetMapping("profiles")
     @ApiOperation("Gets user profile")
