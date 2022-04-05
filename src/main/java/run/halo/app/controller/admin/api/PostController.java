@@ -58,6 +58,14 @@ public class PostController {
 
     private final PostAssembler postAssembler;
 
+    /**
+     * post controller.
+     *
+     * @param postService post service.
+     * @param cacheStore cache store.
+     * @param optionService option service.
+     * @param postAssembler post assembler.
+     */
     public PostController(PostService postService,
         AbstractStringCacheStore cacheStore,
         OptionService optionService,

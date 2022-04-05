@@ -13,7 +13,9 @@ import run.halo.app.service.base.CrudService;
 public interface ContentService extends CrudService<Content, Integer> {
 
     /**
-     * <p>Publish post content.</p>
+     * <p>
+     * Publish post content.
+     * </p>
      * <ul>
      * <li>Copy the latest record in {@link ContentPatchLog} to the {@link Content}.
      * <li>Set status to PUBLISHED.
@@ -26,10 +28,11 @@ public interface ContentService extends CrudService<Content, Integer> {
     Content publishContent(Integer postId);
 
     /**
-     * If the content record does not exist, it will be created; otherwise, it will be updated.
+     * If the content record does not exist, it will be created; otherwise, it will
+     * be updated.
      *
-     * @param postId post id
-     * @param content post format content
+     * @param postId          post id
+     * @param content         post format content
      * @param originalContent post original content
      */
     void createOrUpdateDraftBy(Integer postId, String content, String originalContent);
@@ -39,7 +42,7 @@ public interface ContentService extends CrudService<Content, Integer> {
      *
      * @param postId post id
      * @return {@code true} if find a draft record from {@link ContentPatchLog},
-     *  otherwise {@code false}
+     *         otherwise {@code false}
      */
     Boolean draftingInProgress(Integer postId);
 }

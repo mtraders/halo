@@ -9,14 +9,14 @@ import static run.halo.app.utils.SwaggerUtils.customMixin;
 import static run.halo.app.utils.SwaggerUtils.propertyBuilder;
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
-import com.fasterxml.classmate.TypeResolver;
-import io.swagger.models.auth.In;
 import java.lang.reflect.Type;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+
+import com.fasterxml.classmate.TypeResolver;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +28,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.Assert;
 import org.springframework.util.PathMatcher;
+
+import io.swagger.models.auth.In;
 import run.halo.app.utils.SwaggerUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -57,149 +59,152 @@ import springfox.documentation.swagger.web.UiConfigurationBuilder;
  *
  * @author johnniang
  */
-@Slf4j
 @Configuration
-@ConditionalOnProperty(
-    value = "springfox.documentation.enabled",
-    havingValue = "true",
-    matchIfMissing = true)
+@ConditionalOnProperty(value = "springfox.documentation.enabled", havingValue = "true", matchIfMissing = true)
 public class SwaggerConfiguration {
 
+    /**
+     * halo default api.
+     *
+     * @return default api docket.
+     */
     @Bean
     public Docket haloDefaultApi() {
         return buildApiDocket("run.halo.app.content.api",
-            "run.halo.app.controller.content.api",
-            "/api/content/**")
-            .securitySchemes(contentApiKeys())
-            .securityContexts(contentSecurityContext());
+                "run.halo.app.controller.content.api",
+                "/api/content/**")
+                .securitySchemes(contentApiKeys())
+                .securityContexts(contentSecurityContext());
     }
 
+    /**
+     * halo admin api.
+     *
+     * @return admin api docket.
+     */
     @Bean
     public Docket haloAdminApi() {
         return buildApiDocket("run.halo.app.admin.api",
-            "run.halo.app.controller.admin",
-            "/api/admin/**")
-            .securitySchemes(adminApiKeys())
-            .securityContexts(adminSecurityContext());
+                "run.halo.app.controller.admin",
+                "/api/admin/**")
+                .securitySchemes(adminApiKeys())
+                .securityContexts(adminSecurityContext());
     }
 
     @Bean
     SecurityConfiguration security() {
         return SecurityConfigurationBuilder.builder()
-            .clientId("halo-app-client-id")
-            .clientSecret("halo-app-client-secret")
-            .realm("halo-app-realm")
-            .appName("halo-app")
-            .scopeSeparator(",")
-            .additionalQueryStringParams(null)
-            .useBasicAuthenticationWithAccessCodeGrant(false)
-            .build();
+                .clientId("halo-app-client-id")
+                .clientSecret("halo-app-client-secret")
+                .realm("halo-app-realm")
+                .appName("halo-app")
+                .scopeSeparator(",")
+                .additionalQueryStringParams(null)
+                .useBasicAuthenticationWithAccessCodeGrant(false)
+                .build();
     }
 
     @Bean
     UiConfiguration uiConfig() {
         return UiConfigurationBuilder.builder()
-            .deepLinking(true)
-            .displayOperationId(false)
-            .defaultModelsExpandDepth(1)
-            .defaultModelExpandDepth(1)
-            .defaultModelRendering(ModelRendering.EXAMPLE)
-            .displayRequestDuration(false)
-            .docExpansion(DocExpansion.NONE)
-            .filter(false)
-            .maxDisplayedTags(null)
-            .operationsSorter(OperationsSorter.ALPHA)
-            .showExtensions(false)
-            .showCommonExtensions(false)
-            .tagsSorter(TagsSorter.ALPHA)
-            .supportedSubmitMethods(UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS)
-            .validatorUrl(null)
-            .build();
+                .deepLinking(true)
+                .displayOperationId(false)
+                .defaultModelsExpandDepth(1)
+                .defaultModelExpandDepth(1)
+                .defaultModelRendering(ModelRendering.EXAMPLE)
+                .displayRequestDuration(false)
+                .docExpansion(DocExpansion.NONE)
+                .filter(false)
+                .maxDisplayedTags(null)
+                .operationsSorter(OperationsSorter.ALPHA)
+                .showExtensions(false)
+                .showCommonExtensions(false)
+                .tagsSorter(TagsSorter.ALPHA)
+                .supportedSubmitMethods(UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS)
+                .validatorUrl(null)
+                .build();
     }
 
     private Docket buildApiDocket(@NonNull String groupName, @NonNull String basePackage,
-        @NonNull String antPattern) {
+            @NonNull String antPattern) {
         Assert.hasText(groupName, "Group name must not be blank");
         Assert.hasText(basePackage, "Base package must not be blank");
         Assert.hasText(antPattern, "Ant pattern must not be blank");
 
         return SwaggerUtils.defaultDocket()
-            .groupName(groupName)
-            .select()
-            .apis(RequestHandlerSelectors.basePackage(basePackage))
-            .paths(PathSelectors.ant(antPattern))
-            .build()
-            .apiInfo(apiInfo())
-            .directModelSubstitute(Temporal.class, String.class);
+                .groupName(groupName)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage(basePackage))
+                .paths(PathSelectors.ant(antPattern))
+                .build()
+                .apiInfo(apiInfo())
+                .directModelSubstitute(Temporal.class, String.class);
     }
 
     private List<SecurityScheme> adminApiKeys() {
         return Arrays.asList(
-            new ApiKey(ADMIN_TOKEN_HEADER_NAME, ADMIN_TOKEN_HEADER_NAME, In.HEADER.name()),
-            new ApiKey(ADMIN_TOKEN_QUERY_NAME, ADMIN_TOKEN_QUERY_NAME, In.QUERY.name())
-        );
+                new ApiKey(ADMIN_TOKEN_HEADER_NAME, ADMIN_TOKEN_HEADER_NAME, In.HEADER.name()),
+                new ApiKey(ADMIN_TOKEN_QUERY_NAME, ADMIN_TOKEN_QUERY_NAME, In.QUERY.name()));
     }
 
     private List<SecurityContext> adminSecurityContext() {
         final PathMatcher pathMatcher = new AntPathMatcher();
         return Collections.singletonList(
-            SecurityContext.builder()
-                .securityReferences(adminApiAuths())
-                .operationSelector(operationContext -> {
-                    var requestMappingPattern = operationContext.requestMappingPattern();
-                    return pathMatcher.match("/api/admin/**/*", requestMappingPattern);
-                })
-                .build()
-        );
+                SecurityContext.builder()
+                        .securityReferences(adminApiAuths())
+                        .operationSelector(operationContext -> {
+                            var requestMappingPattern = operationContext.requestMappingPattern();
+                            return pathMatcher.match("/api/admin/**/*", requestMappingPattern);
+                        })
+                        .build());
     }
 
     private List<SecurityScheme> contentApiKeys() {
         return Arrays.asList(
-            new ApiKey(API_ACCESS_KEY_HEADER_NAME, API_ACCESS_KEY_HEADER_NAME, In.HEADER.name()),
-            new ApiKey(API_ACCESS_KEY_QUERY_NAME, API_ACCESS_KEY_QUERY_NAME, In.QUERY.name())
-        );
+                new ApiKey(API_ACCESS_KEY_HEADER_NAME, API_ACCESS_KEY_HEADER_NAME, In.HEADER.name()),
+                new ApiKey(API_ACCESS_KEY_QUERY_NAME, API_ACCESS_KEY_QUERY_NAME, In.QUERY.name()));
     }
 
     private List<SecurityContext> contentSecurityContext() {
         final PathMatcher pathMatcher = new AntPathMatcher();
         return Collections.singletonList(
-            SecurityContext.builder()
-                .securityReferences(contentApiAuths())
-                .operationSelector(operationContext -> {
-                    var requestMappingPattern = operationContext.requestMappingPattern();
-                    return pathMatcher.match("/api/content/**/*", requestMappingPattern);
-                })
-                .build()
-        );
+                SecurityContext.builder()
+                        .securityReferences(contentApiAuths())
+                        .operationSelector(operationContext -> {
+                            var requestMappingPattern = operationContext.requestMappingPattern();
+                            return pathMatcher.match("/api/content/**/*", requestMappingPattern);
+                        })
+                        .build());
     }
 
     private List<SecurityReference> adminApiAuths() {
-        AuthorizationScope[] authorizationScopes =
-            {new AuthorizationScope("Admin api", "Access admin api")};
+        AuthorizationScope[] authorizationScopes = { new AuthorizationScope("Admin api", "Access admin api") };
         return Arrays.asList(new SecurityReference(ADMIN_TOKEN_HEADER_NAME, authorizationScopes),
-            new SecurityReference(ADMIN_TOKEN_QUERY_NAME, authorizationScopes));
+                new SecurityReference(ADMIN_TOKEN_QUERY_NAME, authorizationScopes));
     }
 
     private List<SecurityReference> contentApiAuths() {
-        AuthorizationScope[] authorizationScopes =
-            {new AuthorizationScope("content api", "Access content api")};
+        AuthorizationScope[] authorizationScopes = { new AuthorizationScope("content api", "Access content api") };
         return Arrays.asList(new SecurityReference(API_ACCESS_KEY_HEADER_NAME, authorizationScopes),
-            new SecurityReference(API_ACCESS_KEY_QUERY_NAME, authorizationScopes));
+                new SecurityReference(API_ACCESS_KEY_QUERY_NAME, authorizationScopes));
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-            .title("Halo API Documentation")
-            .description("Documentation for Halo API")
-            .version(HALO_VERSION)
-            .termsOfServiceUrl("https://github.com/halo-dev")
-            .contact(
-                new Contact("halo-dev", "https://github.com/halo-dev/halo/issues", "hi@halo.run"))
-            .license("GNU General Public License v3.0")
-            .licenseUrl("https://github.com/halo-dev/halo/blob/master/LICENSE")
-            .build();
+                .title("Halo CERN API Documentation")
+                .description("Documentation for Halo CERN API")
+                .version(HALO_VERSION)
+                .contact(
+                        new Contact("halo-cern-dev", "https://github.com/mtraders/halo/issues", "lizc@fists.cn"))
+                .build();
     }
 
+    /**
+     * customize convention.
+     *
+     * @param resolver type of resolver
+     * @return alternate type rule convention.
+     */
     @Bean
     public AlternateTypeRuleConvention customizeConvention(TypeResolver resolver) {
         return new AlternateTypeRuleConvention() {
@@ -211,25 +216,24 @@ public class SwaggerConfiguration {
             @Override
             public List<AlternateTypeRule> rules() {
                 return Arrays.asList(
-                    newRule(resolver.resolve(Page.class, WildcardType.class),
-                        resolver.resolve(CustomizedPage.class, WildcardType.class)),
-                    newRule(resolver.resolve(Pageable.class), resolver.resolve(pageableMixin())),
-                    newRule(resolver.resolve(Sort.class), resolver.resolve(sortMixin())));
+                        newRule(resolver.resolve(Page.class, WildcardType.class),
+                                resolver.resolve(CustomizedPage.class, WildcardType.class)),
+                        newRule(resolver.resolve(Pageable.class), resolver.resolve(pageableMixin())),
+                        newRule(resolver.resolve(Sort.class), resolver.resolve(sortMixin())));
             }
         };
     }
 
     private Type sortMixin() {
         return customMixin(Sort.class,
-            Collections.singletonList(propertyBuilder(String[].class, "sort")));
+                Collections.singletonList(propertyBuilder(String[].class, "sort")));
     }
 
     private Type pageableMixin() {
         return customMixin(Pageable.class, Arrays.asList(
-            propertyBuilder(Integer.class, "page"),
-            propertyBuilder(Integer.class, "size"),
-            propertyBuilder(String[].class, "sort")
-        ));
+                propertyBuilder(Integer.class, "page"),
+                propertyBuilder(Integer.class, "size"),
+                propertyBuilder(String[].class, "sort")));
     }
 
     /**

@@ -143,7 +143,7 @@ public class BasePost extends BaseEntity {
     private Integer topPriority;
 
     /**
-     * Likes
+     * Likes.
      */
     @Column(name = "likes")
     @ColumnDefault("0")
@@ -169,7 +169,7 @@ public class BasePost extends BaseEntity {
     private String metaDescription;
 
     /**
-     * Content word count
+     * Content word count.
      */
     @Column(name = "word_count")
     @ColumnDefault("0")
@@ -187,6 +187,12 @@ public class BasePost extends BaseEntity {
      */
     @Transient
     private PatchedContent content;
+
+    /**
+     * Source.
+     */
+    @Column(name = "source")
+    private String source;
 
     @Override
     public void prePersist() {

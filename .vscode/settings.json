@@ -1,0 +1,8 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.import.gradle.home": "",
+  "java.import.gradle.offline.enabled": true,
+  "java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
+  "java.format.settings.url": "${workspaceFolder}/config/checkstyle/check_format-cs-formatter.xml",
+  "java.checkstyle.version": "8.39",
+}

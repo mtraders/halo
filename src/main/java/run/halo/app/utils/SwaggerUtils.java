@@ -30,6 +30,13 @@ public final class SwaggerUtils {
     private SwaggerUtils() {
     }
 
+    /**
+     * custom Mixin Type.
+     *
+     * @param clazz class.
+     * @param properties properties.
+     * @return Type.
+     */
     public static Type customMixin(Class<?> clazz,
         List<Consumer<AlternateTypePropertyBuilder>> properties) {
         Assert.notNull(clazz, "Class must not be null");
@@ -47,6 +54,13 @@ public final class SwaggerUtils {
         return customMixin(clazz, Collections.emptyList());
     }
 
+    /**
+     * swagger property builder.
+     *
+     * @param clazz class type.
+     * @param name name.
+     * @return swagger consumer.
+     */
     public static Consumer<AlternateTypePropertyBuilder> propertyBuilder(Class<?> clazz,
         String name) {
         return propertyBuilder -> propertyBuilder.type(clazz)
@@ -83,6 +97,11 @@ public final class SwaggerUtils {
         new ResponseBuilder().code("503")
             .description("The server is not ready to handle the request.").build());
 
+    /**
+     * default swagger doceket.
+     *
+     * @return swagger doceket.
+     */
     public static Docket defaultDocket() {
         return new Docket(DocumentationType.OAS_30)
             .forCodeGeneration(true)
@@ -95,6 +114,12 @@ public final class SwaggerUtils {
             .globalResponses(HttpMethod.PUT, GLOBAL_RESPONSES);
     }
 
+    /**
+     * class for.
+     *
+     * @param className class name.
+     * @return class optional.
+     */
     public static Optional<Class<?>> classFor(String className) {
         try {
             return Optional

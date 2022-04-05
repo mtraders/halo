@@ -63,7 +63,7 @@ nbdist/
 *.rar
 
 ### VSCode
-.vscode
+// .vscode
 
 ### Local file
 application-local.yml
