@@ -5,7 +5,7 @@ public enum CernProperties implements PropertyEnum {
     /**
      * personnel page prefix.
      */
-    PERSONNELS_PREFIX("personnels_prefix", String.class, "personnels");
+    PERSONNEL_PREFIX("personnel_prefix", String.class, "personnel");
 
     private final String value;
 

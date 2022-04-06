@@ -1,6 +1,7 @@
 package run.halo.app.model.entity.cern;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,6 +22,7 @@ import run.halo.app.model.entity.BaseEntity;
 @Data
 @ToString
 @EqualsAndHashCode(callSuper = true)
+@Entity
 @Table(name = "personnel")
 public class Personnel extends BaseEntity {
 

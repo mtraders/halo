@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author lizc(lizc@fists.cn)
  */
 @RestController("ApiContentCernPersonnelController")
-@RequestMapping("/api/content/cern/personnels")
+@RequestMapping("/api/content/cern/personnel")
 public class PersonnelController {
 
 }
