@@ -1,7 +1,5 @@
 package run.halo.app.model.entity.cern;
 
-import static org.mockito.ArgumentMatchers.nullable;
-
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
