@@ -141,6 +141,11 @@ public interface PropertyEnum extends ValueEnum<String> {
                 || type.isAssignableFrom(ValueEnum.class);
     }
 
+    /**
+     * get value property enum mapping.
+     *
+     * @return property map.
+     */
     static Map<String, PropertyEnum> getValuePropertyEnumMap() {
         // Get all properties
         List<Class<? extends PropertyEnum>> propertyEnumClasses = new LinkedList<>();
@@ -158,6 +163,7 @@ public interface PropertyEnum extends ValueEnum<String> {
         propertyEnumClasses.add(UpOssProperties.class);
         propertyEnumClasses.add(ApiProperties.class);
         propertyEnumClasses.add(PermalinkProperties.class);
+        propertyEnumClasses.add(CernProperties.class);
 
         Map<String, PropertyEnum> result = new HashMap<>();
 
