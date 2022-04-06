@@ -41,6 +41,13 @@ public class TagController {
 
     private final PostRenderAssembler postRenderAssembler;
 
+    /**
+     * content tag controller constructor.
+     *
+     * @param tagService tag service
+     * @param postTagService post tag service
+     * @param postRenderAssembler post render assembler.
+     */
     public TagController(TagService tagService,
         PostTagService postTagService,
         PostRenderAssembler postRenderAssembler) {
@@ -49,6 +56,13 @@ public class TagController {
         this.postRenderAssembler = postRenderAssembler;
     }
 
+    /**
+     * list tags.
+     *
+     * @param sort sort
+     * @param more more
+     * @return tag list
+     */
     @GetMapping
     @ApiOperation("Lists tags")
     public List<? extends TagDTO> listTags(
@@ -61,6 +75,13 @@ public class TagController {
         return tagService.convertTo(tagService.listAll(sort));
     }
 
+    /**
+     * list posts by tag slug.
+     *
+     * @param slug slug.
+     * @param pageable pageable.
+     * @return post list by tag slug.
+     */
     @GetMapping("{slug}/posts")
     @ApiOperation("Lists posts by tag slug")
     public Page<PostListVO> listPostsBy(@PathVariable("slug") String slug,

@@ -15,7 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 import run.halo.app.model.enums.JournalType;
 
 /**
- * Journal entity
+ * Journal entity.
  *
  * @author johnniang
  * @author ryanwang

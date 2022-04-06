@@ -17,7 +17,7 @@ import run.halo.app.service.base.CrudService;
 public interface TagService extends CrudService<Tag, Integer> {
 
     /**
-     * Get tag by slug
+     * Get tag by slug.
      *
      * @param slug slug
      * @return Tag
@@ -26,7 +26,7 @@ public interface TagService extends CrudService<Tag, Integer> {
     Tag getBySlugOfNonNull(@NonNull String slug);
 
     /**
-     * Get tag by slug
+     * Get tag by slug.
      *
      * @param slug slug
      * @return tag

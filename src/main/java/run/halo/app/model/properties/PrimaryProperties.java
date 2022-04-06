@@ -21,7 +21,7 @@ public enum PrimaryProperties implements PropertyEnum {
     THEME("theme", String.class, DEFAULT_THEME_ID),
 
     /**
-     * blog birthday
+     * blog birthday.
      */
     BIRTHDAY("birthday", Long.class, "0"),
 
@@ -31,7 +31,7 @@ public enum PrimaryProperties implements PropertyEnum {
     DEV_MODE("developer_mode", Boolean.class, "false"),
 
     /**
-     * default menu team name
+     * default menu team name.
      */
     DEFAULT_MENU_TEAM("default_menu_team", String.class, "");
 
