@@ -1,6 +1,6 @@
 package run.halo.app.model.properties;
 
-public class CernProperties implements PropertyEnum {
+public enum CernProperties implements PropertyEnum {
 
     /**
      * personnel page prefix.

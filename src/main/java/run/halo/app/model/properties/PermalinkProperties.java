@@ -69,7 +69,7 @@ public enum PermalinkProperties implements PropertyEnum {
      * Path suffix
      * such as: .html or .jsp
      */
-    PATH_SUFFIX("path_suffix", String.class, ""),
+    PATH_SUFFIX("path_suffix", String.class, "");
 
     private final String value;
 
