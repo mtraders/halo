@@ -5,4 +5,19 @@
   "java.checkstyle.configuration": "${workspaceFolder}/config/checkstyle/checkstyle.xml",
   "java.format.settings.url": "${workspaceFolder}/config/checkstyle/check_format-cs-formatter.xml",
   "java.checkstyle.version": "8.39",
+  "sqltools.connections": [
+    {
+      "mysqlOptions": {
+        "authProtocol": "default"
+      },
+      "previewLimit": 50,
+      "server": "127.0.0.1",
+      "port": 3306,
+      "driver": "MySQL",
+      "name": "dev.fists.cn",
+      "database": "halo",
+      "username": "root",
+      "password": "123456"
+    }
+  ],
 }
