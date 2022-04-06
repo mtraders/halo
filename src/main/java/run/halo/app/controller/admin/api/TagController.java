@@ -43,6 +43,13 @@ public class TagController {
         this.postTagService = postTagService;
     }
 
+    /**
+     * list tags.
+     *
+     * @param sort sort order
+     * @param more more
+     * @return tag list.
+     */
     @GetMapping
     @ApiOperation("Lists tags")
     public List<? extends TagDTO> listTags(

@@ -1,5 +1,8 @@
 package run.halo.app.model.entity.cern;
 
+import static org.mockito.ArgumentMatchers.nullable;
+
+import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -34,25 +37,30 @@ public class Personnel extends BaseEntity {
     /**
      * personnel name.
      */
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**
      * english name.
      */
+    @Column(name = "english_name", unique = true)
     private String englishName;
 
     /**
      * slug.
      */
+    @Column(name = "slug", unique = true)
     private String slug;
 
     /**
      * email.
      */
+    @Column(name = "email", length = 127)
     private String email;
 
     /**
      * Cover thumbnail of the personnel.
      */
+    @Column(name = "thumbnail", length = 1023)
     private String thumbnail;
 }

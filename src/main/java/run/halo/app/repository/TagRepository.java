@@ -22,7 +22,7 @@ public interface TagRepository extends BaseRepository<Tag, Integer> {
     long countByNameOrSlug(@NonNull String name, @NonNull String slug);
 
     /**
-     * Get tag by slug
+     * Get tag by slug.
      *
      * @param slug slug must not be null.
      * @return an optional of slug.
@@ -30,7 +30,7 @@ public interface TagRepository extends BaseRepository<Tag, Integer> {
     Optional<Tag> getBySlug(@NonNull String slug);
 
     /**
-     * Get tag by name
+     * Get tag by name.
      *
      * @param name name must not be null.
      * @return an optional of tag

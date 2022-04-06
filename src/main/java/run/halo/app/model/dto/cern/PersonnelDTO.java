@@ -21,4 +21,5 @@ public class PersonnelDTO implements OutputConverter<PersonnelDTO, Personnel> {
     private String thumbnail;
     private Date createTime;
     private Date updateTime;
+    private String fullPath;
 }
