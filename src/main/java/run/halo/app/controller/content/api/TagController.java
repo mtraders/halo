@@ -44,13 +44,13 @@ public class TagController {
     /**
      * content tag controller constructor.
      *
-     * @param tagService tag service
-     * @param postTagService post tag service
+     * @param tagService          tag service
+     * @param postTagService      post tag service
      * @param postRenderAssembler post render assembler.
      */
     public TagController(TagService tagService,
-        PostTagService postTagService,
-        PostRenderAssembler postRenderAssembler) {
+            PostTagService postTagService,
+            PostRenderAssembler postRenderAssembler) {
         this.tagService = tagService;
         this.postTagService = postTagService;
         this.postRenderAssembler = postRenderAssembler;
@@ -66,9 +66,8 @@ public class TagController {
     @GetMapping
     @ApiOperation("Lists tags")
     public List<? extends TagDTO> listTags(
-        @SortDefault(sort = "updateTime", direction = DESC) Sort sort,
-        @ApiParam("If the param is true, post count of tag will be returned")
-        @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
+            @SortDefault(sort = "updateTime", direction = DESC) Sort sort,
+            @ApiParam("If the param is true, post count of tag will be returned") @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
         if (more) {
             return postTagService.listTagWithCountDtos(sort);
         }
@@ -78,21 +77,19 @@ public class TagController {
     /**
      * list posts by tag slug.
      *
-     * @param slug slug.
+     * @param slug     slug.
      * @param pageable pageable.
      * @return post list by tag slug.
      */
     @GetMapping("{slug}/posts")
     @ApiOperation("Lists posts by tag slug")
     public Page<PostListVO> listPostsBy(@PathVariable("slug") String slug,
-        @PageableDefault(sort = {"topPriority", "updateTime"}, direction = DESC)
-            Pageable pageable) {
+            @PageableDefault(sort = { "topPriority", "updateTime" }, direction = DESC) Pageable pageable) {
         // Get tag by slug
         Tag tag = tagService.getBySlugOfNonNull(slug);
 
         // Get posts, convert and return
-        Page<Post> postPage =
-            postTagService.pagePostsBy(tag.getId(), PostStatus.PUBLISHED, pageable);
+        Page<Post> postPage = postTagService.pagePostsBy(tag.getId(), PostStatus.PUBLISHED, pageable);
         return postRenderAssembler.convertToListVo(postPage);
     }
 }

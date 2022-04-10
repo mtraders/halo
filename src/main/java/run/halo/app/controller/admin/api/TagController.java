@@ -37,8 +37,7 @@ public class TagController {
 
     private final PostTagService postTagService;
 
-    public TagController(TagService tagService,
-        PostTagService postTagService) {
+    public TagController(TagService tagService, PostTagService postTagService) {
         this.tagService = tagService;
         this.postTagService = postTagService;
     }
@@ -50,21 +49,27 @@ public class TagController {
      * @param more more
      * @return tag list.
      */
-    @GetMapping
-    @ApiOperation("Lists tags")
+    @GetMapping @ApiOperation("Lists tags")
     public List<? extends TagDTO> listTags(
-        @SortDefault(sort = "createTime", direction = Sort.Direction.DESC) Sort sort,
-        @ApiParam("Return more information(post count) if it is set")
-        @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
+            @SortDefault(sort = "createTime", direction = Sort.Direction.DESC)
+            Sort sort,
+            @ApiParam("Return more information(post count) if it is set") @RequestParam(name = "more", required = false, defaultValue = "false")
+            Boolean more) {
         if (more) {
             return postTagService.listTagWithCountDtos(sort);
         }
         return tagService.convertTo(tagService.listAll(sort));
     }
 
-    @PostMapping
-    @ApiOperation("Creates a tag")
-    public TagDTO createTag(@Valid @RequestBody TagParam tagParam) {
+    /**
+     * create a tag.
+     *
+     * @param tagParam tag param
+     * @return tag
+     */
+    @PostMapping @ApiOperation("Create a tag")
+    public TagDTO createTag(@Valid @RequestBody
+    TagParam tagParam) {
         // Convert to tag
         Tag tag = tagParam.convertTo();
 
@@ -74,16 +79,30 @@ public class TagController {
         return tagService.convertTo(tagService.create(tag));
     }
 
-    @GetMapping("{tagId:\\d+}")
-    @ApiOperation("Gets tag detail by id")
-    public TagDTO getBy(@PathVariable("tagId") Integer tagId) {
+    /**
+     * get tag detail by id.
+     *
+     * @param tagId tag id.
+     * @return tag detail
+     */
+    @GetMapping("{tagId:\\d+}") @ApiOperation("Get tag detail by id")
+    public TagDTO getBy(@PathVariable("tagId")
+    Integer tagId) {
         return tagService.convertTo(tagService.getById(tagId));
     }
 
-    @PutMapping("{tagId:\\d+}")
-    @ApiOperation("Updates a tag")
-    public TagDTO updateBy(@PathVariable("tagId") Integer tagId,
-        @Valid @RequestBody TagParam tagParam) {
+    /**
+     * update tag.
+     *
+     * @param tagId tag id
+     * @param tagParam tag parameter
+     * @return tag detail
+     */
+    @PutMapping("{tagId:\\d+}") @ApiOperation("Update a tag")
+    public TagDTO updateBy(@PathVariable("tagId")
+    Integer tagId,
+            @Valid @RequestBody
+            TagParam tagParam) {
         // Get old tag
         Tag tag = tagService.getById(tagId);
 
@@ -94,9 +113,15 @@ public class TagController {
         return tagService.convertTo(tagService.update(tag));
     }
 
-    @DeleteMapping("{tagId:\\d+}")
-    @ApiOperation("Deletes a tag")
-    public TagDTO deletePermanently(@PathVariable("tagId") Integer tagId) {
+    /**
+     * delete tag.
+     *
+     * @param tagId tag id
+     * @return tag detail
+     */
+    @DeleteMapping("{tagId:\\d+}") @ApiOperation("Deletes a tag")
+    public TagDTO deletePermanently(@PathVariable("tagId")
+    Integer tagId) {
         // Remove the tag
         Tag deletedTag = tagService.removeById(tagId);
         // Remove the post tag relationship
