@@ -1,64 +1,65 @@
-package run.halo.app.model.entity;
+package run.halo.app.model.entity.cern;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Index;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.GenericGenerator;
+import run.halo.app.model.entity.BaseEntity;
 
 /**
- * Tag entity.
+ * personnel entity.
  *
- * @author ryanwang
- * @author guqing
- * @date 2019-03-12
+ * @author lizc(lizc@fists.cn)
  */
 @Data
-@Entity
-@Table(name = "tags", indexes = {@Index(name = "tags_name", columnList = "name")})
 @ToString
 @EqualsAndHashCode(callSuper = true)
-public class Tag extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
-    @GenericGenerator(name = "custom-id",
-        strategy = "run.halo.app.model.entity.support.CustomIdGenerator")
-    private Integer id;
+@Entity
+@Table(name = "personnel")
+public class Personnel extends BaseEntity {
 
     /**
-     * Tag name.
+     * id field.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
+    @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support.CustomIdGenerator")
+    private Long id;
+
+    /**
+     * personnel name.
      */
     @Column(name = "name", nullable = false)
     private String name;
 
     /**
-     * Tag slug name.
+     * english name.
      */
-    @Deprecated
-    @Column(name = "slug_name")
-    private String slugName;
+    @Column(name = "english_name", unique = true)
+    private String englishName;
 
     /**
-     * Tag slug.
+     * slug.
      */
     @Column(name = "slug", unique = true)
     private String slug;
 
     /**
-     * Tag color.
+     * email.
      */
-    @Column(name = "color", length = 25)
-    private String color;
+    @Column(name = "email", length = 127)
+    private String email;
 
     /**
-     * Cover thumbnail of the tag.
+     * Cover thumbnail of the personnel.
      */
     @Column(name = "thumbnail", length = 1023)
     private String thumbnail;

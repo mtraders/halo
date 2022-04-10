@@ -1,22 +1,11 @@
 package run.halo.app.model.properties;
 
-/**
- * Api properties.
- *
- * @author ryanwang
- * @date 2019-06-25
- */
-public enum ApiProperties implements PropertyEnum {
+public enum CernProperties implements PropertyEnum {
 
     /**
-     * api_enabled.
+     * personnel page prefix.
      */
-    API_ENABLED("api_enabled", Boolean.class, "false"),
-
-    /**
-     * api_access_key.
-     */
-    API_ACCESS_KEY("api_access_key", String.class, "");
+    PERSONNEL_PREFIX("personnel_prefix", String.class, "personnel");
 
     private final String value;
 
@@ -24,7 +13,7 @@ public enum ApiProperties implements PropertyEnum {
 
     private final String defaultValue;
 
-    ApiProperties(String value, Class<?> type, String defaultValue) {
+    CernProperties(String value, Class<?> type, String defaultValue) {
         this.value = value;
         this.type = type;
         this.defaultValue = defaultValue;
@@ -44,4 +33,5 @@ public enum ApiProperties implements PropertyEnum {
     public String getValue() {
         return value;
     }
+
 }

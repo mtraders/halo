@@ -17,7 +17,7 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * Photo entity
+ * Photo entity.
  *
  * @author ryanwang
  * @date 2019-03-12
@@ -63,7 +63,7 @@ public class Photo extends BaseEntity {
     private String location;
 
     /**
-     * Thumbnail
+     * Thumbnail.
      */
     @Column(name = "thumbnail", length = 1023)
     private String thumbnail;

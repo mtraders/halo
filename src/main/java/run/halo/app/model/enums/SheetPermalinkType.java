@@ -9,12 +9,12 @@ package run.halo.app.model.enums;
 public enum SheetPermalinkType implements ValueEnum<Integer> {
 
     /**
-     * /{@link run.halo.app.model.properties.PermalinkProperties#SHEET_PREFIX}/${slug}
+     * /{@link run.halo.app.model.properties.PermalinkProperties#SHEET_PREFIX}/${slug}.
      */
     SECONDARY(0),
 
     /**
-     * /${slug}
+     * /${slug}.
      */
     ROOT(1);
 

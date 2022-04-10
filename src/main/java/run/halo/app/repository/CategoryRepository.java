@@ -30,7 +30,7 @@ public interface CategoryRepository extends BaseRepository<Category, Integer> {
     long countById(@NonNull Integer id);
 
     /**
-     * Get category by slug
+     * Get category by slug.
      *
      * @param slug slug
      * @return Optional of Category
