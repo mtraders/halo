@@ -188,12 +188,6 @@ public class BasePost extends BaseEntity {
     @Transient
     private PatchedContent content;
 
-    /**
-     * Source of the post.
-     */
-    @Column(name = "post_source")
-    private String postSource;
-
     @Override
     public void prePersist() {
         super.prePersist();
@@ -250,9 +244,6 @@ public class BasePost extends BaseEntity {
             version = 1;
         }
 
-        if (postSource == null) {
-            postSource = "";
-        }
         // Clear the value of the deprecated attributes
         this.originalContent = "";
         this.formatContent = "";
