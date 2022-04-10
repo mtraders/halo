@@ -147,13 +147,14 @@ public class PostRefreshStatusListener {
         }
 
         PostStatus status = post.getStatus();
+        if (PostStatus.RECYCLE.equals(status)) {
+            return;
+        }
         boolean isPrivate = postCategoryService.listByPostId(post.getId())
             .stream()
             .anyMatch(postCategory -> categoryService.isPrivate(postCategory.getCategoryId()));
         if (post.getStatus() != PostStatus.DRAFT) {
-            if (StringUtils.isNotEmpty(post.getPassword())) {
-                status = PostStatus.INTIMATE;
-            } else if (isPrivate) {
+            if (isPrivate || StringUtils.isNotEmpty(post.getPassword())) {
                 status = PostStatus.INTIMATE;
             } else {
                 status = PostStatus.PUBLISHED;
