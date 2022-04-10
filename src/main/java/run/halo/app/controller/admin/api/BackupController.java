@@ -37,7 +37,7 @@ import run.halo.app.model.params.PostMarkdownParam;
 import run.halo.app.service.BackupService;
 
 /**
- * Backup controller
+ * Backup controller.
  *
  * @author johnniang
  * @author ryanwang
