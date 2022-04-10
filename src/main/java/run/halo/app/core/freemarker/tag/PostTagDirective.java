@@ -36,11 +36,20 @@ public class PostTagDirective implements TemplateDirectiveModel {
 
     private final PostCategoryService postCategoryService;
 
+    /**
+     * post tag directive.
+     *
+     * @param configuration       configuration
+     * @param postService         post service
+     * @param postRenderAssembler post render assembler
+     * @param postTagService      psot tag service
+     * @param postCategoryService post category service
+     */
     public PostTagDirective(Configuration configuration,
-        PostService postService,
-        PostRenderAssembler postRenderAssembler,
-        PostTagService postTagService,
-        PostCategoryService postCategoryService) {
+            PostService postService,
+            PostRenderAssembler postRenderAssembler,
+            PostTagService postTagService,
+            PostCategoryService postCategoryService) {
         this.postService = postService;
         this.postRenderAssembler = postRenderAssembler;
         this.postTagService = postTagService;
@@ -50,62 +59,56 @@ public class PostTagDirective implements TemplateDirectiveModel {
 
     @Override
     public void execute(Environment env, Map params, TemplateModel[] loopVars,
-        TemplateDirectiveBody body) throws TemplateException, IOException {
-        final DefaultObjectWrapperBuilder builder =
-            new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_25);
+            TemplateDirectiveBody body) throws TemplateException, IOException {
+        final DefaultObjectWrapperBuilder builder = new DefaultObjectWrapperBuilder(Configuration.VERSION_2_3_25);
         if (params.containsKey(HaloConst.METHOD_KEY)) {
             String method = params.get(HaloConst.METHOD_KEY).toString();
             switch (method) {
                 case "latest":
                     int top = Integer.parseInt(params.get("top").toString());
                     env.setVariable("posts", builder.build()
-                        .wrap(postRenderAssembler.convertToListVo(postService.listLatest(top))));
+                            .wrap(postRenderAssembler.convertToListVo(postService.listLatest(top))));
                     break;
                 case "count":
                     env.setVariable("count",
-                        builder.build().wrap(postService.countByStatus(PostStatus.PUBLISHED)));
+                            builder.build().wrap(postService.countByStatus(PostStatus.PUBLISHED)));
                     break;
                 case "archiveYear":
                     env.setVariable("archives",
-                        builder.build().wrap(postService.listYearArchives()));
+                            builder.build().wrap(postService.listYearArchives()));
                     break;
                 case "archiveMonth":
                     env.setVariable("archives",
-                        builder.build().wrap(postService.listMonthArchives()));
+                            builder.build().wrap(postService.listMonthArchives()));
                     break;
                 case "archive":
                     String type = params.get("type").toString();
                     env.setVariable("archives", builder.build().wrap(
-                        "year".equals(type) ? postService.listYearArchives() :
-                            postService.listMonthArchives()));
+                            "year".equals(type) ? postService.listYearArchives() : postService.listMonthArchives()));
                     break;
                 case "listByCategoryId":
                     Integer categoryId = Integer.parseInt(params.get("categoryId").toString());
                     env.setVariable("posts", builder.build()
-                        .wrap(postRenderAssembler.convertToListVo(
-                            postCategoryService.listPostBy(categoryId, PostStatus.PUBLISHED))));
+                            .wrap(postRenderAssembler.convertToListVo(
+                                    postCategoryService.listPostBy(categoryId, PostStatus.PUBLISHED))));
                     break;
                 case "listByCategorySlug":
                     String categorySlug = params.get("categorySlug").toString();
-                    List<Post> posts =
-                        postCategoryService.listPostBy(categorySlug, PostStatus.PUBLISHED);
+                    List<Post> posts = postCategoryService.listPostBy(categorySlug, PostStatus.PUBLISHED);
                     env.setVariable("posts",
-                        builder.build().wrap(postRenderAssembler.convertToListVo(posts)));
+                            builder.build().wrap(postRenderAssembler.convertToListVo(posts)));
                     break;
                 case "listByTagId":
                     Integer tagId = Integer.parseInt(params.get("tagId").toString());
                     env.setVariable("posts", builder.build().wrap(postRenderAssembler
-                        .convertToListVo(postTagService.listPostsBy(tagId, PostStatus.PUBLISHED))));
+                            .convertToListVo(postTagService.listPostsBy(tagId, PostStatus.PUBLISHED))));
                     break;
                 case "listByTagSlug":
                     String tagSlug = params.get("tagSlug").toString();
                     env.setVariable("posts", builder.build()
-                        .wrap(
-                            postRenderAssembler.convertToListVo(
-                                postTagService.listPostsBy(tagSlug, PostStatus.PUBLISHED)
-                            )
-                        )
-                    );
+                            .wrap(
+                                    postRenderAssembler.convertToListVo(
+                                            postTagService.listPostsBy(tagSlug, PostStatus.PUBLISHED))));
                     break;
                 default:
                     break;

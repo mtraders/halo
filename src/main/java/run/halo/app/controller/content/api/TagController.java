@@ -44,8 +44,8 @@ public class TagController {
     /**
      * content tag controller constructor.
      *
-     * @param tagService          tag service
-     * @param postTagService      post tag service
+     * @param tagService tag service
+     * @param postTagService post tag service
      * @param postRenderAssembler post render assembler.
      */
     public TagController(TagService tagService,
@@ -77,7 +77,7 @@ public class TagController {
     /**
      * list posts by tag slug.
      *
-     * @param slug     slug.
+     * @param slug slug.
      * @param pageable pageable.
      * @return post list by tag slug.
      */
