@@ -92,7 +92,7 @@ public class TagController {
     /**
      * update tag.
      *
-     * @param tagId    tag id
+     * @param tagId tag id
      * @param tagParam tag parameter
      * @return tag detail
      */

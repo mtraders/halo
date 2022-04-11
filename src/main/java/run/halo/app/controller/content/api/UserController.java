@@ -27,6 +27,6 @@ public class UserController {
     @ApiOperation("Gets blogger profile")
     public UserDTO getProfile() {
         return userService.getCurrentUser().map(user -> (UserDTO) new UserDTO().convertFrom(user))
-            .get();
+                .get();
     }
 }
