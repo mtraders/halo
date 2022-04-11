@@ -312,7 +312,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
             log.debug(domainName + " collection is empty");
             return;
         }
-        repository.deleteInBatch(domains);
+        repository.deleteAllInBatch(domains);
     }
 
     /**
