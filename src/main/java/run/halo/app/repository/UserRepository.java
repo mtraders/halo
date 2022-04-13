@@ -13,8 +13,7 @@ import run.halo.app.repository.base.BaseRepository;
  *
  * @author johnniang
  */
-public interface UserRepository extends BaseRepository<User, Integer>,
-    JpaSpecificationExecutor<User> {
+public interface UserRepository extends BaseRepository<User, Integer>, JpaSpecificationExecutor<User> {
 
     /**
      * Gets user by username.
