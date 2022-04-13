@@ -1,6 +1,3 @@
-
-
-
 package run.halo.app;
 
 import org.springframework.boot.SpringApplication;
