@@ -14,10 +14,11 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import run.halo.app.model.enums.MFAType;
+import run.halo.app.model.enums.UserType;
 import run.halo.app.utils.DateUtils;
 
 /**
- * User entity
+ * User entity.
  *
  * @author ryanwang
  * @date 2019-03-12
@@ -78,14 +79,18 @@ public class User extends BaseEntity {
     private Date expireTime;
 
     /**
-     * mfa type (current: tfa)
+     * mfa type (current: tfa).
      */
     @Column(name = "mfa_type", nullable = false)
     @ColumnDefault("0")
     private MFAType mfaType;
 
+    @Column(name = "user_type", nullable = false)
+    @ColumnDefault("0")
+    private UserType userType;
+
     /**
-     * two factor auth key
+     * two factor auth key.
      */
     @Column(name = "mfa_key", length = 64)
     private String mfaKey;

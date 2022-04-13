@@ -9,12 +9,12 @@ package run.halo.app.model.properties;
 public enum ApiProperties implements PropertyEnum {
 
     /**
-     * api_enabled
+     * api_enabled.
      */
     API_ENABLED("api_enabled", Boolean.class, "false"),
 
     /**
-     * api_access_key
+     * api_access_key.
      */
     API_ACCESS_KEY("api_access_key", String.class, "");
 

@@ -45,7 +45,7 @@ public interface BaseCommentService<COMMENT extends BaseComment>
     Page<COMMENT> pageLatest(int top);
 
     /**
-     * Lists latest comments by status
+     * Lists latest comments by status.
      *
      * @param top top number must not be less than 0
      * @param status status

@@ -24,13 +24,13 @@ public enum PermalinkProperties implements PropertyEnum {
         SheetPermalinkType.SECONDARY.name()),
 
     /**
-     * Categories prefix
+     * Categories prefix.
      * such as: /categories or /categories/${slug}
      */
     CATEGORIES_PREFIX("categories_prefix", String.class, "categories"),
 
     /**
-     * Tags prefix
+     * Tags prefix.
      * such as: /tags or /tags/${slug}
      */
     TAGS_PREFIX("tags_prefix", String.class, "tags"),
@@ -42,25 +42,25 @@ public enum PermalinkProperties implements PropertyEnum {
     ARCHIVES_PREFIX("archives_prefix", String.class, "archives"),
 
     /**
-     * Sheet prefix
+     * Sheet prefix.
      * such as: /s/${slug}
      */
     SHEET_PREFIX("sheet_prefix", String.class, "s"),
 
     /**
-     * Links page prefix
+     * Links page prefix.
      * default is links
      */
     LINKS_PREFIX("links_prefix", String.class, "links"),
 
     /**
-     * Photos page prefix
+     * Photos page prefix.
      * default is photos
      */
     PHOTOS_PREFIX("photos_prefix", String.class, "photos"),
 
     /**
-     * Journals page prefix
+     * Journals page prefix.
      * default is journals
      */
     JOURNALS_PREFIX("journals_prefix", String.class, "journals"),

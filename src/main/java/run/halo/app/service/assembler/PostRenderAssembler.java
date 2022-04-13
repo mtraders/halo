@@ -29,17 +29,30 @@ public class PostRenderAssembler extends PostAssembler {
     private final ContentService contentService;
     private final ContentPatchLogService contentPatchLogService;
 
+    /**
+     * post render assembler.
+     *
+     * @param contentService content service
+     * @param optionService option service
+     * @param postTagService post tag service
+     * @param postCategoryService post category service
+     * @param postMetaService post meta service
+     * @param postCommentService post comment service
+     * @param tagService tag service
+     * @param categoryService category service
+     * @param contentPatchLogService content patch log service
+     */
     public PostRenderAssembler(ContentService contentService,
-        OptionService optionService,
-        PostTagService postTagService,
-        PostCategoryService postCategoryService,
-        PostMetaService postMetaService,
-        PostCommentService postCommentService,
-        TagService tagService,
-        CategoryService categoryService,
-        ContentPatchLogService contentPatchLogService) {
+            OptionService optionService,
+            PostTagService postTagService,
+            PostCategoryService postCategoryService,
+            PostMetaService postMetaService,
+            PostCommentService postCommentService,
+            TagService tagService,
+            CategoryService categoryService,
+            ContentPatchLogService contentPatchLogService) {
         super(contentService, optionService, postTagService, postCategoryService, postMetaService,
-            postCommentService, tagService, categoryService);
+                postCommentService, tagService, categoryService);
         this.contentService = contentService;
         this.contentPatchLogService = contentPatchLogService;
     }

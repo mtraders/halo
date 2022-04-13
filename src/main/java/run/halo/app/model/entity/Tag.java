@@ -13,7 +13,7 @@ import lombok.ToString;
 import org.hibernate.annotations.GenericGenerator;
 
 /**
- * Tag entity
+ * Tag entity.
  *
  * @author ryanwang
  * @author guqing

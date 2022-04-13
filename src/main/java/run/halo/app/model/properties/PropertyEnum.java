@@ -18,13 +18,12 @@ import run.halo.app.model.enums.ValueEnum;
  */
 public interface PropertyEnum extends ValueEnum<String> {
 
-
     /**
-     * Converts to value with corresponding type
+     * Converts to value with corresponding type.
      *
      * @param value string value must not be blank
-     * @param type property value type must not be null
-     * @param <T> property value type
+     * @param type  property value type must not be null
+     * @param <T>   property value type
      * @return property value
      */
     @SuppressWarnings("unchecked")
@@ -66,13 +65,13 @@ public interface PropertyEnum extends ValueEnum<String> {
 
         // Should never happen
         throw new UnsupportedOperationException(
-            "Unsupported convention for blog property type:" + type.getName() + " provided");
+                "Unsupported convention for blog property type:" + type.getName() + " provided");
     }
 
     /**
-     * Converts to value with corresponding type
+     * Converts to value with corresponding type.
      *
-     * @param value value
+     * @param value        value
      * @param propertyEnum property enum must not be null
      * @return property value
      */
@@ -103,8 +102,8 @@ public interface PropertyEnum extends ValueEnum<String> {
      * Converts to enum.
      *
      * @param value string value must not be null
-     * @param type propertye value enum type must not be null
-     * @param <T> property value enum type
+     * @param type  propertye value enum type must not be null
+     * @param <T>   property value enum type
      * @return property enum value or null
      */
     @Nullable
@@ -130,18 +129,23 @@ public interface PropertyEnum extends ValueEnum<String> {
             return false;
         }
         return type.isAssignableFrom(String.class)
-            || type.isAssignableFrom(Number.class)
-            || type.isAssignableFrom(Integer.class)
-            || type.isAssignableFrom(Long.class)
-            || type.isAssignableFrom(Boolean.class)
-            || type.isAssignableFrom(Short.class)
-            || type.isAssignableFrom(Byte.class)
-            || type.isAssignableFrom(Double.class)
-            || type.isAssignableFrom(Float.class)
-            || type.isAssignableFrom(Enum.class)
-            || type.isAssignableFrom(ValueEnum.class);
+                || type.isAssignableFrom(Number.class)
+                || type.isAssignableFrom(Integer.class)
+                || type.isAssignableFrom(Long.class)
+                || type.isAssignableFrom(Boolean.class)
+                || type.isAssignableFrom(Short.class)
+                || type.isAssignableFrom(Byte.class)
+                || type.isAssignableFrom(Double.class)
+                || type.isAssignableFrom(Float.class)
+                || type.isAssignableFrom(Enum.class)
+                || type.isAssignableFrom(ValueEnum.class);
     }
 
+    /**
+     * get value property enum mapping.
+     *
+     * @return property map.
+     */
     static Map<String, PropertyEnum> getValuePropertyEnumMap() {
         // Get all properties
         List<Class<? extends PropertyEnum>> propertyEnumClasses = new LinkedList<>();
@@ -159,6 +163,7 @@ public interface PropertyEnum extends ValueEnum<String> {
         propertyEnumClasses.add(UpOssProperties.class);
         propertyEnumClasses.add(ApiProperties.class);
         propertyEnumClasses.add(PermalinkProperties.class);
+        propertyEnumClasses.add(CernProperties.class);
 
         Map<String, PropertyEnum> result = new HashMap<>();
 
@@ -192,7 +197,7 @@ public interface PropertyEnum extends ValueEnum<String> {
      * Default value with given type.
      *
      * @param propertyType property type must not be null
-     * @param <T> property type
+     * @param <T>          property type
      * @return default value with given type
      */
     @Nullable

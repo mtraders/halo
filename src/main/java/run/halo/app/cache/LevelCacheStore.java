@@ -26,7 +26,7 @@ import run.halo.app.config.properties.HaloProperties;
 import run.halo.app.utils.JsonUtils;
 
 /**
- * level-db cache store
+ * level-db cache store.
  * Create by Pencilso on 2020/1/9 7:20 下午
  */
 @Slf4j

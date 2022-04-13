@@ -31,7 +31,7 @@ public interface OptionService extends CrudService<Option, Integer>, OptionProvi
     String OPTIONS_KEY = "options";
 
     /**
-     * Save multiple options
+     * Save multiple options.
      *
      * @param options options
      */
@@ -39,7 +39,7 @@ public interface OptionService extends CrudService<Option, Integer>, OptionProvi
     void save(@Nullable Map<String, Object> options);
 
     /**
-     * Save multiple options
+     * Save multiple options.
      *
      * @param optionParams option params
      */

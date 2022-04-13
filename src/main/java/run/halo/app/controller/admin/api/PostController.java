@@ -58,6 +58,14 @@ public class PostController {
 
     private final PostAssembler postAssembler;
 
+    /**
+     * post controller.
+     *
+     * @param postService post service.
+     * @param cacheStore cache store.
+     * @param optionService option service.
+     * @param postAssembler post assembler.
+     */
     public PostController(PostService postService,
         AbstractStringCacheStore cacheStore,
         OptionService optionService,
@@ -68,6 +76,14 @@ public class PostController {
         this.postAssembler = postAssembler;
     }
 
+    /**
+     * Lists posts.
+     *
+     * @param pageable page information.
+     * @param postQuery post query information
+     * @param more more
+     * @return post list.
+     */
     @GetMapping
     @ApiOperation("Lists posts")
     public Page<? extends BasePostSimpleDTO> pageBy(
@@ -89,6 +105,14 @@ public class PostController {
         return postAssembler.convertToMinimal(postService.pageLatest(top).getContent());
     }
 
+    /**
+     * get a page of post by post status.
+     *
+     * @param status status.
+     * @param more more information
+     * @param pageable pageable information
+     * @return post lists.
+     */
     @GetMapping("status/{status}")
     @ApiOperation("Gets a page of post by post status")
     public Page<? extends BasePostSimpleDTO> pageByStatus(
@@ -117,6 +141,13 @@ public class PostController {
         postService.increaseLike(postId);
     }
 
+    /**
+     * post status.
+     *
+     * @param postParam post parameter.
+     * @param autoSave auto save or not.
+     * @return post detail.
+     */
     @PostMapping
     @ApiOperation("Creates a post")
     public PostDetailVO createBy(@Valid @RequestBody PostParam postParam,
@@ -128,6 +159,14 @@ public class PostController {
             postParam.getPostMetas(), autoSave);
     }
 
+    /**
+     * update the post.
+     *
+     * @param postParam post parameter.
+     * @param postId post id.
+     * @param autoSave auto save flag
+     * @return post detail.
+     */
     @PutMapping("{postId:\\d+}")
     @ApiOperation("Updates a post")
     public PostDetailVO updateBy(@Valid @RequestBody PostParam postParam,

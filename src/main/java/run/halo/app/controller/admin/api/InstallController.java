@@ -1,12 +1,11 @@
 package run.halo.app.controller.admin.api;
 
-import io.swagger.annotations.ApiOperation;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import io.swagger.annotations.ApiOperation;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.event.logger.LogEvent;
 import run.halo.app.exception.BadRequestException;
@@ -52,7 +53,6 @@ import run.halo.app.utils.ValidationUtils;
  * @author ryanwang
  * @date 2019-03-17
  */
-@Slf4j
 @Controller
 @RequestMapping("/api/admin/installations")
 public class InstallController {
@@ -73,14 +73,26 @@ public class InstallController {
 
     private final ApplicationEventPublisher eventPublisher;
 
+    /**
+     * install controller constructor.
+     *
+     * @param userService user service
+     * @param categoryService category service
+     * @param postService post service
+     * @param sheetService sheet service
+     * @param postCommentService post comment service
+     * @param optionService option service
+     * @param menuService menu service
+     * @param eventPublisher event publisher
+     */
     public InstallController(UserService userService,
-        CategoryService categoryService,
-        PostService postService,
-        SheetService sheetService,
-        PostCommentService postCommentService,
-        OptionService optionService,
-        MenuService menuService,
-        ApplicationEventPublisher eventPublisher) {
+            CategoryService categoryService,
+            PostService postService,
+            SheetService sheetService,
+            PostCommentService postCommentService,
+            OptionService optionService,
+            MenuService menuService,
+            ApplicationEventPublisher eventPublisher) {
         this.userService = userService;
         this.categoryService = categoryService;
         this.postService = postService;
@@ -91,6 +103,12 @@ public class InstallController {
         this.eventPublisher = eventPublisher;
     }
 
+    /**
+     * Initializes the blog.
+     *
+     * @param installParam install parameter
+     * @return base reponse object
+     */
     @PostMapping
     @ResponseBody
     @CacheLock
@@ -101,7 +119,7 @@ public class InstallController {
 
         // Check is installed
         boolean isInstalled = optionService
-            .getByPropertyOrDefault(PrimaryProperties.IS_INSTALLED, Boolean.class, false);
+                .getByPropertyOrDefault(PrimaryProperties.IS_INSTALLED, Boolean.class, false);
 
         if (isInstalled) {
             throw new BadRequestException("该博客已初始化，不能再次安装！");
@@ -129,8 +147,7 @@ public class InstallController {
         createDefaultMenu();
 
         eventPublisher.publishEvent(
-            new LogEvent(this, user.getId().toString(), LogType.BLOG_INITIALIZED, "博客已成功初始化")
-        );
+                new LogEvent(this, user.getId().toString(), LogType.BLOG_INITIALIZED, "博客已成功初始化"));
 
         return BaseResponse.ok("安装完成！");
     }
@@ -170,7 +187,6 @@ public class InstallController {
         menuService.create(menuSheet.convertTo());
     }
 
-
     @Nullable
     private void createDefaultComment(@Nullable PostDetailVO post) {
         if (post == null) {
@@ -187,9 +203,9 @@ public class InstallController {
         comment.setAuthor("Halo");
         comment.setAuthorUrl("https://halo.run");
         comment.setContent(
-            "欢迎使用 Halo，这是你的第一条评论，头像来自 [Gravatar](https://cn.gravatar.com)，"
-                + "你也可以通过注册 [Gravatar]"
-                + "(https://cn.gravatar.com) 来显示自己的头像。");
+                "欢迎使用 Halo，这是你的第一条评论，头像来自 [Gravatar](https://cn.gravatar.com)，"
+                        + "你也可以通过注册 [Gravatar]"
+                        + "(https://cn.gravatar.com) 来显示自己的头像。");
         comment.setEmail("hi@halo.run");
         comment.setPostId(post.getId());
         postCommentService.create(comment);
@@ -209,21 +225,21 @@ public class InstallController {
         postParam.setTitle("Hello Halo");
         postParam.setStatus(PostStatus.PUBLISHED);
         postParam.setOriginalContent("## Hello Halo\n"
-            + "\n"
-            + "如果你看到了这一篇文章，那么证明你已经安装成功了，感谢使用 [Halo](https://halo.run) 进行创作，希望能够使用愉快。\n"
-            + "\n"
-            + "## 相关链接\n"
-            + "\n"
-            + "- 官网：[https://halo.run](https://halo.run)\n"
-            + "- 文档：[https://docs.halo.run](https://docs.halo.run)\n"
-            + "- 社区：[https://bbs.halo.run](https://bbs.halo.run)\n"
-            + "- 主题仓库：[https://halo.run/themes.html](https://halo.run/themes.html)\n"
-            + "- 开源地址：[https://github.com/halo-dev/halo](https://github.com/halo-dev/halo)\n"
-            + "\n"
-            + "在使用过程中，有任何问题都可以通过以上链接找寻答案，或者联系我们。\n"
-            + "\n"
-            + "> 这是一篇自动生成的文章，请删除这篇文章之后开始你的创作吧！\n"
-            + "\n");
+                + "\n"
+                + "如果你看到了这一篇文章，那么证明你已经安装成功了，感谢使用 [Halo](https://halo.run) 进行创作，希望能够使用愉快。\n"
+                + "\n"
+                + "## 相关链接\n"
+                + "\n"
+                + "- 官网：[https://halo.run](https://halo.run)\n"
+                + "- 文档：[https://docs.halo.run](https://docs.halo.run)\n"
+                + "- 社区：[https://bbs.halo.run](https://bbs.halo.run)\n"
+                + "- 主题仓库：[https://halo.run/themes.html](https://halo.run/themes.html)\n"
+                + "- 开源地址：[https://github.com/halo-dev/halo](https://github.com/halo-dev/halo)\n"
+                + "\n"
+                + "在使用过程中，有任何问题都可以通过以上链接找寻答案，或者联系我们。\n"
+                + "\n"
+                + "> 这是一篇自动生成的文章，请删除这篇文章之后开始你的创作吧！\n"
+                + "\n");
 
         Set<Integer> categoryIds = new HashSet<>();
         if (category != null) {
@@ -231,7 +247,7 @@ public class InstallController {
             postParam.setCategoryIds(categoryIds);
         }
         return postService
-            .createBy(postParam.convertTo(), Collections.emptySet(), categoryIds, false);
+                .createBy(postParam.convertTo(), Collections.emptySet(), categoryIds, false);
     }
 
     @Nullable
@@ -246,11 +262,11 @@ public class InstallController {
         sheetParam.setTitle("关于页面");
         sheetParam.setStatus(PostStatus.PUBLISHED);
         sheetParam.setOriginalContent("## 关于页面\n"
-            + "\n"
-            + "这是一个自定义页面，你可以在后台的 `页面` -> `所有页面` -> `自定义页面` 找到它，"
-            + "你可以用于新建关于页面、留言板页面等等。发挥你自己的想象力！\n"
-            + "\n"
-            + "> 这是一篇自动生成的页面，你可以在后台删除它。");
+                + "\n"
+                + "这是一个自定义页面，你可以在后台的 `页面` -> `所有页面` -> `自定义页面` 找到它，"
+                + "你可以用于新建关于页面、留言板页面等等。发挥你自己的想象力！\n"
+                + "\n"
+                + "> 这是一篇自动生成的页面，你可以在后台删除它。");
         sheetService.createBy(sheetParam.convertTo(), false);
     }
 
@@ -279,8 +295,7 @@ public class InstallController {
             // Update user
             return userService.update(user);
         }).orElseGet(() -> {
-            String gravatar =
-                "//cn.gravatar.com/avatar/" + DigestUtils.md5Hex(installParam.getEmail())
+            String gravatar = "//cn.gravatar.com/avatar/" + DigestUtils.md5Hex(installParam.getEmail())
                     + "?s=256&d=mm";
             installParam.setAvatar(gravatar);
             return userService.createBy(installParam);
@@ -294,8 +309,7 @@ public class InstallController {
         properties.put(BlogProperties.BLOG_LOCALE, installParam.getLocale());
         properties.put(BlogProperties.BLOG_TITLE, installParam.getTitle());
         properties.put(BlogProperties.BLOG_URL,
-            StringUtils.isBlank(installParam.getUrl()) ? optionService.getBlogBaseUrl() :
-                installParam.getUrl());
+                StringUtils.isBlank(installParam.getUrl()) ? optionService.getBlogBaseUrl() : installParam.getUrl());
         properties.put(OtherProperties.GLOBAL_ABSOLUTE_PATH_ENABLED, Boolean.FALSE.toString());
         properties.put(PrimaryProperties.BIRTHDAY, String.valueOf(DateUtils.now().getTime()));
 

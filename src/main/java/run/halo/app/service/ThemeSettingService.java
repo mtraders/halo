@@ -2,11 +2,11 @@ package run.halo.app.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
-import run.halo.app.handler.theme.config.support.Item;
+
 import run.halo.app.model.entity.ThemeSetting;
 import run.halo.app.service.base.CrudService;
 

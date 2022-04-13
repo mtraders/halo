@@ -1,6 +1,9 @@
 package run.halo.app.model.enums;
 
 /**
+ *
+ * post editor type.
+ *
  * @author ryanwang
  * @date 2020-02-28
  */

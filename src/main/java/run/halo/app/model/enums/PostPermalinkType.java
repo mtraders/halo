@@ -9,32 +9,32 @@ package run.halo.app.model.enums;
 public enum PostPermalinkType implements ValueEnum<Integer> {
 
     /**
-     * /archives/${slug}
+     * /archives/${slug}.
      */
     DEFAULT(0),
 
     /**
-     * /1970/01/01/${slug}
+     * /1970/01/01/${slug}.
      */
     DATE(1),
 
     /**
-     * /1970/01/${slug}
+     * /1970/01/${slug}.
      */
     DAY(2),
 
     /**
-     * /?p=${id}
+     * /?p=${id}.
      */
     ID(3),
 
     /**
-     * /1970/${slug}
+     * /1970/${slug}.
      */
     YEAR(4),
 
     /**
-     * archives/${id}
+     * archives/${id}.
      */
     ID_SLUG(5);
 

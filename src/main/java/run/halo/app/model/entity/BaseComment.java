@@ -67,7 +67,7 @@ public class BaseComment extends BaseEntity {
     private String authorUrl;
 
     /**
-     * Gravatar md5
+     * Gravatar md5.
      */
     @Column(name = "gravatar_md5", length = 127)
     private String gravatarMd5;

@@ -51,6 +51,13 @@ public class CategoryController {
         return categoryService.convertTo(categoryService.getById(categoryId));
     }
 
+    /**
+     * list all categories.
+     *
+     * @param sort sort field priority.
+     * @param more more information or not.
+     * @return category list.
+     */
     @GetMapping
     @ApiOperation("Lists all categories")
     public List<? extends CategoryDTO> listAll(

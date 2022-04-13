@@ -1,8 +1,7 @@
 package run.halo.app.controller.admin.api;
 
-import io.swagger.annotations.ApiOperation;
 import javax.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
 import run.halo.app.annotation.DisableOnCondition;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.model.dto.EnvironmentDTO;
@@ -34,7 +35,6 @@ import run.halo.app.service.OptionService;
  * @author ryanwang
  * @date 2019-03-19
  */
-@Slf4j
 @RestController
 @RequestMapping("/api/admin")
 public class AdminController {

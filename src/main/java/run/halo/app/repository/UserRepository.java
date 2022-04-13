@@ -1,7 +1,10 @@
 package run.halo.app.repository;
 
 import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.lang.NonNull;
+
 import run.halo.app.model.entity.User;
 import run.halo.app.repository.base.BaseRepository;
 
@@ -10,7 +13,8 @@ import run.halo.app.repository.base.BaseRepository;
  *
  * @author johnniang
  */
-public interface UserRepository extends BaseRepository<User, Integer> {
+public interface UserRepository extends BaseRepository<User, Integer>,
+    JpaSpecificationExecutor<User> {
 
     /**
      * Gets user by username.

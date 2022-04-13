@@ -35,10 +35,9 @@ import run.halo.app.model.enums.PostStatus;
 @Data
 @Entity(name = "BasePost")
 @Table(name = "posts", indexes = {
-    @Index(name = "posts_type_status", columnList = "type, status"),
-    @Index(name = "posts_create_time", columnList = "create_time")})
-@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.INTEGER,
-    columnDefinition = "int default 0")
+        @Index(name = "posts_type_status", columnList = "type, status"),
+        @Index(name = "posts_create_time", columnList = "create_time") })
+@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.INTEGER, columnDefinition = "int default 0")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class BasePost extends BaseEntity {
@@ -46,7 +45,7 @@ public class BasePost extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
     @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support"
-        + ".CustomIdGenerator")
+            + ".CustomIdGenerator")
     private Integer id;
 
     /**
@@ -143,7 +142,7 @@ public class BasePost extends BaseEntity {
     private Integer topPriority;
 
     /**
-     * Likes
+     * Likes.
      */
     @Column(name = "likes")
     @ColumnDefault("0")
@@ -169,7 +168,7 @@ public class BasePost extends BaseEntity {
     private String metaDescription;
 
     /**
-     * Content word count
+     * Content word count.
      */
     @Column(name = "word_count")
     @ColumnDefault("0")
@@ -182,7 +181,8 @@ public class BasePost extends BaseEntity {
     private Integer version;
 
     /**
-     * This extra field don't correspond to any columns in the <code>Post</code> table because we
+     * This extra field don't correspond to any columns in the <code>Post</code>
+     * table because we
      * don't want to save this value.
      */
     @Transient
@@ -243,6 +243,7 @@ public class BasePost extends BaseEntity {
         if (version == null || version < 0) {
             version = 1;
         }
+
         // Clear the value of the deprecated attributes
         this.originalContent = "";
         this.formatContent = "";

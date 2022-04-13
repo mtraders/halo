@@ -34,6 +34,12 @@ public class TagServiceImpl extends AbstractCrudService<Tag, Integer> implements
 
     private final OptionService optionService;
 
+    /**
+     * tag service implementation.
+     *
+     * @param tagRepository tag repository.
+     * @param optionService option service.
+     */
     public TagServiceImpl(TagRepository tagRepository,
         OptionService optionService) {
         super(tagRepository);
