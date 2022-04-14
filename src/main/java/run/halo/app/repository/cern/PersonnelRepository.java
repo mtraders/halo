@@ -11,7 +11,7 @@ import run.halo.app.repository.base.BaseRepository;
  *
  * @author lizc(lizc@fists.cn)
  */
-public interface PersonnelRepository extends BaseRepository<Personnel, Long> {
+public interface PersonnelRepository extends BaseRepository<Personnel, Integer> {
 
     long countByNameOrSlug(@NonNull String name, @NonNull String slug);
 
