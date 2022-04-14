@@ -3,6 +3,7 @@ package run.halo.app.cache;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -33,7 +34,7 @@ public abstract class AbstractCacheStore<K, V> implements CacheStore<K, V> {
     /**
      * Puts the cache wrapper.
      *
-     * @param key key must not be null
+     * @param key          key must not be null
      * @param cacheWrapper cache wrapper must not be null
      */
     abstract void putInternal(@NonNull K key, @NonNull CacheWrapper<V> cacheWrapper);
@@ -41,10 +42,10 @@ public abstract class AbstractCacheStore<K, V> implements CacheStore<K, V> {
     /**
      * Puts the cache wrapper if the key is absent.
      *
-     * @param key key must not be null
+     * @param key          key must not be null
      * @param cacheWrapper cache wrapper must not be null
      * @return true if the key is absent and the value is set, false if the key is present
-     * before, or null if any other reason
+     *     before, or null if any other reason.
      */
     abstract Boolean putInternalIfAbsent(@NonNull K key, @NonNull CacheWrapper<V> cacheWrapper);
 
@@ -54,8 +55,7 @@ public abstract class AbstractCacheStore<K, V> implements CacheStore<K, V> {
 
         return getInternal(key).map(cacheWrapper -> {
             // Check expiration
-            if (cacheWrapper.getExpireAt() != null
-                && cacheWrapper.getExpireAt().before(run.halo.app.utils.DateUtils.now())) {
+            if (cacheWrapper.getExpireAt() != null && cacheWrapper.getExpireAt().before(run.halo.app.utils.DateUtils.now())) {
                 // Expired then delete it
                 log.warn("Cache key: [{}] has been expired", key);
 
@@ -88,15 +88,14 @@ public abstract class AbstractCacheStore<K, V> implements CacheStore<K, V> {
     /**
      * Builds cache wrapper.
      *
-     * @param value cache value must not be null
-     * @param timeout the key expiry time, if the expiry time is less than 1, the cache won't be
-     * expired
+     * @param value    cache value must not be null
+     * @param timeout  the key expiry time, if the expiry time is less than 1, the cache won't be
+     *                 expired
      * @param timeUnit timeout unit must
      * @return cache wrapper
      */
     @NonNull
-    private CacheWrapper<V> buildCacheWrapper(@NonNull V value, long timeout,
-        @Nullable TimeUnit timeUnit) {
+    private CacheWrapper<V> buildCacheWrapper(@NonNull V value, long timeout, @Nullable TimeUnit timeUnit) {
         Assert.notNull(value, "Cache value must not be null");
         Assert.isTrue(timeout >= 0, "Cache expiration timeout must not be less than 1");
 
