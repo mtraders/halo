@@ -131,7 +131,8 @@ dependencies {
     runtimeOnly "mysql:mysql-connector-java"
 
     compileOnly "org.projectlombok:lombok"
-    annotationProcessor "org.projectlombok:lombok"
+    annotationProcessor ("org.projectlombok:lombok",
+            "org.springframework.boot:spring-boot-configuration-processor")
 
     testCompileOnly "org.projectlombok:lombok"
     testAnnotationProcessor "org.projectlombok:lombok"

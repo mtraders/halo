@@ -1,0 +1,7 @@
+package run.halo.app.repository.cern;
+
+import run.halo.app.model.entity.cern.Institution;
+import run.halo.app.repository.base.BaseRepository;
+
+public interface InstitutionRepository extends BaseRepository<Institution, Integer> {
+}

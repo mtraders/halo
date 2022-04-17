@@ -21,14 +21,14 @@ import run.halo.app.model.entity.BasePost;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Project")
-@DiscriminatorValue("4")
+@DiscriminatorValue("5")
 public class Project extends BasePost {
 
     /**
      * 实施时间.
      */
-    @Column(name = "peroid")
-    private String peroid;
+    @Column(name = "period")
+    private String period;
 
     /**
      * 项目来源.
@@ -40,8 +40,8 @@ public class Project extends BasePost {
     public void prePersist() {
         super.prePersist();
 
-        if (peroid == null) {
-            peroid = StringUtils.EMPTY;
+        if (period == null) {
+            period = StringUtils.EMPTY;
         }
 
         if (source == null) {
