@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import javax.persistence.criteria.Predicate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -21,12 +23,10 @@ import run.halo.app.exception.BadRequestException;
 import run.halo.app.exception.ForbiddenException;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.exception.ServiceException;
-import run.halo.app.model.entity.Journal;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.MFAType;
 import run.halo.app.model.enums.UserType;
-import run.halo.app.model.params.JournalQuery;
 import run.halo.app.model.params.UserParam;
 import run.halo.app.model.params.UserQuery;
 import run.halo.app.repository.UserRepository;
@@ -35,7 +35,6 @@ import run.halo.app.service.base.AbstractCrudService;
 import run.halo.app.utils.BCrypt;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.HaloUtils;
-import javax.persistence.criteria.Predicate;
 
 /**
  * UserService implementation class.
@@ -44,6 +43,7 @@ import javax.persistence.criteria.Predicate;
  * @author johnniang
  * @date 2019-03-14
  */
+@Slf4j
 @Service
 public class UserServiceImpl extends AbstractCrudService<User, Integer> implements UserService {
 
@@ -163,9 +163,9 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
     @CacheLock
     public User create(User user) {
         // Check user
-        if (count() != 0) {
-            throw new BadRequestException("当前博客已有用户");
-        }
+        // if (count() != 0) {
+        //     throw new BadRequestException("当前博客已有用户");
+        // }
 
         User createdUser = super.create(user);
 

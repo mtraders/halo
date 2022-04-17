@@ -22,7 +22,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/halo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
-    password: 123456
+    password: mite
     # H2 database configuration.
     # driver-class-name: org.h2.Driver
     # url: jdbc:h2:file:${halo.work-dir}/db/halo
@@ -31,6 +31,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    show-sql: true
     open-in-view: false
   redis:
     port: 6379
