@@ -124,6 +124,7 @@ dependencies {
     implementation "net.coobird:thumbnailator:$thumbnailatorVersion"
     implementation "net.sf.image4j:image4j:$image4jVersion"
     implementation "org.flywaydb:flyway-core:$flywayVersion"
+    implementation "org.flywaydb:flyway-mysql:$flywayVersion"
     implementation "com.google.zxing:core:$zxingVersion"
     implementation "io.github.java-diff-utils:java-diff-utils:$diffUtilsVersion"
 
@@ -148,6 +149,7 @@ dependencies {
     }
 
     developmentOnly "org.springframework.boot:spring-boot-devtools"
+
 }
 
 test {
