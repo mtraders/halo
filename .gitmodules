@@ -1,3 +1,4 @@
-[submodule "src/main/resources/templates/themes/cern-site-theme-joe"]
-	path = src/main/resources/templates/themes/cern-site-theme-joe
-	url = git@github.com:mtraders/cern-site-theme-joe.git
+[submodule "halo-theme-joe2.0"]
+	path = src/main/resources/templates/themes/halo-theme-joe2.0
+	url = git@github.com:mtraders/halo-theme-joe2.0.git
+	branch = mite_dev
