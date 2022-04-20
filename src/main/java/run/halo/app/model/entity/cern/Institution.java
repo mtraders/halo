@@ -1,10 +1,16 @@
 package run.halo.app.model.entity.cern;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
@@ -15,13 +21,18 @@ import run.halo.app.model.enums.cern.InstitutionType;
 /**
  * Institutions entity.
  *
- * @author lizc(lizc@fists.cn)
+ * @author lizc
  */
+@Data
+@ToString
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "institutions", indexes = {@Index(name = "institution_name", columnList = "name")})
 public class Institution extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
     @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support"
-            + ".CustomIdGenerator")
+        + ".CustomIdGenerator")
     private Integer id;
 
     /**

@@ -1,9 +1,12 @@
 package run.halo.app.model.entity.cern;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,6 +24,10 @@ import run.halo.app.model.entity.BaseEntity;
 @Data
 @ToString
 @EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "institution_categories", indexes = {
+    @Index(name = "categories_name", columnList = "name"),
+    @Index(name = "categories_parent_id", columnList = "parent_id")})
 public class InstitutionCategory extends BaseEntity {
 
     @Id
@@ -30,7 +37,7 @@ public class InstitutionCategory extends BaseEntity {
     private Integer id;
 
     /**
-     * catetory name.
+     * category name.
      */
     @Column(name = "name", nullable = false)
     private String name;

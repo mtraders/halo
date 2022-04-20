@@ -10,6 +10,11 @@ import run.halo.app.service.cern.PaperService;
 import run.halo.app.service.impl.BasePostServiceImpl;
 
 
+/**
+ * paper service impl.
+ *
+ * @author lizc
+ */
 @Service
 public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements PaperService {
 

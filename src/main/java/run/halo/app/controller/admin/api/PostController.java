@@ -3,6 +3,7 @@ package run.halo.app.controller.admin.api;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import io.swagger.annotations.ApiOperation;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -10,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.validation.Valid;
+
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,15 +63,15 @@ public class PostController {
     /**
      * post controller.
      *
-     * @param postService post service.
-     * @param cacheStore cache store.
+     * @param postService   post service.
+     * @param cacheStore    cache store.
      * @param optionService option service.
      * @param postAssembler post assembler.
      */
     public PostController(PostService postService,
-        AbstractStringCacheStore cacheStore,
-        OptionService optionService,
-        PostAssembler postAssembler) {
+                          AbstractStringCacheStore cacheStore,
+                          OptionService optionService,
+                          PostAssembler postAssembler) {
         this.postService = postService;
         this.cacheStore = cacheStore;
         this.optionService = optionService;
@@ -79,9 +81,9 @@ public class PostController {
     /**
      * Lists posts.
      *
-     * @param pageable page information.
+     * @param pageable  page information.
      * @param postQuery post query information
-     * @param more more
+     * @param more      more
      * @return post list.
      */
     @GetMapping
@@ -108,8 +110,8 @@ public class PostController {
     /**
      * get a page of post by post status.
      *
-     * @param status status.
-     * @param more more information
+     * @param status   status.
+     * @param more     more information
      * @param pageable pageable information
      * @return post lists.
      */
@@ -145,13 +147,13 @@ public class PostController {
      * post status.
      *
      * @param postParam post parameter.
-     * @param autoSave auto save or not.
+     * @param autoSave  auto save or not.
      * @return post detail.
      */
     @PostMapping
     @ApiOperation("Creates a post")
     public PostDetailVO createBy(@Valid @RequestBody PostParam postParam,
-        @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
+                                 @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
     ) {
         // Convert to
         Post post = postParam.convertTo();
@@ -163,15 +165,15 @@ public class PostController {
      * update the post.
      *
      * @param postParam post parameter.
-     * @param postId post id.
-     * @param autoSave auto save flag
+     * @param postId    post id.
+     * @param autoSave  auto save flag
      * @return post detail.
      */
     @PutMapping("{postId:\\d+}")
     @ApiOperation("Updates a post")
     public PostDetailVO updateBy(@Valid @RequestBody PostParam postParam,
-        @PathVariable("postId") Integer postId,
-        @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
+                                 @PathVariable("postId") Integer postId,
+                                 @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
     ) {
         // Get the post info
         Post postToUpdate = postService.getWithLatestContentById(postId);
@@ -194,7 +196,7 @@ public class PostController {
     @PutMapping("status/{status}")
     @ApiOperation("Updates post status in batch")
     public List<Post> updateStatusInBatch(@PathVariable(name = "status") PostStatus status,
-        @RequestBody List<Integer> ids) {
+                                          @RequestBody List<Integer> ids) {
         return postService.updateStatusByIds(ids, status);
     }
 
