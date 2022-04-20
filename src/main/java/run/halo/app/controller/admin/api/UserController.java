@@ -10,9 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
@@ -20,15 +22,18 @@ import run.halo.app.annotation.DisableOnCondition;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.exception.BadRequestException;
 import run.halo.app.model.dto.UserDTO;
+import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.MFAType;
 import run.halo.app.model.params.MultiFactorAuthParam;
 import run.halo.app.model.params.PasswordParam;
+import run.halo.app.model.params.PostParam;
 import run.halo.app.model.params.UserParam;
 import run.halo.app.model.params.UserQuery;
 import run.halo.app.model.support.BaseResponse;
 import run.halo.app.model.support.UpdateCheck;
 import run.halo.app.model.vo.MultiFactorAuthVO;
+import run.halo.app.model.vo.PostDetailVO;
 import run.halo.app.service.UserService;
 import run.halo.app.service.assembler.UserAssembler;
 import run.halo.app.utils.HaloUtils;
@@ -63,6 +68,14 @@ public class UserController {
         return userAssembler.convertToWithUserVo(commentPage);
     }
 
+    @PostMapping
+    @ApiOperation("Creates a User")
+    public User createBy(@Valid @RequestBody UserParam userParam,
+        @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
+    ) {
+        // Convert to
+        return userService.createBy(userParam);
+    }
 
     @GetMapping("profiles")
     @ApiOperation("Gets user profile")
