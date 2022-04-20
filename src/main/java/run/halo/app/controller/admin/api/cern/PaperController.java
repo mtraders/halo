@@ -10,10 +10,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import run.halo.app.model.dto.cern.paper.PaperListDTO;
-import run.halo.app.model.entity.cern.Paper;
 import run.halo.app.model.vo.cern.paper.PaperDetailVO;
 import run.halo.app.model.vo.cern.paper.PaperListVO;
+import run.halo.app.service.assembler.cern.PaperAssembler;
 import run.halo.app.service.cern.PaperService;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -22,9 +21,11 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/api/admin/cern/papers")
 public class PaperController {
     private final PaperService paperService;
+    private final PaperAssembler paperAssembler;
 
-    public PaperController(PaperService paperService) {
+    public PaperController(PaperService paperService, PaperAssembler paperAssembler) {
         this.paperService = paperService;
+        this.paperAssembler = paperAssembler;
     }
 
     @GetMapping
