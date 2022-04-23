@@ -1,5 +1,6 @@
 package run.halo.app.exception;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -18,7 +19,7 @@ public class AuthenticationException extends AbstractHaloException {
     }
 
     @Override
-    public HttpStatus getStatus() {
+    public @NotNull HttpStatus getStatus() {
         return HttpStatus.UNAUTHORIZED;
     }
 }

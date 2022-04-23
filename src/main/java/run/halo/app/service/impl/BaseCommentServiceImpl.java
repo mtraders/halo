@@ -91,7 +91,6 @@ public abstract class BaseCommentServiceImpl<COMMENT extends BaseComment>
     @NonNull
     public List<COMMENT> listBy(@NonNull Integer postId) {
         Assert.notNull(postId, "Post id must not be null");
-
         return baseCommentRepository.findAllByPostId(postId);
     }
 
