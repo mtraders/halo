@@ -19,7 +19,7 @@ import run.halo.app.model.entity.BaseEntity;
 /**
  * Institution Category entity.
  *
- * @author lizc(lizc@fists.cn)
+ * @author lizc(lizc @ fists.cn)
  */
 @Data
 @ToString
@@ -33,7 +33,7 @@ public class InstitutionCategory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
     @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support"
-            + ".CustomIdGenerator")
+        + ".CustomIdGenerator")
     private Integer id;
 
     /**
