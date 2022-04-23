@@ -2,8 +2,6 @@ package run.halo.app.controller.admin.api;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import java.util.List;
-import javax.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -21,6 +19,9 @@ import run.halo.app.model.entity.Tag;
 import run.halo.app.model.params.TagParam;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
+
+import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Tag controller.

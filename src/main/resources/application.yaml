@@ -7,9 +7,9 @@ spring:
   devtools:
     restart:
       enabled: false
-  mvc:
-    pathmatch:
-      use-suffix-pattern: true
+  #  mvc:
+  #    pathmatch:
+  #      use-suffix-pattern: true
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   output:
@@ -18,7 +18,7 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
 
-   # MySQL database configuration.
+    # MySQL database configuration.
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/halo?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
