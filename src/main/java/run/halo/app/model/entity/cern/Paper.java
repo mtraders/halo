@@ -26,7 +26,7 @@ public class Paper extends BasePost {
     /**
      * publish date.
      */
-    @Column(name = "publish_datre")
+    @Column(name = "publish_date")
     private Date publishDate;
 
     /**

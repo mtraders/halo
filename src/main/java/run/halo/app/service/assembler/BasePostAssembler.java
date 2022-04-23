@@ -23,6 +23,8 @@ import run.halo.app.service.OptionService;
 import run.halo.app.utils.HaloUtils;
 
 /**
+ * base post assembler.
+ *
  * @author guqing
  * @date 2022-03-01
  */

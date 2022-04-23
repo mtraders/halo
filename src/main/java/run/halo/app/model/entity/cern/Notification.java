@@ -12,6 +12,6 @@ import run.halo.app.model.entity.BasePost;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Notification")
-@DiscriminatorValue("5")
-public class Notification extends BasePost{
+@DiscriminatorValue("3")
+public class Notification extends BasePost {
 }

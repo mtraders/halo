@@ -27,7 +27,7 @@ public abstract class AbstractHaloException extends RuntimeException {
     }
 
     /**
-     * Http status code
+     * get http status code.
      *
      * @return {@link HttpStatus}
      */

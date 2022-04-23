@@ -1,11 +1,14 @@
 package run.halo.app.model.entity.support;
 
 import java.io.Serializable;
+
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.id.IdentityGenerator;
 import run.halo.app.utils.ReflectionUtils;
 
 /**
+ * custom id generator.
+ *
  * @author ryanwang
  * @date 2020-03-16
  */

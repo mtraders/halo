@@ -7,4 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/cern/institution-category")
 public class InstitutionCategoryController {
 
+    public InstitutionCategoryController() {
+    }
 }

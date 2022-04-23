@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -52,7 +53,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * List All
+     * List All.
      *
      * @return List
      */
@@ -127,7 +128,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * Get by id
+     * Get by id.
      *
      * @param id id
      * @return DOMAIN
@@ -177,7 +178,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * count all
+     * count all.
      *
      * @return long
      */
@@ -187,7 +188,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * save by domain
+     * save by domain.
      *
      * @param domain domain
      * @return DOMAIN
@@ -242,7 +243,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * Removes by id
+     * Removes by id.
      *
      * @param id id
      * @return DOMAIN
@@ -250,7 +251,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
      */
     @Override
     public DOMAIN removeById(ID id) {
-        // Get non null domain by id
+        // Get non-null domain by id
         DOMAIN domain = getById(id);
 
         // Remove it
@@ -287,12 +288,12 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * Remove by ids
+     * Remove by ids.
      *
      * @param ids ids
      */
     @Override
-    public void removeInBatch(Collection<ID> ids) {
+    public void removeInBatch(@NotNull Collection<ID> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             log.debug(domainName + " id collection is empty");
             return;
@@ -302,12 +303,12 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * Remove all by domains
+     * Remove all by domains.
      *
      * @param domains domains
      */
     @Override
-    public void removeAll(Collection<DOMAIN> domains) {
+    public void removeAll(@NotNull Collection<DOMAIN> domains) {
         if (CollectionUtils.isEmpty(domains)) {
             log.debug(domainName + " collection is empty");
             return;
@@ -316,7 +317,7 @@ public abstract class AbstractCrudService<DOMAIN, ID> implements CrudService<DOM
     }
 
     /**
-     * Remove all
+     * Remove all.
      */
     @Override
     public void removeAll() {

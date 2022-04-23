@@ -47,6 +47,11 @@ public abstract class AbstractMailService implements MailService {
         this.optionService = optionService;
     }
 
+    /**
+     * getExecutorService.
+     *
+     * @return ExecutorService
+     */
     @NonNull
     public ExecutorService getExecutorService() {
         if (this.executorService == null) {

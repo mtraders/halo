@@ -77,10 +77,10 @@ public class ServiceUtils {
     }
 
     /**
-     * Converts to map (key from the list data)
+     * Converts to map (key from the list data).
      *
      * @param list data list
-     * @param mappingFunction calclulate the id from list data
+     * @param mappingFunction calculate the id from list data
      * @param <I> id type
      * @param <D> data type
      * @return a map which key from list data and value is data
