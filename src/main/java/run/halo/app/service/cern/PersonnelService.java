@@ -8,6 +8,6 @@ import run.halo.app.service.base.CrudService;
  *
  * @author lizc mailto:lizc@fists.cn
  */
-public interface PersonnelService extends CrudService<Personnel, Long> {
+public interface PersonnelService extends CrudService<Personnel, Integer> {
 
 }

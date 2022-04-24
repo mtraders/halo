@@ -1,27 +1,31 @@
 package run.halo.app.model.entity.cern;
 
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.GenericGenerator;
+import run.halo.app.model.entity.BaseEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import run.halo.app.model.entity.BaseEntity;
+import java.util.Objects;
 
 /**
  * personnel entity.
  *
  * @author lizc(lizc@fists.cn)
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "personnel")
 public class Personnel extends BaseEntity {
@@ -63,4 +67,21 @@ public class Personnel extends BaseEntity {
      */
     @Column(name = "thumbnail", length = 1023)
     private String thumbnail;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Personnel personnel = (Personnel) o;
+        return id != null && Objects.equals(id, personnel.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
