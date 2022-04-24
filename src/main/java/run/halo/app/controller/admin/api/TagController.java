@@ -53,7 +53,8 @@ public class TagController {
     @GetMapping
     @ApiOperation("Lists tags")
     public List<? extends TagDTO> listTags(@SortDefault(sort = "createTime", direction = Sort.Direction.DESC) Sort sort,
-            @ApiParam("Return more information(post count) if it is set") @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
+                                           @ApiParam("Return more information(post count) if it is set")
+                                           @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
         if (more) {
             return postTagService.listTagWithCountDtos(sort);
         }
