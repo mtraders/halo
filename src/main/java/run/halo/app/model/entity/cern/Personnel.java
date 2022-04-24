@@ -20,7 +20,7 @@ import java.util.Objects;
 /**
  * personnel entity.
  *
- * @author lizc(lizc@fists.cn)
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 @Getter
 @Setter

@@ -21,7 +21,7 @@ public class TagPostPostCountProjection {
     private Long postCount;
 
     /**
-     * Tag id
+     * Tag id.
      */
     private Integer tagId;
 

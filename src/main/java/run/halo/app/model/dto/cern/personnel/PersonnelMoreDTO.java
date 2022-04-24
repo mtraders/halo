@@ -1,13 +1,13 @@
-package run.halo.app.model.dto.cern;
+package run.halo.app.model.dto.cern.personnel;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 /**
- * personnel with more inforamtion.
+ * personnel with more information.
  *
- * @author lizc(lizc@fists.cn)
+ * @author <a href="lizc@fists.cn">lizc</a>
  */
 @Data
 @ToString(callSuper = true)

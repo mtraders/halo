@@ -11,6 +11,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import run.halo.app.model.entity.BasePost;
 
+import static run.halo.app.model.support.CernConst.PROJECT_POST_TYPE;
+
 /**
  * project entity.
  *
@@ -21,7 +23,7 @@ import run.halo.app.model.entity.BasePost;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Project")
-@DiscriminatorValue("5")
+@DiscriminatorValue(PROJECT_POST_TYPE)
 public class Project extends BasePost {
 
     /**

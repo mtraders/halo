@@ -1,5 +1,16 @@
 package run.halo.app.model.entity.cern;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
+import run.halo.app.model.entity.BaseEntity;
+import run.halo.app.model.enums.cern.InstitutionType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,25 +18,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
-
-import run.halo.app.model.entity.BaseEntity;
-import run.halo.app.model.enums.cern.InstitutionType;
+import java.util.Objects;
 
 /**
  * Institutions entity.
  *
- * @author lizc
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "institutions", indexes = {@Index(name = "institution_name", columnList = "name")})
 public class Institution extends BaseEntity {
@@ -81,4 +84,20 @@ public class Institution extends BaseEntity {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Institution that = (Institution) o;
+        return id != null && Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

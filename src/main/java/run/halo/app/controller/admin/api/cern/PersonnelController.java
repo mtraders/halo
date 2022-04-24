@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
-import run.halo.app.model.dto.cern.PersonnelDTO;
+import run.halo.app.model.dto.cern.personnel.PersonnelDTO;
 import run.halo.app.model.params.cern.PersonnelParam;
 import run.halo.app.service.cern.PersonnelService;
+import run.halo.app.service.cern.PostPersonnelService;
 
 import javax.validation.Valid;
 
@@ -33,9 +34,11 @@ import javax.validation.Valid;
 public class PersonnelController {
 
     private final PersonnelService personnelService;
+    private final PostPersonnelService postPersonnelService;
 
-    public PersonnelController(PersonnelService personnelService) {
+    public PersonnelController(PersonnelService personnelService, PostPersonnelService postPersonnelService) {
         this.personnelService = personnelService;
+        this.postPersonnelService = postPersonnelService;
     }
 
     /**
@@ -48,9 +51,12 @@ public class PersonnelController {
     @GetMapping
     @ApiOperation(value = "List Personnel")
     public List<? extends PersonnelDTO> listPersonnel(@SortDefault(sort = "createTime", direction = Sort.Direction.DESC) Sort sort,
-                                            @ApiParam("Return more information if it is set")
-                                            @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
-        return Collections.emptyList();
+                                                      @ApiParam("Return more information if it is set")
+                                                      @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
+        if (more) {
+            return postPersonnelService.listPersonnelMore(sort);
+        }
+        return personnelService.convertTo(personnelService.listAll(sort));
     }
 
     /**

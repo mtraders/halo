@@ -1,26 +1,31 @@
 package run.halo.app.model.entity.cern;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.Hibernate;
+import run.halo.app.model.entity.BasePost;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import run.halo.app.model.entity.BasePost;
+import static run.halo.app.model.support.CernConst.NEWS_POST_TYPE;
 
 /**
  * News entity.
  *
- * @author lizc(lizc@fists.cn)
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @Entity(name = "News")
-@DiscriminatorValue("2")
+@DiscriminatorValue(NEWS_POST_TYPE)
 public class News extends BasePost {
 
     /**
@@ -44,5 +49,22 @@ public class News extends BasePost {
         if (link == null) {
             link = StringUtils.EMPTY;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        News news = (News) o;
+        return getId() != null && Objects.equals(getId(), news.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }
