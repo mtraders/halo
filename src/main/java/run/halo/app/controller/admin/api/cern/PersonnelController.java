@@ -27,7 +27,7 @@ import javax.validation.Valid;
 /**
  * Personnel controller.
  *
- * @author lizc mailto:lizc@fists.cn
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 @RestController
 @RequestMapping("/api/admin/cern/personnel")

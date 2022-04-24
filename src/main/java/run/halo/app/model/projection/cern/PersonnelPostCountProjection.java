@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+
 /**
  * personnel post count projection.
  *
@@ -11,9 +13,15 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class PersonnelPostCountProjection {
-    private Integer personnelId;
-    private Long postCount;
-    private Integer postType;
+    @Column(name = "personnel_id")
+    private int personnelId;
+    @Column(name = "post_count")
+    private long postCount;
+    @Column(name = "post_type")
+    private int postType;
+
+    public PersonnelPostCountProjection() {
+        this.postCount = 0L;
+    }
 }
