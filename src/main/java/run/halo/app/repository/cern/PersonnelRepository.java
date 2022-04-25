@@ -9,7 +9,8 @@ import run.halo.app.repository.base.BaseRepository;
 /**
  * Personnel repository.
  *
- * @author lizc(lizc@fists.cn)
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
+ *
  */
 public interface PersonnelRepository extends BaseRepository<Personnel, Integer> {
 
