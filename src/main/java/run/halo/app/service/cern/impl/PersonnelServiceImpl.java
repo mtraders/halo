@@ -1,6 +1,7 @@
 package run.halo.app.service.cern.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hadoop.util.StringUtils;
 import org.springframework.util.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,9 @@ public class PersonnelServiceImpl extends AbstractCrudService<Personnel, Integer
         long count = personnelRepository.countByNameOrSlug(personnel.getName(), personnel.getSlug());
         log.debug("Personnel count: [{}]", count);
         if (count > 0) {
-            throw new AlreadyExistsException("人员已存在").setErrorData(personnel);
+            String name = personnel.getName();
+            String message = StringUtils.format("人员 %s 已存在", name);
+            throw new AlreadyExistsException(message).setErrorData(personnel);
         }
         return super.create(personnel);
     }
