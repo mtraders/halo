@@ -42,7 +42,7 @@ public class User extends BaseEntity {
     private String username;
 
     /**
-     * User nick name,used to display on page.
+     * User nickname,used to display on page.
      */
     @Column(name = "nickname", nullable = false)
     private String nickname;

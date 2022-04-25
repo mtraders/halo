@@ -29,7 +29,7 @@ public class PersonnelServiceImpl extends AbstractCrudService<Personnel, Integer
         this.personnelRepository = personnelRepository;
     }
 
-    private PersonnelDTO convertTo(Personnel personnel) {
+    public @NotNull PersonnelDTO convertTo(@NotNull Personnel personnel) {
         return new PersonnelMoreDTO().convertFrom(personnel);
     }
 

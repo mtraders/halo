@@ -14,7 +14,7 @@ import java.util.List;
  * @author lizc <a href=mailto:lizc@fists.cn></a>
  */
 public interface PostPersonnelRepository extends BaseRepository<PostPersonnel, Integer> {
-    @Query(name = "select personnel_id, count(post_id) as post_count, type as post_type from post_personnel pp inner join posts p "
+    @Query(value = "select personnel_id, count(post_id) as post_count, `type` as post_type from post_personnel pp inner join posts p "
         + "on p.id=pp.post_id and p.status <> 2 "
         + "group by pp.personnel_id, p.type", nativeQuery = true)
     @NonNull

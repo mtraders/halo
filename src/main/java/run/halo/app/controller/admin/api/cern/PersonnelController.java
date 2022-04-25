@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import run.halo.app.model.dto.cern.personnel.PersonnelDTO;
+import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.params.cern.PersonnelParam;
 import run.halo.app.service.cern.PersonnelService;
 import run.halo.app.service.cern.PostPersonnelService;
@@ -29,6 +31,7 @@ import javax.validation.Valid;
  *
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/admin/cern/personnel")
 public class PersonnelController {
@@ -68,7 +71,9 @@ public class PersonnelController {
     @PostMapping
     @ApiOperation(value = "create personnel")
     public PersonnelDTO createPersonnel(@Valid @RequestBody PersonnelParam personnelParam) {
-        return new PersonnelDTO();
+        Personnel personnel = personnelParam.convertTo();
+        log.debug("Personnel to be created: [{}]", personnel);
+        return personnelService.convertTo(personnelService.create(personnel));
     }
 
     /**

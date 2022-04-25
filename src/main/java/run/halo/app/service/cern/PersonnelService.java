@@ -15,4 +15,7 @@ import java.util.List;
 public interface PersonnelService extends CrudService<Personnel, Integer> {
     @NonNull
     List<PersonnelDTO> convertTo(@NonNull List<Personnel> personnelList);
+
+    @NonNull
+    PersonnelDTO convertTo(@NonNull Personnel personnel);
 }
