@@ -7,11 +7,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GenericGenerator;
+import run.halo.app.model.enums.cern.PostType;
 
 /**
  * Category entity.
@@ -86,6 +88,13 @@ public class Category extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    /**
+     * Post type.
+     */
+    @Column(name = "post_type")
+    @ColumnDefault("0")
+    private PostType postType;
+
     @Override
     public void prePersist() {
         super.prePersist();
@@ -100,6 +109,10 @@ public class Category extends BaseEntity {
 
         if (priority == null) {
             priority = 0;
+        }
+
+        if (null == postType) {
+            postType = PostType.BASE;
         }
     }
 
