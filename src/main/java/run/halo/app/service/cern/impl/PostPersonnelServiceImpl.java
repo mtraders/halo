@@ -73,17 +73,17 @@ public class PostPersonnelServiceImpl extends AbstractCrudService<PostPersonnel,
             PersonnelMoreDTO personnelMoreDTO = new PersonnelMoreDTO().convertFrom(personnel);
             PersonnelPostCountProjection personnelPostDefaultCount =
                 personnelPostCountMap.getOrDefault(buildCountKey(personnelId, PostType.BASE.getValue()), new PersonnelPostCountProjection());
-            Assert.notNull(personnelPostDefaultCount, "personnel default post count info must not be null");
+            Assert.notNull(personnelPostDefaultCount, "personnel post count info must not be null");
             personnelMoreDTO.setPostCount(personnelPostDefaultCount.getPostCount());
 
             PersonnelPostCountProjection personnelPaperCount =
                 personnelPostCountMap.getOrDefault(buildCountKey(personnelId, PostType.PAPER.getValue()), new PersonnelPostCountProjection());
-            Assert.notNull(personnelPaperCount, "personnel default paper count info must not be null");
+            Assert.notNull(personnelPaperCount, "personnel paper count info must not be null");
             personnelMoreDTO.setPaperCount(personnelPaperCount.getPostCount());
 
             PersonnelPostCountProjection personnelProjectCount =
                 personnelPostCountMap.getOrDefault(buildCountKey(personnelId, PostType.PROJECT.getValue()), new PersonnelPostCountProjection());
-            Assert.notNull(personnelProjectCount, "personnel default project count info must not be null");
+            Assert.notNull(personnelProjectCount, "personnel project count info must not be null");
             personnelMoreDTO.setProjectCount(personnelProjectCount.getPostCount());
 
             return personnelMoreDTO;

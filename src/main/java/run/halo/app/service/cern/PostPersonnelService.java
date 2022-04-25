@@ -23,6 +23,12 @@ public interface PostPersonnelService extends CrudService<PostPersonnel, Integer
     @NonNull
     List<PersonnelMoreDTO> listPersonnelMore(@NonNull Sort sort);
 
+    /**
+     * remove post personnel by personnel id.
+     *
+     * @param personnelId personnel id
+     * @return removed post personnel list
+     */
     @NonNull
     List<PostPersonnel> removeByPersonnelId(@NonNull Integer personnelId);
 }
