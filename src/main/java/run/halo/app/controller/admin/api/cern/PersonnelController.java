@@ -1,8 +1,6 @@
 package run.halo.app.controller.admin.api.cern;
 
-import java.util.Collections;
-import java.util.List;
-
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -16,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
 import run.halo.app.model.dto.cern.personnel.PersonnelDTO;
 import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.params.cern.PersonnelParam;
@@ -25,6 +21,7 @@ import run.halo.app.service.cern.PersonnelService;
 import run.halo.app.service.cern.PostPersonnelService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Personnel controller.
