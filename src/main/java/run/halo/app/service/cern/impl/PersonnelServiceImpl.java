@@ -35,7 +35,7 @@ public class PersonnelServiceImpl extends AbstractCrudService<Personnel, Integer
     }
 
     public @NotNull PersonnelDTO convertTo(@NotNull Personnel personnel) {
-        return new PersonnelMoreDTO().convertFrom(personnel);
+        return new PersonnelDTO().convertFrom(personnel);
     }
 
     @Override
