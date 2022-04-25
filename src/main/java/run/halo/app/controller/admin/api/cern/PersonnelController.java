@@ -82,7 +82,8 @@ public class PersonnelController {
     @GetMapping("{personnelId:\\d+}")
     @ApiOperation("Get personnel detail by id")
     public PersonnelDTO getBy(@PathVariable("personnelId") Integer personnelId) {
-        return new PersonnelDTO();
+        Personnel personnel = personnelService.getById(personnelId);
+        return personnelService.convertTo(personnel);
     }
 
     /**

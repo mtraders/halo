@@ -13,7 +13,7 @@ import java.util.Date;
  */
 @Data
 public class PersonnelDTO implements OutputConverter<PersonnelDTO, Personnel> {
-    private Long id;
+    private Integer id;
     private String name;
     private String englishName;
     private String slug;
