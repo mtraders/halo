@@ -15,11 +15,14 @@ import java.util.List;
  */
 public interface PostPersonnelService extends CrudService<PostPersonnel, Integer> {
     /**
-     * list personnel with more inforamtion.
+     * list personnel with more information.
      *
      * @param sort spring sort info, not null.
      * @return personnel more information.
      */
     @NonNull
     List<PersonnelMoreDTO> listPersonnelMore(@NonNull Sort sort);
+
+    @NonNull
+    List<PostPersonnel> removeByPersonnelId(@NonNull Integer personnelId);
 }

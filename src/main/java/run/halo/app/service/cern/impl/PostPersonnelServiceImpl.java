@@ -16,9 +16,9 @@ import run.halo.app.repository.cern.PostPersonnelRepository;
 import run.halo.app.service.base.AbstractCrudService;
 import run.halo.app.service.cern.PostPersonnelService;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -88,5 +88,16 @@ public class PostPersonnelServiceImpl extends AbstractCrudService<PostPersonnel,
 
             return personnelMoreDTO;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * remove post personnel by personnel id.
+     *
+     * @param personnelId personnel id
+     * @return deleted postpersonnel
+     */
+    @Override
+    public @NotNull List<PostPersonnel> removeByPersonnelId(@NotNull Integer personnelId) {
+        return Collections.emptyList();
     }
 }

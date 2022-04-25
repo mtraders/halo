@@ -96,7 +96,9 @@ public class PersonnelController {
     @PutMapping("{personnelId:\\d+}")
     @ApiOperation("Update a person")
     public PersonnelDTO updateBy(@PathVariable("personnelId") Integer personnelId, @Valid @RequestBody PersonnelParam personnelParam) {
-        return new PersonnelDTO();
+        Personnel personnel = personnelService.getById(personnelId);
+        personnelParam.update(personnel);
+        return personnelService.convertTo(personnelService.update(personnel));
     }
 
     /**
@@ -108,6 +110,10 @@ public class PersonnelController {
     @DeleteMapping("{personnelId:\\d+}")
     @ApiOperation("Delete person permanently.")
     public PersonnelDTO deletePermanently(@PathVariable("personnelId") Integer personnelId) {
-        return new PersonnelDTO();
+        // Remove posts of the person
+        postPersonnelService.removeByPersonnelId(personnelId);
+        // Remove the person
+        Personnel personnel = personnelService.removeById(personnelId);
+        return personnelService.convertTo(personnel);
     }
 }

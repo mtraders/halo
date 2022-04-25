@@ -47,7 +47,7 @@ public class Personnel extends BaseEntity {
     /**
      * english name.
      */
-    @Column(name = "english_name", unique = true)
+    @Column(name = "english_name", nullable = false)
     private String englishName;
 
     /**
