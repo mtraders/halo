@@ -1,13 +1,7 @@
 package run.halo.app.controller.content.api;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
 import com.google.common.collect.Sets;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,6 +26,11 @@ import run.halo.app.model.vo.PostListVO;
 import run.halo.app.service.CategoryService;
 import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.assembler.PostRenderAssembler;
+
+import java.util.List;
+import java.util.Set;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * Content category controller.
@@ -62,11 +61,8 @@ public class CategoryController {
      * @param categoryAuthentication category authentication.
      * @param contentAuthenticationManager content authentication manager.
      */
-    public CategoryController(CategoryService categoryService,
-                              PostCategoryService postCategoryService,
-                              PostRenderAssembler postRenderAssembler,
-                              CategoryAuthentication categoryAuthentication,
-                              ContentAuthenticationManager contentAuthenticationManager) {
+    public CategoryController(CategoryService categoryService, PostCategoryService postCategoryService, PostRenderAssembler postRenderAssembler,
+                              CategoryAuthentication categoryAuthentication, ContentAuthenticationManager contentAuthenticationManager) {
         this.categoryService = categoryService;
         this.postCategoryService = postCategoryService;
         this.postRenderAssembler = postRenderAssembler;
@@ -83,9 +79,8 @@ public class CategoryController {
      */
     @GetMapping
     @ApiOperation("Lists categories")
-    public List<? extends CategoryDTO> listCategories(
-        @SortDefault(sort = "updateTime", direction = DESC) Sort sort,
-        @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
+    public List<? extends CategoryDTO> listCategories(@SortDefault(sort = "updateTime", direction = DESC) Sort sort,
+                                                      @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
         if (more) {
             return postCategoryService.listCategoryWithPostCountDto(sort);
         }
@@ -104,8 +99,7 @@ public class CategoryController {
     @ApiOperation("Lists posts by category slug")
     public Page<? extends PostListVO> listPostsBy(@PathVariable("slug") String slug,
                                                   @RequestParam(value = "password", required = false) String password,
-                                                  @PageableDefault(sort = {"topPriority", "updateTime"}, direction = DESC)
-                                                      Pageable pageable) {
+                                                  @PageableDefault(sort = {"topPriority", "updateTime"}, direction = DESC) Pageable pageable) {
         // Get category by slug
         Category category = categoryService.getBySlugOfNonNull(slug);
 
@@ -114,8 +108,7 @@ public class CategoryController {
             statusesToQuery = Sets.immutableEnumSet(PostStatus.PUBLISHED, PostStatus.INTIMATE);
         }
 
-        Page<Post> postPage =
-            postCategoryService.pagePostBy(category.getId(), statusesToQuery, pageable);
+        Page<Post> postPage = postCategoryService.pagePostBy(category.getId(), statusesToQuery, pageable);
         return postRenderAssembler.convertToListVo(postPage);
     }
 
@@ -131,9 +124,7 @@ public class CategoryController {
         }
 
         if (password != null) {
-            ContentAuthenticationRequest authRequest =
-                ContentAuthenticationRequest.of(categoryId, password,
-                    EncryptTypeEnum.CATEGORY.getName());
+            ContentAuthenticationRequest authRequest = ContentAuthenticationRequest.of(categoryId, password, EncryptTypeEnum.CATEGORY.getName());
             // authenticate this request,throw an error if authenticate failed
             contentAuthenticationManager.authenticate(authRequest);
             return true;
