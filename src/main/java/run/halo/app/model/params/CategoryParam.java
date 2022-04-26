@@ -3,10 +3,12 @@ package run.halo.app.model.params;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.Category;
+import run.halo.app.model.enums.cern.PostType;
 import run.halo.app.model.support.NotAllowSpaceOnly;
 import run.halo.app.utils.SlugUtils;
 
@@ -45,6 +47,8 @@ public class CategoryParam implements InputConverter<Category> {
     @Min(value = 0, message = "排序编号不能低于 {value}")
     private Integer priority;
 
+    private PostType postType;
+
     @Override
     public Category convertTo() {
 
@@ -52,6 +56,10 @@ public class CategoryParam implements InputConverter<Category> {
 
         if (null == thumbnail) {
             thumbnail = "";
+        }
+
+        if (null == postType) {
+            postType = PostType.BASE;
         }
 
         return InputConverter.super.convertTo();
@@ -64,6 +72,10 @@ public class CategoryParam implements InputConverter<Category> {
 
         if (null == thumbnail) {
             thumbnail = "";
+        }
+
+        if (null == postType) {
+            postType = PostType.BASE;
         }
 
         InputConverter.super.update(category);
