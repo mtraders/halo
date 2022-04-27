@@ -5,7 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
- * Base exception of the project.
+ * Base exception to the project.
  *
  * @author johnniang
  * @author ryan0up

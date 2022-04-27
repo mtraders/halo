@@ -1,7 +1,7 @@
 package run.halo.app.exception;
 
 /**
- * repeat type exception
+ * repeat type exception.
  *
  * @author bestsort
  * @date 3/13/20 5:03 PM

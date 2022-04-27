@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletRequest;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -48,6 +49,8 @@ import run.halo.app.service.ThemeService;
 import run.halo.app.service.assembler.PostRenderAssembler;
 
 /**
+ * content controller.
+ *
  * @author ryanwang
  * @author guqing
  * @date 2020-01-07
@@ -85,20 +88,38 @@ public class ContentContentController {
 
     private final ContentAuthenticationManager providerManager;
 
+    /**
+     * content content controller constructor.
+     *
+     * @param postModel post model.
+     * @param sheetModel sheet model
+     * @param categoryModel category model
+     * @param tagModel tag model
+     * @param journalModel journal model
+     * @param photoModel photo model
+     * @param linkModel link model
+     * @param optionService option service.
+     * @param postService post service.
+     * @param sheetService sheet service.
+     * @param categoryService category service.
+     * @param themeService theme service.
+     * @param postRenderAssembler post render assembler.
+     * @param providerManager provider manager.
+     */
     public ContentContentController(PostModel postModel,
-        SheetModel sheetModel,
-        CategoryModel categoryModel,
-        TagModel tagModel,
-        JournalModel journalModel,
-        PhotoModel photoModel,
-        LinkModel linkModel,
-        OptionService optionService,
-        PostService postService,
-        SheetService sheetService,
-        CategoryService categoryService,
-        ThemeService themeService,
-        PostRenderAssembler postRenderAssembler,
-        ContentAuthenticationManager providerManager) {
+                                    SheetModel sheetModel,
+                                    CategoryModel categoryModel,
+                                    TagModel tagModel,
+                                    JournalModel journalModel,
+                                    PhotoModel photoModel,
+                                    LinkModel linkModel,
+                                    OptionService optionService,
+                                    PostService postService,
+                                    SheetService sheetService,
+                                    CategoryService categoryService,
+                                    ThemeService themeService,
+                                    PostRenderAssembler postRenderAssembler,
+                                    ContentAuthenticationManager providerManager) {
         this.postModel = postModel;
         this.sheetModel = sheetModel;
         this.categoryModel = categoryModel;
@@ -115,10 +136,18 @@ public class ContentContentController {
         this.providerManager = providerManager;
     }
 
+    /**
+     * get content by prefix.
+     *
+     * @param prefix prefix
+     * @param token token
+     * @param model model
+     * @return content
+     */
     @GetMapping("{prefix}")
     public String content(@PathVariable("prefix") String prefix,
-        @RequestParam(value = "token", required = false) String token,
-        Model model) {
+                          @RequestParam(value = "token", required = false) String token,
+                          Model model) {
         if (optionService.getArchivesPrefix().equals(prefix)) {
             return postModel.archives(1, model);
         }
@@ -145,11 +174,20 @@ public class ContentContentController {
         throw buildPathNotFoundException();
     }
 
+    /**
+     * get content by page number.
+     *
+     * @param prefix prefix
+     * @param page page info
+     * @param request request
+     * @param model model
+     * @return content
+     */
     @GetMapping("{prefix}/page/{page:\\d+}")
     public String content(@PathVariable("prefix") String prefix,
-        @PathVariable(value = "page") Integer page,
-        HttpServletRequest request,
-        Model model) {
+                          @PathVariable(value = "page") Integer page,
+                          HttpServletRequest request,
+                          Model model) {
         if (optionService.getArchivesPrefix().equals(prefix)) {
             return postModel.archives(page, model);
         }
@@ -165,11 +203,20 @@ public class ContentContentController {
         throw buildPathNotFoundException();
     }
 
+    /**
+     * get content by slug.
+     *
+     * @param prefix prefix
+     * @param slug slug
+     * @param token token
+     * @param model model
+     * @return content
+     */
     @GetMapping("{prefix}/{slug}")
     public String content(@PathVariable("prefix") String prefix,
-        @PathVariable("slug") String slug,
-        @RequestParam(value = "token", required = false) String token,
-        Model model) {
+                          @PathVariable("slug") String slug,
+                          @RequestParam(value = "token", required = false) String token,
+                          Model model) {
         PostPermalinkType postPermalinkType = optionService.getPostPermalinkType();
         if (optionService.getArchivesPrefix().equals(prefix)) {
             if (postPermalinkType.equals(PostPermalinkType.DEFAULT)) {
@@ -206,11 +253,20 @@ public class ContentContentController {
         throw buildPathNotFoundException();
     }
 
+    /**
+     * get content by prefix and slug.
+     *
+     * @param prefix prefix
+     * @param slug slug
+     * @param page page
+     * @param model model
+     * @return content
+     */
     @GetMapping("{prefix}/{slug}/page/{page:\\d+}")
     public String content(@PathVariable("prefix") String prefix,
-        @PathVariable("slug") String slug,
-        @PathVariable("page") Integer page,
-        Model model) {
+                          @PathVariable("slug") String slug,
+                          @PathVariable("page") Integer page,
+                          Model model) {
         if (optionService.getCategoriesPrefix().equals(prefix)) {
             return categoryModel.listPost(model, slug, page);
         }
@@ -222,12 +278,22 @@ public class ContentContentController {
         throw buildPathNotFoundException();
     }
 
+    /**
+     * get content by date.
+     *
+     * @param year year
+     * @param month month
+     * @param slug slug
+     * @param token token
+     * @param model model
+     * @return content
+     */
     @GetMapping("{year:\\d+}/{month:\\d+}/{slug}")
     public String content(@PathVariable("year") Integer year,
-        @PathVariable("month") Integer month,
-        @PathVariable("slug") String slug,
-        @RequestParam(value = "token", required = false) String token,
-        Model model) {
+                          @PathVariable("month") Integer month,
+                          @PathVariable("slug") String slug,
+                          @RequestParam(value = "token", required = false) String token,
+                          Model model) {
         PostPermalinkType postPermalinkType = optionService.getPostPermalinkType();
         if (postPermalinkType.equals(PostPermalinkType.DATE)) {
             Post post = postService.getBy(year, month, slug);
@@ -237,13 +303,24 @@ public class ContentContentController {
         throw buildPathNotFoundException();
     }
 
+    /**
+     * get content by date and slug.
+     *
+     * @param year year
+     * @param month month
+     * @param day day
+     * @param slug slug
+     * @param token token
+     * @param model model
+     * @return content
+     */
     @GetMapping("{year:\\d+}/{month:\\d+}/{day:\\d+}/{slug}")
     public String content(@PathVariable("year") Integer year,
-        @PathVariable("month") Integer month,
-        @PathVariable("day") Integer day,
-        @PathVariable("slug") String slug,
-        @RequestParam(value = "token", required = false) String token,
-        Model model) {
+                          @PathVariable("month") Integer month,
+                          @PathVariable("day") Integer day,
+                          @PathVariable("slug") String slug,
+                          @RequestParam(value = "token", required = false) String token,
+                          Model model) {
         PostPermalinkType postPermalinkType = optionService.getPostPermalinkType();
         if (postPermalinkType.equals(PostPermalinkType.DAY)) {
             Post post = postService.getBy(year, month, day, slug);
@@ -253,12 +330,22 @@ public class ContentContentController {
         throw buildPathNotFoundException();
     }
 
+    /**
+     * get password.
+     *
+     * @param type type
+     * @param slug slug
+     * @param password password
+     * @param request request
+     * @return password
+     * @throws UnsupportedEncodingException unsupported encoding exception.
+     */
     @PostMapping(value = "content/{type}/{slug:.*}/authentication")
     @CacheLock(traceRequest = true, expired = 2)
     public String password(@PathVariable("type") String type,
-        @PathVariable("slug") String slug,
-        @RequestParam(value = "password") String password,
-        HttpServletRequest request) throws UnsupportedEncodingException {
+                           @PathVariable("slug") String slug,
+                           @RequestParam(value = "password") String password,
+                           HttpServletRequest request) throws UnsupportedEncodingException {
         if (EncryptTypeEnum.POST.getName().equals(type)) {
             return authenticatePost(slug, type, password, request);
         } else if (EncryptTypeEnum.CATEGORY.getName().equals(type)) {
@@ -269,7 +356,7 @@ public class ContentContentController {
     }
 
     private String authenticatePost(String slug, String type, String password,
-        HttpServletRequest request) {
+                                    HttpServletRequest request) {
         ContentAuthenticationRequest authRequest = new ContentAuthenticationRequest();
         authRequest.setPassword(password);
         Post post = postService.getBy(PostStatus.INTIMATE, slug);
@@ -290,7 +377,7 @@ public class ContentContentController {
     }
 
     private String authenticateCategory(String slug, String type, String password,
-        HttpServletRequest request) {
+                                        HttpServletRequest request) {
         ContentAuthenticationRequest authRequest = new ContentAuthenticationRequest();
         authRequest.setPassword(password);
         Category category = categoryService.getBySlugOfNonNull(slug);
