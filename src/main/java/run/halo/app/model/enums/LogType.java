@@ -8,32 +8,32 @@ package run.halo.app.model.enums;
 public enum LogType implements ValueEnum<Integer> {
 
     /**
-     * Blog initialization
+     * Blog initialization.
      */
     BLOG_INITIALIZED(0),
 
     /**
-     * Post published
+     * Post published.
      */
     POST_PUBLISHED(5),
 
     /**
-     * Post edited
+     * Post edited.
      */
     POST_EDITED(15),
 
     /**
-     * Post deleted
+     * Post deleted.
      */
     POST_DELETED(20),
 
     /**
-     * Logged in
+     * Logged in.
      */
     LOGGED_IN(25),
 
     /**
-     * Logged out
+     * Logged out.
      */
     LOGGED_OUT(30),
 
@@ -43,37 +43,37 @@ public enum LogType implements ValueEnum<Integer> {
     LOGIN_FAILED(35),
 
     /**
-     * Updated the blogger password
+     * Updated the blogger password.
      */
     PASSWORD_UPDATED(40),
 
     /**
-     * Updated the blogger profile
+     * Updated the blogger profile.
      */
     PROFILE_UPDATED(45),
 
     /**
-     * Sheet published
+     * Sheet published.
      */
     SHEET_PUBLISHED(50),
 
     /**
-     * Sheet edited
+     * Sheet edited.
      */
     SHEET_EDITED(55),
 
     /**
-     * Sheet deleted
+     * Sheet deleted.
      */
     SHEET_DELETED(60),
 
     /**
-     * MFA Updated
+     * MFA Updated.
      */
     MFA_UPDATED(65),
 
     /**
-     * Logged pre check
+     * Logged pre check.
      */
     LOGGED_PRE_CHECK(70);
 

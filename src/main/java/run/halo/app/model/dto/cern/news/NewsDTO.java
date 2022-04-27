@@ -9,4 +9,6 @@ import run.halo.app.model.dto.post.BasePostDetailDTO;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class NewsDTO extends BasePostDetailDTO {
+    private String source;
+    private String link;
 }

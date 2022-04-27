@@ -1,14 +1,10 @@
 package run.halo.app.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -34,6 +30,12 @@ import run.halo.app.service.SheetService;
 import run.halo.app.service.ThemeService;
 import run.halo.app.utils.MarkdownUtils;
 import run.halo.app.utils.ServiceUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Sheet service implementation.
@@ -97,7 +99,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Sheet createBy(Sheet sheet, boolean autoSave) {
+    public @NonNull Sheet createBy(@NonNull Sheet sheet, boolean autoSave) {
         Sheet createdSheet = createOrUpdateBy(sheet);
         if (!autoSave) {
             // Log the creation
@@ -110,7 +112,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Sheet createBy(Sheet sheet, Set<SheetMeta> metas, boolean autoSave) {
+    public Sheet createBy(@NonNull Sheet sheet, Set<SheetMeta> metas, boolean autoSave) {
         Sheet createdSheet = createOrUpdateBy(sheet);
 
         // Create sheet meta data
@@ -128,7 +130,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Sheet updateBy(Sheet sheet, boolean autoSave) {
+    public @NonNull Sheet updateBy(@NonNull Sheet sheet, boolean autoSave) {
         Sheet updatedSheet = createOrUpdateBy(sheet);
         if (!autoSave) {
             // Log the creation

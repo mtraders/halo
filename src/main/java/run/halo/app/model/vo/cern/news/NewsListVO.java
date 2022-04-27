@@ -12,4 +12,5 @@ import run.halo.app.model.vo.PostListVO;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class NewsListVO extends PostListVO {
+    private String author;
 }
