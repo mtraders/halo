@@ -179,14 +179,12 @@ public class ContentContentController {
      *
      * @param prefix prefix
      * @param page page info
-     * @param request request
      * @param model model
      * @return content
      */
     @GetMapping("{prefix}/page/{page:\\d+}")
     public String content(@PathVariable("prefix") String prefix,
                           @PathVariable(value = "page") Integer page,
-                          HttpServletRequest request,
                           Model model) {
         if (optionService.getArchivesPrefix().equals(prefix)) {
             return postModel.archives(page, model);
