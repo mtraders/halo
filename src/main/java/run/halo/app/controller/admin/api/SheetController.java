@@ -97,6 +97,14 @@ public class SheetController {
         return sheetAssembler.convertToDetailVo(sheet);
     }
 
+    /**
+     * Updates a sheet.
+     *
+     * @param sheetId sheet id.
+     * @param sheetParam sheet param.
+     * @param autoSave auto save or not
+     * @return sheet detail vo.
+     */
     @PutMapping("{sheetId:\\d+}")
     @ApiOperation("Updates a sheet")
     public SheetDetailVO updateBy(
@@ -112,6 +120,12 @@ public class SheetController {
         return sheetAssembler.convertToDetailVo(sheet);
     }
 
+    /**
+     * Update a sheet.
+     *
+     * @param sheetId sheet id
+     * @param status status
+     */
     @PutMapping("{sheetId:\\d+}/{status}")
     @ApiOperation("Updates a sheet")
     public void updateStatusBy(
@@ -126,6 +140,13 @@ public class SheetController {
         sheetService.update(sheet);
     }
 
+    /**
+     * updates draft.
+     *
+     * @param sheetId sheet id.
+     * @param contentParam content param.
+     * @return base post detail dto.
+     */
     @PutMapping("{sheetId:\\d+}/status/draft/content")
     @ApiOperation("Updates draft")
     public BasePostDetailDTO updateDraftBy(
@@ -147,6 +168,13 @@ public class SheetController {
         return sheetAssembler.convertToDetailVo(sheet);
     }
 
+    /**
+     * get a sheet preview link.
+     *
+     * @param sheetId sheet id.
+     * @return sheet link
+     * @throws UnsupportedEncodingException unsupported encoding exception.
+     */
     @GetMapping("preview/{sheetId:\\d+}")
     @ApiOperation("Gets a sheet preview link")
     public String preview(@PathVariable("sheetId") Integer sheetId)

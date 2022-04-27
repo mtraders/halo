@@ -183,6 +183,13 @@ public class PostController {
             postParam.getPostMetas(), autoSave);
     }
 
+    /**
+     * update post status.
+     *
+     * @param postId post id.
+     * @param status status.
+     * @return post mini dto.
+     */
     @PutMapping("{postId:\\d+}/status/{status}")
     @ApiOperation("Updates post status")
     public BasePostMinimalDTO updateStatusBy(
@@ -200,6 +207,13 @@ public class PostController {
         return postService.updateStatusByIds(ids, status);
     }
 
+    /**
+     * update draft post.
+     *
+     * @param postId post id.
+     * @param contentParam content param.
+     * @return base post detail dto.
+     */
     @PutMapping("{postId:\\d+}/status/draft/content")
     @ApiOperation("Updates draft")
     public BasePostDetailDTO updateDraftBy(
@@ -225,6 +239,14 @@ public class PostController {
         return postService.removeByIds(ids);
     }
 
+    /**
+     * gets a post preview link.
+     *
+     * @param postId post id.
+     * @return post content.
+     * @throws UnsupportedEncodingException unsupported encoding exception.
+     * @throws URISyntaxException url syntax exception.
+     */
     @GetMapping(value = {"preview/{postId:\\d+}", "{postId:\\d+}/preview"})
     @ApiOperation("Gets a post preview link")
     public String preview(@PathVariable("postId") Integer postId)
