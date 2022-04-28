@@ -206,6 +206,12 @@ public class PostAssembler extends BasePostAssembler<Post> {
         });
     }
 
+    /**
+     * convert post entities to post list vos.
+     *
+     * @param posts posts.
+     * @return post list vos.
+     */
     public List<PostListVO> convertToListVo(List<Post> posts) {
         Assert.notNull(posts, "Post page must not be null");
 

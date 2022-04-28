@@ -120,7 +120,7 @@ public class NewsAssembler extends BasePostAssembler<News> {
         return newsDetailVO;
     }
 
-    private void generateAndSetSummaryIfAbsent(News news, NewsDetailVO newsDetailVO) {
+    private void generateAndSetSummaryIfAbsent(@NonNull News news, @NonNull NewsDetailVO newsDetailVO) {
         Assert.notNull(news, "The news must not be null.");
         if (StringUtils.isNotBlank(newsDetailVO.getSummary())) {
             return;
