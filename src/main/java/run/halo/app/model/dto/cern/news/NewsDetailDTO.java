@@ -1,36 +1,28 @@
 package run.halo.app.model.dto.cern.news;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import run.halo.app.model.enums.PostEditorType;
-import run.halo.app.model.enums.PostStatus;
+import org.springframework.lang.NonNull;
+import run.halo.app.model.entity.Content.PatchedContent;
+import run.halo.app.model.entity.cern.News;
 
-import java.util.Date;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-public class NewsDetailDTO extends NewsListIDTO {
-    // base post fields
-    private Integer id;
-    private String title;
-    private PostStatus status;
-    private String slug;
-    private PostEditorType editorType;
+public class NewsDetailDTO extends NewsListDTO {
     private String originalContent;
-    private String formattedContent;
-    private String summary;
-    private String thumbnail;
-    private Long visits;
-    private Integer topPriority;
-    private Long likes;
-    private Date editTime;
-    private String metaKeywords;
-    private String metaDescription;
-    private Long wordCount;
-    // news special fields
-    private String source;
-    private String link;
-    // comment date fields
-    private Date createTime;
-    private Date updateTime;
+    private String content;
+    private Long commentCount = 0L;
+
+    @Override
+    @NonNull
+    @SuppressWarnings("unchecked")
+    public <T extends NewsListDTO> T convertFrom(@NonNull News news) {
+        NewsDetailDTO newsDetailDTO = super.convertFrom(news);
+        PatchedContent content = news.getContent();
+        newsDetailDTO.setContent(content.getContent());
+        newsDetailDTO.setOriginalContent(content.getOriginalContent());
+        return (T) newsDetailDTO;
+    }
 }

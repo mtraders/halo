@@ -18,7 +18,8 @@ import java.util.Date;
 @Data
 @ToString
 @EqualsAndHashCode
-public class NewsListIDTO implements OutputConverter<NewsListIDTO, News> {
+public class NewsListDTO implements OutputConverter<NewsListDTO, News> {
+    // post minimal
     private Integer id;
     private String title;
     private PostStatus status;
@@ -29,7 +30,23 @@ public class NewsListIDTO implements OutputConverter<NewsListIDTO, News> {
     private Date editTime;
     private String metaKeywords;
     private String metaDescription;
+    private String fullPath;
+    // post simple
+    private String summary;
+    private String thumbnail;
+    private Long visits;
+    private Boolean disallowComment;
+    private String password;
+    private String template;
+    private Integer topPriority;
+    private Long likes;
+    private Long wordCount;
+    private Boolean inProgress;
+    // news special field
     private String source;
     private String sourceLink;
-    private String fullPath;
+
+    public boolean isTopped() {
+        return this.topPriority != null && this.topPriority > 0;
+    }
 }
