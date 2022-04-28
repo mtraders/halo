@@ -14,11 +14,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import run.halo.app.cache.AbstractCacheStore;
+import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.cern.NewsParam;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
+import run.halo.app.service.OptionService;
+import run.halo.app.service.assembler.cern.NewsAssembler;
+import run.halo.app.service.cern.NewsService;
 
 import javax.validation.Valid;
 
@@ -33,13 +38,24 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/api/admin/cern/news")
 public class NewsController {
 
-    public NewsController() {
+    private final NewsService newsService;
+    private final AbstractCacheStore acheStore;
+    private final OptionService optionService;
+    private final NewsAssembler newsAssembler;
+
+    public NewsController(NewsService newsService, AbstractCacheStore acheStore, OptionService optionService,
+                          NewsAssembler newsAssembler) {
+        this.newsService = newsService;
+        this.acheStore = acheStore;
+        this.optionService = optionService;
+        this.newsAssembler = newsAssembler;
     }
 
     @GetMapping
     @ApiOperation("Get a page of news")
     public Page<NewsListVO> pageBy(@PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
-        return null;
+        Page<News> newsPage = newsService.pageBy(pageable);
+        return newsAssembler.convertToListVo(newsPage);
     }
 
 
@@ -57,7 +73,7 @@ public class NewsController {
     }
 
     @PutMapping("{newsId:\\d+}")
-    @ApiOperation("Update a sheet")
+    @ApiOperation("Update a news")
     public NewsDetailVO updateBy(@PathVariable("newsId") Integer newsId, @RequestBody @Valid NewsParam newsParam,
                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
         return new NewsDetailVO();

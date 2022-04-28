@@ -1,8 +1,14 @@
 package run.halo.app.model.vo.cern.news;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import run.halo.app.model.vo.PostListVO;
+import run.halo.app.model.dto.base.OutputConverter;
+import run.halo.app.model.dto.cern.news.NewsDTO;
+import run.halo.app.model.entity.cern.News;
+import run.halo.app.model.entity.cern.Personnel;
+import run.halo.app.model.enums.PostEditorType;
+import run.halo.app.model.enums.PostStatus;
+
+import java.util.Date;
 
 /**
  * News list vo.
@@ -10,7 +16,16 @@ import run.halo.app.model.vo.PostListVO;
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class NewsListVO extends PostListVO {
-    private String author;
+public class NewsListVO implements OutputConverter<NewsListVO, NewsDTO> {
+    private Integer id;
+    private String title;
+    private PostStatus status;
+    private String slug;
+    private PostEditorType editorType;
+    private Date updateTime;
+    private Date editTime;
+    private String metaKeywords;
+    private String metaDescription;
+    private String fullPath;
+    private Personnel author;
 }

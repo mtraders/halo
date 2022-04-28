@@ -5,13 +5,18 @@ import lombok.EqualsAndHashCode;
 import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.params.BasePostParam;
+import run.halo.app.model.params.PostMetaParam;
+import run.halo.app.model.params.SheetMetaParam;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class NewsParam extends BasePostParam implements InputConverter<News> {
+
+    private Set<PostMetaParam> metas;
 
     @Size(max = 255, message = "新闻来源长度不能超过 {max}")
     private String source;

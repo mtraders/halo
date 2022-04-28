@@ -47,8 +47,7 @@ import java.util.Set;
  */
 @Slf4j
 @Service
-public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
-        implements SheetService {
+public class SheetServiceImpl extends BasePostServiceImpl<Sheet> implements SheetService {
 
     private final SheetRepository sheetRepository;
 
@@ -69,23 +68,18 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
     /**
      * sheet service implementation.
      *
-     * @param sheetRepository             sheet repository
-     * @param eventPublisher              event publisher
-     * @param sheetCommentService         sheet comment service
-     * @param sheetContentService         sheet content service
-     * @param sheetMetaService            sheet meta service
-     * @param themeService                theme service
-     * @param optionService               option service
+     * @param sheetRepository sheet repository
+     * @param eventPublisher event publisher
+     * @param sheetCommentService sheet comment service
+     * @param sheetContentService sheet content service
+     * @param sheetMetaService sheet meta service
+     * @param themeService theme service
+     * @param optionService option service
      * @param sheetContentPatchLogService sheet content patch patch log service
      */
-    public SheetServiceImpl(SheetRepository sheetRepository,
-            ApplicationEventPublisher eventPublisher,
-            SheetCommentService sheetCommentService,
-            ContentService sheetContentService,
-            SheetMetaService sheetMetaService,
-            ThemeService themeService,
-            OptionService optionService,
-            ContentPatchLogService sheetContentPatchLogService) {
+    public SheetServiceImpl(SheetRepository sheetRepository, ApplicationEventPublisher eventPublisher, SheetCommentService sheetCommentService,
+                            ContentService sheetContentService, SheetMetaService sheetMetaService, ThemeService themeService,
+                            OptionService optionService, ContentPatchLogService sheetContentPatchLogService) {
         super(sheetRepository, optionService, sheetContentService, sheetContentPatchLogService);
         this.sheetRepository = sheetRepository;
         this.eventPublisher = eventPublisher;
@@ -99,12 +93,12 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public @NonNull Sheet createBy(@NonNull Sheet sheet, boolean autoSave) {
+    public @NonNull
+    Sheet createBy(@NonNull Sheet sheet, boolean autoSave) {
         Sheet createdSheet = createOrUpdateBy(sheet);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED,
-                    createdSheet.getTitle());
+            LogEvent logEvent = new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED, createdSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return createdSheet;
@@ -121,8 +115,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED,
-                    createdSheet.getTitle());
+            LogEvent logEvent = new LogEvent(this, createdSheet.getId().toString(), LogType.SHEET_PUBLISHED, createdSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return createdSheet;
@@ -130,12 +123,12 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public @NonNull Sheet updateBy(@NonNull Sheet sheet, boolean autoSave) {
+    public @NonNull
+    Sheet updateBy(@NonNull Sheet sheet, boolean autoSave) {
         Sheet updatedSheet = createOrUpdateBy(sheet);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED,
-                    updatedSheet.getTitle());
+            LogEvent logEvent = new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED, updatedSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return updatedSheet;
@@ -152,8 +145,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED,
-                    updatedSheet.getTitle());
+            LogEvent logEvent = new LogEvent(this, updatedSheet.getId().toString(), LogType.SHEET_EDITED, updatedSheet.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return updatedSheet;
@@ -170,8 +162,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
     public Sheet getBySlug(String slug) {
         Assert.hasText(slug, "Sheet slug must not be blank");
 
-        return sheetRepository.getBySlug(slug)
-                .orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
+        return sheetRepository.getBySlug(slug).orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
     }
 
     @Override
@@ -179,8 +170,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         Sheet sheet = getById(postId);
         Content sheetContent = getContentById(postId);
         // Use the head pointer stored in the post content.
-        PatchedContent patchedContent = sheetContentPatchLogService
-                .getPatchedContentById(sheetContent.getHeadPatchLogId());
+        PatchedContent patchedContent = sheetContentPatchLogService.getPatchedContentById(sheetContent.getHeadPatchLogId());
         sheet.setContent(patchedContent);
         return sheet;
     }
@@ -192,8 +182,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
 
         Optional<Sheet> postOptional = sheetRepository.getBySlugAndStatus(slug, status);
 
-        return postOptional
-                .orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
+        return postOptional.orElseThrow(() -> new NotFoundException("查询不到该页面的信息").setErrorData(slug));
     }
 
     @Override
@@ -291,8 +280,7 @@ public class SheetServiceImpl extends BasePostServiceImpl<Sheet>
         sheet.setContent(PatchedContent.of(sheetContent));
 
         // Log it
-        eventPublisher.publishEvent(
-                new LogEvent(this, id.toString(), LogType.SHEET_DELETED, sheet.getTitle()));
+        eventPublisher.publishEvent(new LogEvent(this, id.toString(), LogType.SHEET_DELETED, sheet.getTitle()));
 
         return sheet;
     }
