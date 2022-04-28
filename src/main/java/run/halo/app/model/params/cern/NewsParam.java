@@ -6,7 +6,6 @@ import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.params.BasePostParam;
 import run.halo.app.model.params.PostMetaParam;
-import run.halo.app.model.params.SheetMetaParam;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;

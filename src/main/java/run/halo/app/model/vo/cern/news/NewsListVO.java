@@ -3,7 +3,6 @@ package run.halo.app.model.vo.cern.news;
 import lombok.Data;
 import run.halo.app.model.dto.base.OutputConverter;
 import run.halo.app.model.dto.cern.news.NewsDTO;
-import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.enums.PostEditorType;
 import run.halo.app.model.enums.PostStatus;
