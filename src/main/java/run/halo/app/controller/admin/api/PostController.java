@@ -63,15 +63,12 @@ public class PostController {
     /**
      * post controller.
      *
-     * @param postService   post service.
-     * @param cacheStore    cache store.
+     * @param postService post service.
+     * @param cacheStore cache store.
      * @param optionService option service.
      * @param postAssembler post assembler.
      */
-    public PostController(PostService postService,
-                          AbstractStringCacheStore cacheStore,
-                          OptionService optionService,
-                          PostAssembler postAssembler) {
+    public PostController(PostService postService, AbstractStringCacheStore cacheStore, OptionService optionService, PostAssembler postAssembler) {
         this.postService = postService;
         this.cacheStore = cacheStore;
         this.optionService = optionService;
@@ -81,17 +78,15 @@ public class PostController {
     /**
      * Lists posts.
      *
-     * @param pageable  page information.
+     * @param pageable page information.
      * @param postQuery post query information
-     * @param more      more
+     * @param more more
      * @return post list.
      */
     @GetMapping
     @ApiOperation("Lists posts")
-    public Page<? extends BasePostSimpleDTO> pageBy(
-        @PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
-        PostQuery postQuery,
-        @RequestParam(value = "more", defaultValue = "true") Boolean more) {
+    public Page<? extends BasePostSimpleDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
+                                                    PostQuery postQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
         Page<Post> postPage = postService.pageBy(postQuery, pageable);
         if (more) {
             return postAssembler.convertToListVo(postPage);
@@ -102,25 +97,23 @@ public class PostController {
 
     @GetMapping("latest")
     @ApiOperation("Pages latest post")
-    public List<BasePostMinimalDTO> pageLatest(
-        @RequestParam(name = "top", defaultValue = "10") int top) {
+    public List<BasePostMinimalDTO> pageLatest(@RequestParam(name = "top", defaultValue = "10") int top) {
         return postAssembler.convertToMinimal(postService.pageLatest(top).getContent());
     }
 
     /**
      * get a page of post by post status.
      *
-     * @param status   status.
-     * @param more     more information
+     * @param status status.
+     * @param more more information
      * @param pageable pageable information
      * @return post lists.
      */
     @GetMapping("status/{status}")
     @ApiOperation("Gets a page of post by post status")
-    public Page<? extends BasePostSimpleDTO> pageByStatus(
-        @PathVariable(name = "status") PostStatus status,
-        @RequestParam(value = "more", required = false, defaultValue = "false") Boolean more,
-        @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
+    public Page<? extends BasePostSimpleDTO> pageByStatus(@PathVariable(name = "status") PostStatus status,
+                                                          @RequestParam(value = "more", required = false, defaultValue = "false") Boolean more,
+                                                          @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
         Page<Post> posts = postService.pageBy(status, pageable);
 
         if (more) {
@@ -147,40 +140,35 @@ public class PostController {
      * post status.
      *
      * @param postParam post parameter.
-     * @param autoSave  auto save or not.
+     * @param autoSave auto save or not.
      * @return post detail.
      */
     @PostMapping
     @ApiOperation("Creates a post")
     public PostDetailVO createBy(@Valid @RequestBody PostParam postParam,
-                                 @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
-    ) {
+                                 @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
         // Convert to
         Post post = postParam.convertTo();
-        return postService.createBy(post, postParam.getTagIds(), postParam.getCategoryIds(),
-            postParam.getPostMetas(), autoSave);
+        return postService.createBy(post, postParam.getTagIds(), postParam.getCategoryIds(), postParam.getPostMetas(), autoSave);
     }
 
     /**
      * update the post.
      *
      * @param postParam post parameter.
-     * @param postId    post id.
-     * @param autoSave  auto save flag
+     * @param postId post id.
+     * @param autoSave auto save flag
      * @return post detail.
      */
     @PutMapping("{postId:\\d+}")
     @ApiOperation("Updates a post")
-    public PostDetailVO updateBy(@Valid @RequestBody PostParam postParam,
-                                 @PathVariable("postId") Integer postId,
-                                 @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
-    ) {
+    public PostDetailVO updateBy(@Valid @RequestBody PostParam postParam, @PathVariable("postId") Integer postId,
+                                 @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
         // Get the post info
         Post postToUpdate = postService.getWithLatestContentById(postId);
 
         postParam.update(postToUpdate);
-        return postService.updateBy(postToUpdate, postParam.getTagIds(), postParam.getCategoryIds(),
-            postParam.getPostMetas(), autoSave);
+        return postService.updateBy(postToUpdate, postParam.getTagIds(), postParam.getCategoryIds(), postParam.getPostMetas(), autoSave);
     }
 
     /**
@@ -192,9 +180,7 @@ public class PostController {
      */
     @PutMapping("{postId:\\d+}/status/{status}")
     @ApiOperation("Updates post status")
-    public BasePostMinimalDTO updateStatusBy(
-        @PathVariable("postId") Integer postId,
-        @PathVariable("status") PostStatus status) {
+    public BasePostMinimalDTO updateStatusBy(@PathVariable("postId") Integer postId, @PathVariable("status") PostStatus status) {
         Post post = postService.updateStatus(status, postId);
 
         return new BasePostMinimalDTO().convertFrom(post);
@@ -202,8 +188,7 @@ public class PostController {
 
     @PutMapping("status/{status}")
     @ApiOperation("Updates post status in batch")
-    public List<Post> updateStatusInBatch(@PathVariable(name = "status") PostStatus status,
-                                          @RequestBody List<Integer> ids) {
+    public List<Post> updateStatusInBatch(@PathVariable(name = "status") PostStatus status, @RequestBody List<Integer> ids) {
         return postService.updateStatusByIds(ids, status);
     }
 
@@ -216,14 +201,11 @@ public class PostController {
      */
     @PutMapping("{postId:\\d+}/status/draft/content")
     @ApiOperation("Updates draft")
-    public BasePostDetailDTO updateDraftBy(
-        @PathVariable("postId") Integer postId,
-        @RequestBody PostContentParam contentParam) {
+    public BasePostDetailDTO updateDraftBy(@PathVariable("postId") Integer postId, @RequestBody PostContentParam contentParam) {
         Post postToUse = postService.getById(postId);
         String formattedContent = contentParam.decideContentBy(postToUse.getEditorType());
         // Update draft content
-        Post post = postService.updateDraftContent(formattedContent,
-            contentParam.getOriginalContent(), postId);
+        Post post = postService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), postId);
         return postAssembler.convertToDetail(post);
     }
 
@@ -245,12 +227,11 @@ public class PostController {
      * @param postId post id.
      * @return post content.
      * @throws UnsupportedEncodingException unsupported encoding exception.
-     * @throws URISyntaxException url syntax exception.
+     * @throws URISyntaxException           url syntax exception.
      */
     @GetMapping(value = {"preview/{postId:\\d+}", "{postId:\\d+}/preview"})
     @ApiOperation("Gets a post preview link")
-    public String preview(@PathVariable("postId") Integer postId)
-        throws UnsupportedEncodingException, URISyntaxException {
+    public String preview(@PathVariable("postId") Integer postId) throws UnsupportedEncodingException, URISyntaxException {
         Post post = postService.getById(postId);
 
         post.setSlug(URLEncoder.encode(post.getSlug(), StandardCharsets.UTF_8.name()));
@@ -271,8 +252,6 @@ public class PostController {
         previewUrl.append(postMinimalDTO.getFullPath());
 
         // build preview post url and return
-        return new URIBuilder(previewUrl.toString())
-            .addParameter("token", token)
-            .build().toString();
+        return new URIBuilder(previewUrl.toString()).addParameter("token", token).build().toString();
     }
 }

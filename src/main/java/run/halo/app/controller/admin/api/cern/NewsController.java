@@ -43,8 +43,7 @@ public class NewsController {
     private final OptionService optionService;
     private final NewsAssembler newsAssembler;
 
-    public NewsController(NewsService newsService, AbstractCacheStore acheStore, OptionService optionService,
-                          NewsAssembler newsAssembler) {
+    public NewsController(NewsService newsService, AbstractCacheStore acheStore, OptionService optionService, NewsAssembler newsAssembler) {
         this.newsService = newsService;
         this.acheStore = acheStore;
         this.optionService = optionService;
@@ -69,7 +68,7 @@ public class NewsController {
     @ApiOperation("Create a news")
     public NewsDetailVO createBy(@RequestBody @Valid NewsParam newsParam,
                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
-        return new NewsDetailVO();
+        return newsService.createBy(newsParam.convertTo(), newsParam.getTagIds(), newsParam.getCategoryIds(), newsParam.getPostMetas(), autoSave);
     }
 
     @PutMapping("{newsId:\\d+}")

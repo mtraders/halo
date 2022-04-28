@@ -37,8 +37,8 @@ public class News extends BasePost {
     /**
      * link of the source.
      */
-    @Column(name = "link")
-    private String link;
+    @Column(name = "source_link")
+    private String sourceLink;
 
     @Override
     public void prePersist() {
@@ -46,8 +46,8 @@ public class News extends BasePost {
         if (source == null) {
             source = StringUtils.EMPTY;
         }
-        if (link == null) {
-            link = StringUtils.EMPTY;
+        if (sourceLink == null) {
+            sourceLink = StringUtils.EMPTY;
         }
     }
 

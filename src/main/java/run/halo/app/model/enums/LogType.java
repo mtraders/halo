@@ -75,7 +75,14 @@ public enum LogType implements ValueEnum<Integer> {
     /**
      * Logged pre check.
      */
-    LOGGED_PRE_CHECK(70);
+    LOGGED_PRE_CHECK(70),
+
+    /**
+     * News create.
+     */
+    NEWS_PUBLISHED(100),
+    ;
+
 
     private final Integer value;
 
