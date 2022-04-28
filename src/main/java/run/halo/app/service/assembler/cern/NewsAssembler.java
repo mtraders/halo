@@ -26,6 +26,11 @@ import run.halo.app.utils.ServiceUtils;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * News assembler.
+ *
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
+ */
 @Component
 public class NewsAssembler extends BasePostAssembler<News> {
     private final ContentService contentService;
@@ -34,8 +39,18 @@ public class NewsAssembler extends BasePostAssembler<News> {
     private final PostMetaService postMetaService;
     private final PostAssembler postAssembler;
 
-    public NewsAssembler(ContentService contentService, OptionService optionService, TagService tagService,
-                         CategoryService categoryService, PostMetaService postMetaService, PostAssembler postAssembler) {
+    /**
+     * news assembler constructor.
+     *
+     * @param contentService content service.
+     * @param optionService option service.
+     * @param tagService tag service.
+     * @param categoryService category service.
+     * @param postMetaService post meta service.
+     * @param postAssembler post assembler.
+     */
+    public NewsAssembler(ContentService contentService, OptionService optionService, TagService tagService, CategoryService categoryService,
+                         PostMetaService postMetaService, PostAssembler postAssembler) {
         super(contentService, optionService);
         this.contentService = contentService;
         this.tagService = tagService;
@@ -44,6 +59,12 @@ public class NewsAssembler extends BasePostAssembler<News> {
         this.postAssembler = postAssembler;
     }
 
+    /**
+     * convert new entity page to news list vo page.
+     *
+     * @param newsPage news page.
+     * @return news list vo page.
+     */
     @NonNull
     public Page<NewsListVO> convertToListVo(Page<News> newsPage) {
         Assert.notNull(newsPage, "News page must not be null");
@@ -87,6 +108,14 @@ public class NewsAssembler extends BasePostAssembler<News> {
         newsDetailVO.setMetas(postMetaService.convertTo(postMetaList));
 
         newsDetailVO.setFullPath(postAssembler.buildFullPath(news));
+
+        PatchedContent newsContent = news.getContent();
+        newsDetailVO.setContent(newsContent.getContent());
+        newsDetailVO.setOriginalContent(newsContent.getOriginalContent());
+
+        // News currently drafting in process
+        Boolean inProgress = contentService.draftingInProgress(news.getId());
+        newsDetailVO.setInProgress(inProgress);
 
         return newsDetailVO;
     }
