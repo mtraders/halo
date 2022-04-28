@@ -11,6 +11,11 @@ import run.halo.app.model.dto.cern.news.NewsDetailDTO;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * new detail view.
+ *
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
+ */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
