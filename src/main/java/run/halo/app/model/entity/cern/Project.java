@@ -21,7 +21,7 @@ import run.halo.app.model.entity.BasePost;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 @Entity(name = "Project")
-@DiscriminatorValue("5")
+@DiscriminatorValue("6")
 public class Project extends BasePost {
 
     /**
