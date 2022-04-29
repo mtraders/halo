@@ -52,7 +52,7 @@ public class HaloConst {
     /**
      * Default theme directory name.
      */
-    public static final String DEFAULT_THEME_DIR_NAME = "cern-site-theme-joe";
+    public static final String DEFAULT_THEME_DIR_NAME = "halo-theme-joe2.0";
 
     /**
      * Default error path.
