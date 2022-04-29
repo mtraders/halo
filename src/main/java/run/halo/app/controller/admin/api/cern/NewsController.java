@@ -39,13 +39,13 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class NewsController {
 
     private final NewsService newsService;
-    private final AbstractCacheStore acheStore;
+    private final AbstractCacheStore cacheStore;
     private final OptionService optionService;
     private final NewsAssembler newsAssembler;
 
-    public NewsController(NewsService newsService, AbstractCacheStore acheStore, OptionService optionService, NewsAssembler newsAssembler) {
+    public NewsController(NewsService newsService, AbstractCacheStore cacheStore, OptionService optionService, NewsAssembler newsAssembler) {
         this.newsService = newsService;
-        this.acheStore = acheStore;
+        this.cacheStore = cacheStore;
         this.optionService = optionService;
         this.newsAssembler = newsAssembler;
     }
@@ -61,7 +61,8 @@ public class NewsController {
     @GetMapping("{newsId:\\d+}")
     @ApiOperation("Get a news")
     public NewsDetailVO getBy(@PathVariable("newsId") Integer newsId) {
-        return new NewsDetailVO();
+        News news = newsService.getWithLatestContentById(newsId);
+        return newsAssembler.convertToDetailVo(news);
     }
 
     @PostMapping

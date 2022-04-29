@@ -194,4 +194,22 @@ public class NewsAssembler extends BasePostAssembler<News> {
         }
     }
 
+    /**
+     * convert to news detail vo.
+     *
+     * @param news news
+     * @return news detail vo.
+     */
+    public NewsDetailVO convertToDetailVo(News news) {
+        // List tags
+        List<Tag> tags = postTagService.listTagsBy(news.getId());
+        // List categories
+        List<Category> categories = postCategoryService
+            .listCategoriesBy(news.getId());
+        // List metas
+        List<PostMeta> metas = postMetaService.listBy(news.getId());
+        // Convert to detail vo
+        return convertTo(news, tags, categories, metas);
+    }
+
 }

@@ -104,12 +104,17 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
      * Get post with the latest content by id.
      * content from patch log.
      *
-     * @param postId post id.
+     * @param newsId post id.
      * @return post with the latest content.
      */
     @Override
-    public News getWithLatestContentById(Integer postId) {
-        return null;
+    public News getWithLatestContentById(Integer newsId) {
+        News news = getById(newsId);
+        Content newsContent = getContentById(newsId);
+        // Use the head pointer stored in the post content.
+        Content.PatchedContent patchedContent = postContentPatchLogService.getPatchedContentById(newsContent.getHeadPatchLogId());
+        news.setContent(patchedContent);
+        return news;
     }
 
     @Override
