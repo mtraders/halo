@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Objects;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
+
 import lombok.Data;
 import org.springframework.util.Assert;
 import run.halo.app.model.entity.BasePost;
@@ -14,6 +15,8 @@ import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.MarkdownUtils;
 
 /**
+ * Base post param.
+ *
  * @author guqing
  * @date 2022-02-21
  */

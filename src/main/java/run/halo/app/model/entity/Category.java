@@ -1,5 +1,14 @@
 package run.halo.app.model.entity;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
+import run.halo.app.model.enums.cern.PostType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,11 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
+import java.util.Objects;
 
 /**
  * Category entity.
@@ -20,13 +25,14 @@ import org.hibernate.annotations.GenericGenerator;
  * @author ryanwang
  * @date 2019-03-15
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Entity
 @Table(name = "categories", indexes = {
     @Index(name = "categories_name", columnList = "name"),
     @Index(name = "categories_parent_id", columnList = "parent_id")})
 @ToString
-@EqualsAndHashCode(callSuper = true)
 public class Category extends BaseEntity {
 
     @Id
@@ -86,6 +92,13 @@ public class Category extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    /**
+     * Post type.
+     */
+    @Column(name = "post_type")
+    @ColumnDefault("0")
+    private PostType postType;
+
     @Override
     public void prePersist() {
         super.prePersist();
@@ -101,6 +114,26 @@ public class Category extends BaseEntity {
         if (priority == null) {
             priority = 0;
         }
+
+        if (null == postType) {
+            postType = PostType.BASE;
+        }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Category category = (Category) o;
+        return id != null && Objects.equals(id, category.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

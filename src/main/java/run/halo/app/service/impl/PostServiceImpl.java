@@ -16,6 +16,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -111,19 +112,11 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     private final ApplicationContext applicationContext;
 
-    public PostServiceImpl(BasePostRepository<Post> basePostRepository,
-        PostAssembler postAssembler, OptionService optionService,
-        PostRepository postRepository,
-        TagService tagService,
-        CategoryService categoryService,
-        PostTagService postTagService,
-        PostCategoryService postCategoryService,
-        PostCommentService postCommentService,
-        ApplicationEventPublisher eventPublisher,
-        PostMetaService postMetaService,
-        ContentService contentService,
-        ContentPatchLogService contentPatchLogService,
-        ApplicationContext applicationContext) {
+    public PostServiceImpl(BasePostRepository<Post> basePostRepository, PostAssembler postAssembler, OptionService optionService,
+                           PostRepository postRepository, TagService tagService, CategoryService categoryService, PostTagService postTagService,
+                           PostCategoryService postCategoryService, PostCommentService postCommentService, ApplicationEventPublisher eventPublisher,
+                           PostMetaService postMetaService, ContentService contentService, ContentPatchLogService contentPatchLogService,
+                           ApplicationContext applicationContext) {
         super(basePostRepository, optionService, contentService, contentPatchLogService);
         this.postAssembler = postAssembler;
         this.postRepository = postRepository;
@@ -164,13 +157,11 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PostDetailVO createBy(Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds,
-        Set<PostMeta> metas, boolean autoSave) {
+    public PostDetailVO createBy(@NonNull Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave) {
         PostDetailVO createdPost = createOrUpdate(postToCreate, tagIds, categoryIds, metas);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, createdPost.getId().toString(),
-                LogType.POST_PUBLISHED, createdPost.getTitle());
+            LogEvent logEvent = new LogEvent(this, createdPost.getId().toString(), LogType.POST_PUBLISHED, createdPost.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return createdPost;
@@ -178,13 +169,11 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PostDetailVO createBy(Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds,
-        boolean autoSave) {
+    public PostDetailVO createBy(Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds, boolean autoSave) {
         PostDetailVO createdPost = createOrUpdate(postToCreate, tagIds, categoryIds, null);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, createdPost.getId().toString(),
-                LogType.POST_PUBLISHED, createdPost.getTitle());
+            LogEvent logEvent = new LogEvent(this, createdPost.getId().toString(), LogType.POST_PUBLISHED, createdPost.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return createdPost;
@@ -192,15 +181,13 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PostDetailVO updateBy(Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds,
-        Set<PostMeta> metas, boolean autoSave) {
+    public PostDetailVO updateBy(Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave) {
         // Set edit time
         postToUpdate.setEditTime(DateUtils.now());
         PostDetailVO updatedPost = createOrUpdate(postToUpdate, tagIds, categoryIds, metas);
         if (!autoSave) {
             // Log the creation
-            LogEvent logEvent = new LogEvent(this, updatedPost.getId().toString(),
-                LogType.POST_EDITED, updatedPost.getTitle());
+            LogEvent logEvent = new LogEvent(this, updatedPost.getId().toString(), LogType.POST_EDITED, updatedPost.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return updatedPost;
@@ -227,8 +214,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
         Optional<Post> postOptional = postRepository.findBy(year, month, slug);
 
-        return postOptional
-            .orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
+        return postOptional.orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
     }
 
     @NonNull
@@ -239,8 +225,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
         Optional<Post> postOptional = postRepository.findBy(year, slug);
 
-        return postOptional
-            .orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
+        return postOptional.orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
     }
 
     @Override
@@ -252,8 +237,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
         Optional<Post> postOptional = postRepository.findBy(year, month, slug, status);
 
-        return postOptional
-            .orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
+        return postOptional.orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
     }
 
     @Override
@@ -265,8 +249,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
         Optional<Post> postOptional = postRepository.findBy(year, month, day, slug);
 
-        return postOptional
-            .orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
+        return postOptional.orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
     }
 
     @Override
@@ -279,8 +262,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
         Optional<Post> postOptional = postRepository.findBy(year, month, day, slug, status);
 
-        return postOptional
-            .orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
+        return postOptional.orElseThrow(() -> new NotFoundException("查询不到该文章的信息").setErrorData(slug));
     }
 
     @Override
@@ -307,8 +289,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         Post post = getById(postId);
         Content postContent = getContentById(postId);
         // Use the head pointer stored in the post content.
-        PatchedContent patchedContent =
-            postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId());
+        PatchedContent patchedContent = postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId());
         post.setContent(patchedContent);
         return post;
     }
@@ -316,8 +297,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
     @Override
     public List<ArchiveYearVO> listYearArchives() {
         // Get all posts
-        List<Post> posts = postRepository
-            .findAllByStatus(PostStatus.PUBLISHED, Sort.by(DESC, "createTime"));
+        List<Post> posts = postRepository.findAllByStatus(PostStatus.PUBLISHED, Sort.by(DESC, "createTime"));
 
         return postAssembler.convertToYearArchives(posts);
     }
@@ -325,8 +305,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
     @Override
     public List<ArchiveMonthVO> listMonthArchives() {
         // Get all posts
-        List<Post> posts = postRepository
-            .findAllByStatus(PostStatus.PUBLISHED, Sort.by(DESC, "createTime"));
+        List<Post> posts = postRepository.findAllByStatus(PostStatus.PUBLISHED, Sort.by(DESC, "createTime"));
 
         return postAssembler.convertToMonthArchives(posts);
     }
@@ -488,8 +467,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         if (metas.size() > 0) {
             content.append("metas:").append("\n");
             for (PostMeta postMeta : metas) {
-                content.append("  - ").append(postMeta.getKey()).append(" :  ")
-                    .append(postMeta.getValue()).append("\n");
+                content.append("  - ").append(postMeta.getKey()).append(" :  ").append(postMeta.getValue()).append("\n");
             }
         }
 
@@ -532,8 +510,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         deletedPost.setContent(PatchedContent.of(postContent));
 
         // Log it
-        eventPublisher.publishEvent(new LogEvent(this, postId.toString(), LogType.POST_DELETED,
-            deletedPost.getTitle()));
+        eventPublisher.publishEvent(new LogEvent(this, postId.toString(), LogType.POST_DELETED, deletedPost.getTitle()));
 
         return deletedPost;
     }
@@ -544,6 +521,8 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
      * @param postQuery post query must not be null
      * @return a post specification
      */
+
+    // CS304 issue: https://github.com/halo-dev/halo/issues/1842
     @NonNull
     private Specification<Post> buildSpecByQuery(@NonNull PostQuery postQuery) {
         Assert.notNull(postQuery, "Post query must not be null");
@@ -558,38 +537,35 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
             if (postQuery.getCategoryId() != null) {
                 List<Integer> categoryIds =
-                    categoryService.listAllByParentId(postQuery.getCategoryId())
-                        .stream()
-                        .map(Category::getId)
-                        .collect(Collectors.toList());
+                    categoryService.listAllByParentId(postQuery.getCategoryId()).stream().map(Category::getId).collect(Collectors.toList());
                 Subquery<Post> postSubquery = query.subquery(Post.class);
                 Root<PostCategory> postCategoryRoot = postSubquery.from(PostCategory.class);
                 postSubquery.select(postCategoryRoot.get("postId"));
-                postSubquery.where(
-                    criteriaBuilder.equal(root.get("id"), postCategoryRoot.get("postId")),
+                postSubquery.where(criteriaBuilder.equal(root.get("id"), postCategoryRoot.get("postId")),
                     postCategoryRoot.get("categoryId").in(categoryIds));
                 predicates.add(criteriaBuilder.exists(postSubquery));
             }
 
             if (postQuery.getKeyword() != null) {
+
                 // Format like condition
-                String likeCondition = String
-                    .format("%%%s%%", StringUtils.strip(postQuery.getKeyword()));
+                String likeCondition = String.format("%%%s%%", StringUtils.strip(postQuery.getKeyword()));
 
                 // Build like predicate
-                Predicate titleLike = criteriaBuilder.like(root.get("title"), likeCondition);
-                Predicate originalContentLike = criteriaBuilder
-                    .like(root.get("originalContent"), likeCondition);
+                Subquery<Post> postSubquery = query.subquery(Post.class);
+                Root<Content> contentRoot = postSubquery.from(Content.class);
+                postSubquery.select(contentRoot.get("id")).where(criteriaBuilder.like(contentRoot.get("originalContent"), likeCondition));
 
-                predicates.add(criteriaBuilder.or(titleLike, originalContentLike));
+                Predicate titleLike = criteriaBuilder.like(root.get("title"), likeCondition);
+
+                predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubquery)));
             }
 
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
     }
 
-    private PostDetailVO createOrUpdate(@NonNull Post post, Set<Integer> tagIds,
-        Set<Integer> categoryIds, Set<PostMeta> metas) {
+    private PostDetailVO createOrUpdate(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas) {
         Assert.notNull(post, "Post param must not be null");
 
         post = super.createOrUpdateBy(post);
@@ -605,21 +581,18 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         List<Category> categories = categoryService.listAllByIds(categoryIds);
 
         // Create post tags
-        List<PostTag> postTags = postTagService.mergeOrCreateByIfAbsent(post.getId(),
-            ServiceUtils.fetchProperty(tags, Tag::getId));
+        List<PostTag> postTags = postTagService.mergeOrCreateByIfAbsent(post.getId(), ServiceUtils.fetchProperty(tags, Tag::getId));
 
         log.debug("Created post tags: [{}]", postTags);
 
         // Create post categories
         List<PostCategory> postCategories =
-            postCategoryService.mergeOrCreateByIfAbsent(post.getId(),
-                ServiceUtils.fetchProperty(categories, Category::getId));
+            postCategoryService.mergeOrCreateByIfAbsent(post.getId(), ServiceUtils.fetchProperty(categories, Category::getId));
 
         log.debug("Created post categories: [{}]", postCategories);
 
         // Create post meta data
-        List<PostMeta> postMetaList = postMetaService
-            .createOrUpdateByPostId(post.getId(), metas);
+        List<PostMeta> postMetaList = postMetaService.createOrUpdateByPostId(post.getId(), metas);
         log.debug("Created post metas: [{}]", postMetaList);
 
         // Publish post updated event.
@@ -627,8 +600,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
         // get draft content by head patch log id
         Content postContent = postContentService.getById(post.getId());
-        post.setContent(
-            postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId()));
+        post.setContent(postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId()));
         // Convert to post detail vo
         return postAssembler.convertTo(post, tags, categories, postMetaList);
     }
@@ -640,8 +612,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     @Override
     public @NotNull Sort getPostDefaultSort() {
-        String indexSort = optionService.getByPropertyOfNonNull(PostProperties.INDEX_SORT)
-            .toString();
+        String indexSort = optionService.getByPropertyOfNonNull(PostProperties.INDEX_SORT).toString();
         return Sort.by(DESC, "topPriority").and(Sort.by(DESC, indexSort).and(Sort.by(DESC, "id")));
     }
 
@@ -705,8 +676,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         // classification with hierarchies has not been processed yet
         List<Category> categories = postCategoryService.listCategoriesBy(post.getId());
         StringBuilder categoryContent = new StringBuilder();
-        categories.forEach(category -> categoryContent.append("- ").append(category.getName())
-            .append("\n"));
+        categories.forEach(category -> categoryContent.append("- ").append(category.getName()).append("\n"));
         frontMatter.append("categories: ").append("\n").append(categoryContent);
 
         // set tags

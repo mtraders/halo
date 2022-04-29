@@ -1,26 +1,31 @@
 package run.halo.app.model.entity.cern;
 
-import java.util.Date;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+import run.halo.app.model.entity.BasePost;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.util.Date;
+import java.util.Objects;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import run.halo.app.model.entity.BasePost;
+import static run.halo.app.model.support.CernConst.PAPER_POST_TYPE;
 
 /**
  * paper entity.
  *
- * @author lizc(lizc@fists.cn)
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @ToString
-@EqualsAndHashCode(callSuper = true)
 @Entity(name = "Paper")
-@DiscriminatorValue("4")
+@DiscriminatorValue(PAPER_POST_TYPE)
 public class Paper extends BasePost {
 
     /**
@@ -35,4 +40,20 @@ public class Paper extends BasePost {
     @Column(name = "press")
     private String press;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        Paper paper = (Paper) o;
+        return getId() != null && Objects.equals(getId(), paper.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
