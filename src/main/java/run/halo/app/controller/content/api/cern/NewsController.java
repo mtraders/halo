@@ -21,6 +21,8 @@ import run.halo.app.service.cern.NewsService;
 
 import java.util.Set;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 /**
  * News content controller.
  *
@@ -54,7 +56,7 @@ public class NewsController {
      */
     @GetMapping
     @ApiOperation("Lists news")
-    public Page<NewsListVO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = Direction.DESC) Pageable pageable,
+    public Page<NewsListVO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
                                    @RequestParam(value = "keyword", required = false) String keyword,
                                    @RequestParam(value = "categoryId", required = false) Integer categoryId) {
         PostQuery postQuery = new PostQuery();
@@ -68,8 +70,10 @@ public class NewsController {
 
     @PostMapping(value = "search")
     @ApiOperation("Lists news by keyword")
-    public Page<NewsListVO> pageBy(String keyword) {
-        return null;
+    public Page<NewsListVO> pageBy(@RequestParam(value = "keyword") String keyword,
+                                   @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
+        Page<News> newsPage = newsService.pageBy(keyword, pageable);
+        return newsAssembler.convertToListVo(newsPage);
     }
 
     @GetMapping("{newsId:\\d+}")

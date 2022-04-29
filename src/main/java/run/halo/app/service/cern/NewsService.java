@@ -26,6 +26,16 @@ public interface NewsService extends BasePostService<News> {
     Page<News> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable);
 
     /**
+     * Pages news by keyword.
+     *
+     * @param keyword keyword
+     * @param pageable pageable
+     * @return a page of news
+     */
+    @NonNull
+    Page<News> pageBy(@NonNull String keyword, @NonNull Pageable pageable);
+
+    /**
      * Create news by news param.
      *
      * @param news news must not be null
