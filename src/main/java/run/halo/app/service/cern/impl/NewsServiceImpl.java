@@ -7,23 +7,28 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import run.halo.app.event.cern.NewsUpdateEvent;
 import run.halo.app.event.logger.LogEvent;
+import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.PostCategory;
+import run.halo.app.model.entity.PostComment;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.PostTag;
 import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
+import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.repository.cern.NewsRepository;
 import run.halo.app.service.CategoryService;
 import run.halo.app.service.ContentPatchLogService;
 import run.halo.app.service.ContentService;
 import run.halo.app.service.OptionService;
 import run.halo.app.service.PostCategoryService;
+import run.halo.app.service.PostCommentService;
 import run.halo.app.service.PostMetaService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
@@ -33,8 +38,11 @@ import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * News service impl.
@@ -59,6 +67,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
     private final PostMetaService postMetaService;
     private final ContentService postContentService;
     private final ContentPatchLogService postContentPatchLogService;
+    private final PostCommentService postCommentService;
 
     /**
      * constructor of news service impl.
@@ -77,12 +86,14 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
      * @param postMetaService post meta service.
      * @param postContentService post content service.
      * @param postContentPatchLogService post content patch log service.
+     * @param postCommentService post comment service.
      */
     public NewsServiceImpl(NewsRepository newsRepository, OptionService optionService, ContentService contentService,
                            ContentPatchLogService contentPatchLogService, ApplicationEventPublisher eventPublisher, NewsAssembler newsAssembler,
                            PostTagService postTagService, PostCategoryService postCategoryService, TagService tagService,
                            CategoryService categoryService, ApplicationContext applicationContext, PostMetaService postMetaService,
-                           ContentService postContentService, ContentPatchLogService postContentPatchLogService) {
+                           ContentService postContentService, ContentPatchLogService postContentPatchLogService,
+                           PostCommentService postCommentService) {
         super(newsRepository, optionService, contentService, contentPatchLogService);
         this.newsRepository = newsRepository;
         this.contentService = contentService;
@@ -98,6 +109,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         this.postMetaService = postMetaService;
         this.postContentService = postContentService;
         this.postContentPatchLogService = postContentPatchLogService;
+        this.postCommentService = postCommentService;
     }
 
 
@@ -151,6 +163,52 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
             eventPublisher.publishEvent(logEvent);
         }
         return updatedNews;
+    }
+
+    /**
+     * Remove news in batch.
+     *
+     * @param ids ids must not be null.
+     * @return a list of deleted news.
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public List<News> removeByIds(@NonNull Collection<Integer> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return ids.stream().map(this::removeById).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public News removeById(@NonNull Integer newsId) {
+        Assert.notNull(newsId, "News id must not be null");
+        log.debug("Removing news: {}", newsId);
+        // Remove news tags
+        List<PostTag> newsTags = postTagService.removeByPostId(newsId);
+        log.debug("Removed news tags: [{}]", newsTags);
+        // Remove news categories
+        List<PostCategory> newsCategories = postCategoryService.removeByPostId(newsId);
+        log.debug("Remove news categories: [{}]", newsCategories);
+        // Remove metas
+        List<PostMeta> metas = postMetaService.removeByPostId(newsId);
+        log.debug("Removed news metas: [{}]", metas);
+        // Remove news comments
+        List<PostComment> newsComments = postCommentService.removeByPostId(newsId);
+        // Remove news content
+        Content newsContent = postContentService.removeById(newsId);
+        log.debug("Removed news content: [{}]", newsContent);
+
+        News deletedNews = super.removeById(newsId);
+        deletedNews.setContent(Content.PatchedContent.of(newsContent));
+
+        // Log it
+        eventPublisher.publishEvent(new LogEvent(this, newsId.toString(), LogType.NEWS_DELETED, deletedNews.getTitle()));
+
+        return deletedNews;
     }
 
     private NewsDetailVO createOrUpdate(@NonNull News news, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas) {

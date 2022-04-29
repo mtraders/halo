@@ -4,8 +4,11 @@ import org.springframework.lang.NonNull;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
+import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.base.BasePostService;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 public interface NewsService extends BasePostService<News> {
@@ -34,4 +37,13 @@ public interface NewsService extends BasePostService<News> {
      */
     @NonNull
     NewsDetailVO updateBy(@NonNull News newsToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave);
+
+    /**
+     * Remove news in batch.
+     *
+     * @param ids ids must not be null.
+     * @return a list of deleted news.
+     */
+    @NonNull
+    List<News> removeByIds(@NonNull Collection<Integer> ids);
 }

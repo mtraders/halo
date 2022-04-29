@@ -28,6 +28,8 @@ import run.halo.app.service.cern.NewsService;
 
 import javax.validation.Valid;
 
+import java.util.List;
+
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
@@ -59,6 +61,12 @@ public class NewsController {
         this.newsAssembler = newsAssembler;
     }
 
+    /**
+     * get news list.
+     *
+     * @param pageable page info
+     * @return news list vo list.
+     */
     @GetMapping
     @ApiOperation("List news")
     public Page<NewsListVO> pageBy(@PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
@@ -96,6 +104,13 @@ public class NewsController {
         return new NewsListVO().convertFrom(news);
     }
 
+    /**
+     * Update draft news.
+     *
+     * @param newsId news id.
+     * @param contentParam content param.
+     * @return news detail vo.
+     */
     @PutMapping("{newsId:\\d+}/status/draft/content")
     @ApiOperation("Update draft news")
     public NewsDetailVO updateDraftBy(@PathVariable("newsId") Integer newsId, @RequestBody PostContentParam contentParam) {
@@ -107,8 +122,14 @@ public class NewsController {
 
     @DeleteMapping("{newsId:\\d+}")
     @ApiOperation("Delete a news")
-    public NewsDetailVO deleteBy(@PathVariable("newsId") Integer newsId) {
-        return new NewsDetailVO();
+    public News deletePermanently(@PathVariable("newsId") Integer newsId) {
+        return newsService.removeById(newsId);
+    }
+
+    @DeleteMapping
+    @ApiOperation("Deletes news permanently in batch by id array")
+    public List<News> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
+        return newsService.removeByIds(ids);
     }
 
     @GetMapping("preview/{newsId:\\d+}")
