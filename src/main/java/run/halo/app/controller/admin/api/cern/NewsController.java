@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import run.halo.app.cache.AbstractCacheStore;
 import run.halo.app.cache.AbstractStringCacheStore;
+import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
+import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.params.cern.NewsParam;
+import run.halo.app.model.params.cern.NewsQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.OptionService;
@@ -27,7 +29,6 @@ import run.halo.app.service.assembler.cern.NewsAssembler;
 import run.halo.app.service.cern.NewsService;
 
 import javax.validation.Valid;
-
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -69,9 +70,26 @@ public class NewsController {
      */
     @GetMapping
     @ApiOperation("List news")
-    public Page<NewsListVO> pageBy(@PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
-        Page<News> newsPage = newsService.pageBy(pageable);
-        return newsAssembler.convertToListVo(newsPage);
+    public Page<? extends NewsListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
+                                              PostQuery newsQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
+        Page<News> newsPage = newsService.pageBy(newsQuery, pageable);
+        if (more) {
+            return newsAssembler.convertToListVo(newsPage);
+        }
+        return newsAssembler.convertToListDTO(newsPage);
+    }
+
+    /**
+     * get latest news dto.
+     *
+     * @param top count
+     * @return new list dto list.
+     */
+    @GetMapping("latest")
+    @ApiOperation("Get latest news")
+    public List<NewsListDTO> pageLatest(@RequestParam(name = "top", defaultValue = "10") int top) {
+        Page<News> newsPage = newsService.pageLatest(top);
+        return newsAssembler.convertToListDTO(newsPage).getContent();
     }
 
     @GetMapping("{newsId:\\d+}")
@@ -88,6 +106,14 @@ public class NewsController {
         return newsService.createBy(newsParam.convertTo(), newsParam.getTagIds(), newsParam.getCategoryIds(), newsParam.getPostMetas(), autoSave);
     }
 
+    /**
+     * Update news.
+     *
+     * @param newsId news id.
+     * @param newsParam news param.
+     * @param autoSave auto save flag.
+     * @return news detail vo.
+     */
     @PutMapping("{newsId:\\d+}")
     @ApiOperation("Update a news")
     public NewsDetailVO updateBy(@PathVariable("newsId") Integer newsId, @RequestBody @Valid NewsParam newsParam,
@@ -97,6 +123,13 @@ public class NewsController {
         return newsService.updateBy(newsToUpdate, newsParam.getTagIds(), newsParam.getCategoryIds(), newsParam.getPostMetas(), autoSave);
     }
 
+    /**
+     * Update news status.
+     *
+     * @param newsId news id.
+     * @param status status.
+     * @return news list vo.
+     */
     @PutMapping("{newsId:\\d+}/{status}")
     @ApiOperation("Update news status")
     public NewsListVO updateStatusBy(@PathVariable("newsId") Integer newsId, @PathVariable("status") PostStatus status) {
@@ -120,18 +153,36 @@ public class NewsController {
         return newsAssembler.convertToDetailVo(news);
     }
 
+    /**
+     * delete a news.
+     *
+     * @param newsId news id.
+     * @return news entity.
+     */
     @DeleteMapping("{newsId:\\d+}")
     @ApiOperation("Delete a news")
     public News deletePermanently(@PathVariable("newsId") Integer newsId) {
         return newsService.removeById(newsId);
     }
 
+    /**
+     * deletes news permanently in batch.
+     *
+     * @param ids ids
+     * @return news entities
+     */
     @DeleteMapping
     @ApiOperation("Deletes news permanently in batch by id array")
     public List<News> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
         return newsService.removeByIds(ids);
     }
 
+    /**
+     * get a news preview.
+     *
+     * @param newsId news id.
+     * @return preview content.
+     */
     @GetMapping("preview/{newsId:\\d+}")
     @ApiOperation("Get a news preview")
     public String preview(@PathVariable("newsId") Integer newsId) {

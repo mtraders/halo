@@ -1,8 +1,12 @@
 package run.halo.app.service.cern.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,9 +14,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.event.cern.NewsUpdateEvent;
 import run.halo.app.event.logger.LogEvent;
-import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
+import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.PostCategory;
 import run.halo.app.model.entity.PostComment;
 import run.halo.app.model.entity.PostMeta;
@@ -20,8 +24,9 @@ import run.halo.app.model.entity.PostTag;
 import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.LogType;
+import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
-import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.repository.cern.NewsRepository;
 import run.halo.app.service.CategoryService;
 import run.halo.app.service.ContentPatchLogService;
@@ -38,8 +43,12 @@ import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -112,7 +121,6 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         this.postCommentService = postCommentService;
     }
 
-
     /**
      * Get post with the latest content by id.
      * content from patch log.
@@ -128,6 +136,60 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         Content.PatchedContent patchedContent = postContentPatchLogService.getPatchedContentById(newsContent.getHeadPatchLogId());
         news.setContent(patchedContent);
         return news;
+    }
+
+    /**
+     * pages news.
+     *
+     * @param postQuery post query.
+     * @param pageable pageable.
+     * @return news list vo.
+     */
+    @NonNull
+    public Page<News> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable) {
+        Assert.notNull(postQuery, "Post query must not be null");
+        Assert.notNull(pageable, "Pageable must not be null");
+        return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
+    }
+
+    @NonNull
+    private Specification<News> buildSpecByQuery(@NonNull PostQuery postQuery) {
+        Assert.notNull(postQuery, "News query must not be null");
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new LinkedList<>();
+
+            Set<PostStatus> statuses = postQuery.getStatuses();
+            if (!CollectionUtils.isEmpty(statuses)) {
+                predicates.add(root.get("status").in(statuses));
+            }
+
+            if (postQuery.getCategoryId() != null) {
+                List<Integer> categoryIds =
+                    categoryService.listAllByParentId(postQuery.getCategoryId()).stream().map(Category::getId).collect(Collectors.toList());
+                Subquery<Post> postSubquery = query.subquery(Post.class);
+                Root<PostCategory> postCategoryRoot = postSubquery.from(PostCategory.class);
+                postSubquery.select(postCategoryRoot.get("postId"));
+                postSubquery.where(criteriaBuilder.equal(root.get("id"), postCategoryRoot.get("postId")),
+                    postCategoryRoot.get("categoryId").in(categoryIds));
+                predicates.add(criteriaBuilder.exists(postSubquery));
+            }
+
+            if (postQuery.getKeyword() != null) {
+
+                // Format like condition
+                String likeCondition = String.format("%%%s%%", StringUtils.strip(postQuery.getKeyword()));
+
+                // Build like predicate
+                Subquery<News> postSubquery = query.subquery(News.class);
+                Root<Content> contentRoot = postSubquery.from(Content.class);
+                postSubquery.select(contentRoot.get("id")).where(criteriaBuilder.like(contentRoot.get("originalContent"), likeCondition));
+
+                Predicate titleLike = criteriaBuilder.like(root.get("title"), likeCondition);
+
+                predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubquery)));
+            }
+            return query.where(predicates.toArray(new Predicate[0])).getRestriction();
+        };
     }
 
     @Override

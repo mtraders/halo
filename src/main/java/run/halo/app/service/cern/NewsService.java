@@ -1,10 +1,12 @@
 package run.halo.app.service.cern;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.cern.News;
+import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
-import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.base.BasePostService;
 
 import java.util.Collection;
@@ -12,6 +14,17 @@ import java.util.List;
 import java.util.Set;
 
 public interface NewsService extends BasePostService<News> {
+
+    /**
+     * pages news.
+     *
+     * @param postQuery post query.
+     * @param pageable pageable.
+     * @return news list vo.
+     */
+    @NonNull
+    Page<News> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable);
+
     /**
      * Create news by news param.
      *
@@ -46,4 +59,5 @@ public interface NewsService extends BasePostService<News> {
      */
     @NonNull
     List<News> removeByIds(@NonNull Collection<Integer> ids);
+
 }
