@@ -4,7 +4,9 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+
 import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -49,8 +51,8 @@ public class TagController {
      * @param postRenderAssembler post render assembler.
      */
     public TagController(TagService tagService,
-            PostTagService postTagService,
-            PostRenderAssembler postRenderAssembler) {
+                         PostTagService postTagService,
+                         PostRenderAssembler postRenderAssembler) {
         this.tagService = tagService;
         this.postTagService = postTagService;
         this.postRenderAssembler = postRenderAssembler;
@@ -66,8 +68,9 @@ public class TagController {
     @GetMapping
     @ApiOperation("Lists tags")
     public List<? extends TagDTO> listTags(
-            @SortDefault(sort = "updateTime", direction = DESC) Sort sort,
-            @ApiParam("If the param is true, post count of tag will be returned") @RequestParam(name = "more", required = false, defaultValue = "false") Boolean more) {
+        @SortDefault(sort = "updateTime", direction = DESC) Sort sort,
+        @ApiParam("If the param is true, post count of tag will be returned") @RequestParam(name = "more", required = false, defaultValue = "false")
+            Boolean more) {
         if (more) {
             return postTagService.listTagWithCountDtos(sort);
         }
@@ -84,7 +87,7 @@ public class TagController {
     @GetMapping("{slug}/posts")
     @ApiOperation("Lists posts by tag slug")
     public Page<PostListVO> listPostsBy(@PathVariable("slug") String slug,
-            @PageableDefault(sort = { "topPriority", "updateTime" }, direction = DESC) Pageable pageable) {
+                                        @PageableDefault(sort = {"topPriority", "updateTime"}, direction = DESC) Pageable pageable) {
         // Get tag by slug
         Tag tag = tagService.getBySlugOfNonNull(slug);
 

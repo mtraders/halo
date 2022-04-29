@@ -7,6 +7,8 @@ import run.halo.app.utils.ServletUtils;
 import run.halo.app.utils.ValidationUtils;
 
 /**
+ * log event.
+ *
  * @author johnniang
  * @date 19-4-20
  */

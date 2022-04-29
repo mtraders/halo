@@ -1,6 +1,19 @@
 package run.halo.app.model.entity;
 
-import java.util.Date;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.GenericGenerator;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import run.halo.app.model.entity.Content.PatchedContent;
+import run.halo.app.model.enums.PostEditorType;
+import run.halo.app.model.enums.PostStatus;
+
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
@@ -14,16 +27,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
-import run.halo.app.model.entity.Content.PatchedContent;
-import run.halo.app.model.enums.PostEditorType;
-import run.halo.app.model.enums.PostStatus;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Post base entity.
@@ -32,14 +37,15 @@ import run.halo.app.model.enums.PostStatus;
  * @author ryanwang
  * @author coor.top
  */
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
 @Entity(name = "BasePost")
 @Table(name = "posts", indexes = {
         @Index(name = "posts_type_status", columnList = "type, status"),
         @Index(name = "posts_create_time", columnList = "create_time") })
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.INTEGER, columnDefinition = "int default 0")
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
 public class BasePost extends BaseEntity {
 
     @Id
@@ -276,5 +282,22 @@ public class BasePost extends BaseEntity {
     @Nullable
     public PatchedContent getContentOfNullable() {
         return this.content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) {
+            return false;
+        }
+        BasePost basePost = (BasePost) o;
+        return id != null && Objects.equals(id, basePost.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

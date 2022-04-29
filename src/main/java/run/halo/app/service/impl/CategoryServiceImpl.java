@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -27,9 +28,11 @@ import org.springframework.util.CollectionUtils;
 import run.halo.app.event.category.CategoryUpdatedEvent;
 import run.halo.app.exception.AlreadyExistsException;
 import run.halo.app.exception.NotFoundException;
+import run.halo.app.exception.UnsupportedException;
 import run.halo.app.model.dto.CategoryDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.PostCategory;
+import run.halo.app.model.enums.cern.PostType;
 import run.halo.app.model.vo.CategoryVO;
 import run.halo.app.repository.CategoryRepository;
 import run.halo.app.service.CategoryService;
@@ -50,8 +53,7 @@ import run.halo.app.utils.ServiceUtils;
  */
 @Slf4j
 @Service
-public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
-    implements CategoryService {
+public class CategoryServiceImpl extends AbstractCrudService<Category, Integer> implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
@@ -61,10 +63,16 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
 
     private final ApplicationContext applicationContext;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository,
-        PostCategoryService postCategoryService,
-        OptionService optionService,
-        ApplicationContext applicationContext) {
+    /**
+     * Category service impl constructor.
+     *
+     * @param categoryRepository category repository.
+     * @param postCategoryService post category service.
+     * @param optionService option service.
+     * @param applicationContext application context.
+     */
+    public CategoryServiceImpl(CategoryRepository categoryRepository, PostCategoryService postCategoryService, OptionService optionService,
+                               ApplicationContext applicationContext) {
         super(categoryRepository);
         this.categoryRepository = categoryRepository;
         this.postCategoryService = postCategoryService;
@@ -72,10 +80,13 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
         this.applicationContext = applicationContext;
     }
 
+
     @Override
     @Transactional
-    public Category create(Category category) {
+    public @NonNull Category create(@NonNull Category category) {
         Assert.notNull(category, "Category to create must not be null");
+
+        validCheck(category);
 
         // Check the category name
         long count = categoryRepository.countByName(category.getName());
@@ -90,10 +101,8 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
             count = categoryRepository.countById(category.getParentId());
 
             if (count == 0) {
-                log.error("Parent category with id: [{}] was not found, category: [{}]",
-                    category.getParentId(), category);
-                throw new NotFoundException(
-                    "Parent category with id = " + category.getParentId() + " was not found");
+                log.error("Parent category with id: [{}] was not found, category: [{}]", category.getParentId(), category);
+                throw new NotFoundException("Parent category with id = " + category.getParentId() + " was not found");
             }
         }
 
@@ -106,22 +115,31 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
     }
 
     @Override
-    public Category update(Category category) {
+    public @NonNull Category update(Category category) {
         Category persisted = getById(category.getId());
         Category beforeUpdated = new Category();
         BeanUtils.updateProperties(persisted, beforeUpdated);
+        validCheck(category);
         boolean beforeIsPrivate = isPrivate(category.getId());
 
         Category updated = super.update(category);
 
         Set<Integer> postIds = listPostIdsByCategoryIdRecursively(category.getId());
-        applicationContext.publishEvent(
-            new CategoryUpdatedEvent(this, category, beforeUpdated, beforeIsPrivate, postIds));
+        applicationContext.publishEvent(new CategoryUpdatedEvent(this, category, beforeUpdated, beforeIsPrivate, postIds));
         return updated;
     }
 
+    private void validCheck(@NonNull Category category) {
+        // sheet post type should not be added to a category.
+        PostType postType = category.getPostType();
+        if (postType == PostType.SHEET) {
+            throw new UnsupportedException("sheet post type should not be added to a category.");
+        }
+    }
+
     @Override
-    public List<CategoryVO> listAsTree(Sort sort) {
+    @NonNull
+    public List<CategoryVO> listAsTree(@NonNull Sort sort) {
         Assert.notNull(sort, "Sort info must not be null");
 
         // List all category
@@ -153,16 +171,13 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
             fullPath.append(optionService.getBlogBaseUrl());
         }
 
-        fullPath.append(URL_SEPARATOR)
-            .append(optionService.getCategoriesPrefix())
-            .append(URL_SEPARATOR)
-            .append(slug)
+        fullPath.append(URL_SEPARATOR).append(optionService.getCategoriesPrefix()).append(URL_SEPARATOR).append(slug)
             .append(optionService.getPathSuffix());
         return fullPath.toString();
     }
 
     @Override
-    public Category getBySlug(String slug) {
+    public Category getBySlug(@NonNull String slug) {
         return categoryRepository.getBySlug(slug).orElse(null);
     }
 
@@ -175,14 +190,13 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
     }
 
     @Override
+    @NonNull
     public Category getBySlugOfNonNull(String slug) {
-        return categoryRepository
-            .getBySlug(slug)
-            .orElseThrow(() -> new NotFoundException("查询不到该分类的信息").setErrorData(slug));
+        return categoryRepository.getBySlug(slug).orElseThrow(() -> new NotFoundException("查询不到该分类的信息").setErrorData(slug));
     }
 
     @Override
-    public Category getByName(String name) {
+    public Category getByName(@NonNull String name) {
         return categoryRepository.getByName(name).orElse(null);
     }
 
@@ -204,8 +218,7 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
         // Remove post categories
         postCategoryService.removeByCategoryId(categoryId);
 
-        applicationContext.publishEvent(
-            new CategoryUpdatedEvent(this, null, category, beforeIsPrivate, postIds));
+        applicationContext.publishEvent(new CategoryUpdatedEvent(this, null, category, beforeIsPrivate, postIds));
     }
 
     @Override
@@ -219,9 +232,7 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
         Assert.notNull(id, "Parent id must not be null");
         List<Category> categories = super.listAll(Sort.by(Order.asc("name")));
         List<CategoryVO> categoryTree = listToTree(categories);
-        return findCategoryTreeNodeById(categoryTree, id)
-            .map(this::walkCategoryTree)
-            .orElse(Collections.emptyList());
+        return findCategoryTreeNodeById(categoryTree, id).map(this::walkCategoryTree).orElse(Collections.emptyList());
     }
 
     /**
@@ -257,8 +268,7 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
      * @param categoryId category id to be found.
      * @return the root node of the subtree.
      */
-    private Optional<CategoryVO> findCategoryTreeNodeById(List<CategoryVO> categoryVos,
-        Integer categoryId) {
+    private Optional<CategoryVO> findCategoryTreeNodeById(List<CategoryVO> categoryVos, Integer categoryId) {
         Assert.notNull(categoryId, "categoryId id must not be null");
         Queue<CategoryVO> queue = new ArrayDeque<>(categoryVos);
         while (!queue.isEmpty()) {
@@ -274,7 +284,8 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
     }
 
     @Override
-    public CategoryDTO convertTo(Category category) {
+    @NonNull
+    public CategoryDTO convertTo(@NonNull Category category) {
         Assert.notNull(category, "Category must not be null");
 
         CategoryDTO categoryDto = new CategoryDTO().convertFrom(category);
@@ -285,14 +296,13 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
     }
 
     @Override
+    @NonNull
     public List<CategoryDTO> convertTo(List<Category> categories) {
         if (CollectionUtils.isEmpty(categories)) {
             return Collections.emptyList();
         }
 
-        return categories.stream()
-            .map(this::convertTo)
-            .collect(Collectors.toList());
+        return categories.stream().map(this::convertTo).collect(Collectors.toList());
     }
 
     @Override
@@ -304,13 +314,10 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
     public List<CategoryVO> listToTree(List<Category> categories) {
         Assert.notNull(categories, "The categories must not be null.");
         // batch convert category to categoryVo
-        List<CategoryVO> categoryVoList = categories.stream()
-            .map(this::convertToCategoryVo)
-            .collect(Collectors.toList());
+        List<CategoryVO> categoryVoList = categories.stream().map(this::convertToCategoryVo).collect(Collectors.toList());
 
         // build a tree, the time complexity is O(n)
-        Map<Integer, List<CategoryVO>> parentIdMap = categoryVoList.stream()
-            .collect(Collectors.groupingBy(CategoryVO::getParentId));
+        Map<Integer, List<CategoryVO>> parentIdMap = categoryVoList.stream().collect(Collectors.groupingBy(CategoryVO::getParentId));
 
         // set children
         categoryVoList.forEach(category -> {
@@ -322,16 +329,13 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
             }
         });
 
-        return categoryVoList.stream()
-            .filter(category -> category.getParentId() == null || category.getParentId() == 0)
-            .collect(Collectors.toList());
+        return categoryVoList.stream().filter(category -> category.getParentId() == null || category.getParentId() == 0).collect(Collectors.toList());
     }
 
     @Override
     public Optional<Category> lookupFirstEncryptedBy(Integer categoryId) {
         List<Category> categories = listAll();
-        Map<Integer, Category> categoryMap =
-            ServiceUtils.convertToMap(categories, Category::getId);
+        Map<Integer, Category> categoryMap = ServiceUtils.convertToMap(categories, Category::getId);
         return Optional.ofNullable(findFirstEncryptedCategoryBy(categoryMap, categoryId));
     }
 
@@ -344,8 +348,7 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
      * @param categoryId category id
      * @return whether to encrypt
      */
-    private Category findFirstEncryptedCategoryBy(Map<Integer, Category> idToCategoryMap,
-        Integer categoryId) {
+    private Category findFirstEncryptedCategoryBy(Map<Integer, Category> idToCategoryMap, Integer categoryId) {
         Category category = idToCategoryMap.get(categoryId);
 
         if (categoryId == 0 || category == null) {
@@ -361,42 +364,36 @@ public class CategoryServiceImpl extends AbstractCrudService<Category, Integer>
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<Category> updateInBatch(Collection<Category> categories) {
+    @NonNull
+    public List<Category> updateInBatch(@NonNull Collection<Category> categories) {
         if (CollectionUtils.isEmpty(categories)) {
             return Collections.emptyList();
         }
         Set<Integer> categoryIds = ServiceUtils.fetchProperty(categories, Category::getId);
-        Map<Integer, Category> idCategoryParamMap =
-            ServiceUtils.convertToMap(categories, Category::getId);
-        return categoryRepository.findAllById(categoryIds)
-            .stream()
-            .map(categoryToUpdate -> {
-                // 将持久化状态的对象转非session管理对象否则数据会被更新
-                Category categoryBefore = BeanUtils.transformFrom(categoryToUpdate, Category.class);
-                boolean beforeIsPrivate = isPrivate(categoryToUpdate.getId());
+        Map<Integer, Category> idCategoryParamMap = ServiceUtils.convertToMap(categories, Category::getId);
+        return categoryRepository.findAllById(categoryIds).stream().map(categoryToUpdate -> {
+            // 将持久化状态的对象转非session管理对象否则数据会被更新
+            Category categoryBefore = BeanUtils.transformFrom(categoryToUpdate, Category.class);
+            boolean beforeIsPrivate = isPrivate(categoryToUpdate.getId());
 
-                Category categoryParam = idCategoryParamMap.get(categoryToUpdate.getId());
-                BeanUtils.updateProperties(categoryParam, categoryToUpdate);
-                Category categoryUpdated = update(categoryToUpdate);
+            Category categoryParam = idCategoryParamMap.get(categoryToUpdate.getId());
+            BeanUtils.updateProperties(categoryParam, categoryToUpdate);
+            Category categoryUpdated = update(categoryToUpdate);
 
-                Set<Integer> postIds = listPostIdsByCategoryIdRecursively(categoryUpdated.getId());
-                applicationContext.publishEvent(new CategoryUpdatedEvent(this,
-                    categoryUpdated, categoryBefore, beforeIsPrivate, postIds));
-                return categoryUpdated;
-            })
-            .collect(Collectors.toList());
+            Set<Integer> postIds = listPostIdsByCategoryIdRecursively(categoryUpdated.getId());
+            applicationContext.publishEvent(new CategoryUpdatedEvent(this, categoryUpdated, categoryBefore, beforeIsPrivate, postIds));
+            return categoryUpdated;
+        }).collect(Collectors.toList());
     }
 
     @NonNull
     @Override
     public Set<Integer> listPostIdsByCategoryIdRecursively(@NonNull Integer categoryId) {
-        Set<Integer> categoryIds = ServiceUtils.fetchProperty(listAllByParentId(categoryId),
-            Category::getId);
+        Set<Integer> categoryIds = ServiceUtils.fetchProperty(listAllByParentId(categoryId), Category::getId);
         if (CollectionUtils.isEmpty(categoryIds)) {
             return Collections.emptySet();
         }
-        List<PostCategory> postCategories =
-            postCategoryService.listByCategoryIdList(new ArrayList<>(categoryIds));
+        List<PostCategory> postCategories = postCategoryService.listByCategoryIdList(new ArrayList<>(categoryIds));
         return ServiceUtils.fetchProperty(postCategories, PostCategory::getPostId);
     }
 

@@ -53,6 +53,11 @@ public class PostParam extends BasePostParam implements InputConverter<Post> {
         return super.getPassword();
     }
 
+    /**
+     * get post metas.
+     *
+     * @return PostMeta Set.
+     */
     public Set<PostMeta> getPostMetas() {
         Set<PostMeta> postMetaSet = new HashSet<>();
         if (CollectionUtils.isEmpty(metas)) {

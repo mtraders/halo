@@ -77,6 +77,12 @@ public class CategoryController {
         return categoryService.listAsTree(sort);
     }
 
+    /**
+     * create a category.
+     *
+     * @param categoryParam category param
+     * @return category dto.
+     */
     @PostMapping
     @ApiOperation("Creates category")
     public CategoryDTO createBy(@RequestBody @Valid CategoryParam categoryParam) {
@@ -87,6 +93,13 @@ public class CategoryController {
         return categoryService.convertTo(categoryService.create(category));
     }
 
+    /**
+     * update a category.
+     *
+     * @param categoryId category id.
+     * @param categoryParam category param.
+     * @return category dto.
+     */
     @PutMapping("{categoryId:\\d+}")
     @ApiOperation("Updates category")
     public CategoryDTO updateBy(@PathVariable("categoryId") Integer categoryId,
@@ -97,6 +110,12 @@ public class CategoryController {
         return categoryService.convertTo(categoryService.update(categoryToUpdate));
     }
 
+    /**
+     * update category in batch.
+     *
+     * @param categoryParams category params.
+     * @return category dto list
+     */
     @PutMapping("/batch")
     @ApiOperation("Updates category in batch")
     public List<CategoryDTO> updateBatchBy(@RequestBody List<@Valid CategoryParam> categoryParams) {

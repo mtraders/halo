@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.model.dto.post.BasePostMinimalDTO;
+import run.halo.app.model.dto.post.BasePostSimpleDTO;
+import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content.PatchedContent;
 import run.halo.app.model.entity.Post;
@@ -204,6 +206,12 @@ public class PostAssembler extends BasePostAssembler<Post> {
         });
     }
 
+    /**
+     * convert post entities to post list vos.
+     *
+     * @param posts posts.
+     * @return post list vos.
+     */
     public List<PostListVO> convertToListVo(List<Post> posts) {
         Assert.notNull(posts, "Post page must not be null");
 
@@ -389,7 +397,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
      * @param post post
      * @return full patch to access.
      */
-    public String buildFullPath(Post post) {
+    public <POST extends BasePost> String buildFullPath(POST post) {
 
         PostPermalinkType permalinkType = optionService.getPostPermalinkType();
 

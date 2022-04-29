@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -49,8 +50,8 @@ public class TagServiceImpl extends AbstractCrudService<Tag, Integer> implements
 
     @Override
     @Transactional
-    public Tag create(Tag tag) {
-        // Check if the tag is exist
+    public @NotNull Tag create(Tag tag) {
+        // Check if the tag is existed.
         long count = tagRepository.countByNameOrSlug(tag.getName(), tag.getSlug());
 
         log.debug("Tag count: [{}]", count);
@@ -65,23 +66,23 @@ public class TagServiceImpl extends AbstractCrudService<Tag, Integer> implements
     }
 
     @Override
-    public Tag getBySlugOfNonNull(String slug) {
+    public @NotNull Tag getBySlugOfNonNull(@NotNull String slug) {
         return tagRepository.getBySlug(slug)
             .orElseThrow(() -> new NotFoundException("查询不到该标签的信息").setErrorData(slug));
     }
 
     @Override
-    public Tag getBySlug(String slug) {
+    public Tag getBySlug(@NotNull String slug) {
         return tagRepository.getBySlug(slug).orElse(null);
     }
 
     @Override
-    public Tag getByName(String name) {
+    public Tag getByName(@NotNull String name) {
         return tagRepository.getByName(name).orElse(null);
     }
 
     @Override
-    public TagDTO convertTo(Tag tag) {
+    public @NotNull TagDTO convertTo(@NotNull Tag tag) {
         Assert.notNull(tag, "Tag must not be null");
 
         TagDTO tagDTO = new TagDTO().convertFrom(tag);
@@ -104,7 +105,7 @@ public class TagServiceImpl extends AbstractCrudService<Tag, Integer> implements
     }
 
     @Override
-    public List<TagDTO> convertTo(List<Tag> tags) {
+    public @NotNull List<TagDTO> convertTo(List<Tag> tags) {
         if (CollectionUtils.isEmpty(tags)) {
             return Collections.emptyList();
         }

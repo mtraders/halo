@@ -43,6 +43,14 @@ public class SheetAssembler extends BasePostAssembler<Sheet> {
 
     private final OptionService optionService;
 
+    /**
+     * Sheet assembler.
+     *
+     * @param sheetCommentService sheet comment service.
+     * @param contentService content service.
+     * @param sheetMetaService sheet meta service.
+     * @param optionService option service.
+     */
     public SheetAssembler(SheetCommentService sheetCommentService,
         ContentService contentService,
         SheetMetaService sheetMetaService,
@@ -122,6 +130,13 @@ public class SheetAssembler extends BasePostAssembler<Sheet> {
             .collect(Collectors.toList());
     }
 
+    /**
+     * convert to sheet detail vo.
+     *
+     * @param sheet sheet entity.
+     * @param metas metas.
+     * @return sheet detail vo.
+     */
     @NonNull
     public SheetDetailVO convertTo(@NonNull Sheet sheet, List<SheetMeta> metas) {
         Assert.notNull(sheet, "Sheet must not be null");
