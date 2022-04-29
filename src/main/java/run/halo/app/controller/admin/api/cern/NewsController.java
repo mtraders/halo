@@ -14,17 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import run.halo.app.cache.AbstractStringCacheStore;
 import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.params.cern.NewsParam;
-import run.halo.app.model.params.cern.NewsQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
-import run.halo.app.service.OptionService;
 import run.halo.app.service.assembler.cern.NewsAssembler;
 import run.halo.app.service.cern.NewsService;
 
@@ -43,22 +40,16 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class NewsController {
 
     private final NewsService newsService;
-    private final AbstractStringCacheStore cacheStore;
-    private final OptionService optionService;
     private final NewsAssembler newsAssembler;
 
     /**
      * news controller constructor.
      *
      * @param newsService news service
-     * @param cacheStore cache store.
-     * @param optionService option service.
      * @param newsAssembler news assembler.
      */
-    public NewsController(NewsService newsService, AbstractStringCacheStore cacheStore, OptionService optionService, NewsAssembler newsAssembler) {
+    public NewsController(NewsService newsService, NewsAssembler newsAssembler) {
         this.newsService = newsService;
-        this.cacheStore = cacheStore;
-        this.optionService = optionService;
         this.newsAssembler = newsAssembler;
     }
 
@@ -99,6 +90,13 @@ public class NewsController {
         return newsAssembler.convertToDetailVo(news);
     }
 
+    /**
+     * Create a news.
+     *
+     * @param newsParam news param.
+     * @param autoSave auto save or not.
+     * @return news detail vo.
+     */
     @PostMapping
     @ApiOperation("Create a news")
     public NewsDetailVO createBy(@RequestBody @Valid NewsParam newsParam,
