@@ -30,6 +30,7 @@ import run.halo.app.service.TagService;
 import run.halo.app.service.assembler.cern.NewsAssembler;
 import run.halo.app.service.cern.NewsService;
 import run.halo.app.service.impl.BasePostServiceImpl;
+import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
 import java.util.List;
@@ -127,6 +128,29 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
             eventPublisher.publishEvent(logEvent);
         }
         return createdNews;
+    }
+
+    /**
+     * Updates news by news, tag id set and category id set.
+     *
+     * @param newsToUpdate news to update
+     * @param tagIds tag id set
+     * @param categoryIds category id set
+     * @param metas metas
+     * @param autoSave auto save
+     * @return updated news
+     */
+    @Override
+    @NonNull
+    public NewsDetailVO updateBy(@NonNull News newsToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave) {
+        newsToUpdate.setEditTime(DateUtils.now());
+        NewsDetailVO updatedNews = createOrUpdate(newsToUpdate, tagIds, categoryIds, metas);
+        if (!autoSave) {
+            // Log the creation
+            LogEvent logEvent = new LogEvent(this, updatedNews.getId().toString(), LogType.NEWS_PUBLISHED, updatedNews.getTitle());
+            eventPublisher.publishEvent(logEvent);
+        }
+        return updatedNews;
     }
 
     private NewsDetailVO createOrUpdate(@NonNull News news, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas) {

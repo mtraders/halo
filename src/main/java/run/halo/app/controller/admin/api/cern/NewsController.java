@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.cache.AbstractCacheStore;
+import run.halo.app.cache.AbstractStringCacheStore;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
@@ -39,11 +40,19 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class NewsController {
 
     private final NewsService newsService;
-    private final AbstractCacheStore cacheStore;
+    private final AbstractStringCacheStore cacheStore;
     private final OptionService optionService;
     private final NewsAssembler newsAssembler;
 
-    public NewsController(NewsService newsService, AbstractCacheStore cacheStore, OptionService optionService, NewsAssembler newsAssembler) {
+    /**
+     * news controller constructor.
+     *
+     * @param newsService news service
+     * @param cacheStore cache store.
+     * @param optionService option service.
+     * @param newsAssembler news assembler.
+     */
+    public NewsController(NewsService newsService, AbstractStringCacheStore cacheStore, OptionService optionService, NewsAssembler newsAssembler) {
         this.newsService = newsService;
         this.cacheStore = cacheStore;
         this.optionService = optionService;
@@ -51,7 +60,7 @@ public class NewsController {
     }
 
     @GetMapping
-    @ApiOperation("Get a page of news")
+    @ApiOperation("List news")
     public Page<NewsListVO> pageBy(@PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
         Page<News> newsPage = newsService.pageBy(pageable);
         return newsAssembler.convertToListVo(newsPage);
@@ -76,7 +85,9 @@ public class NewsController {
     @ApiOperation("Update a news")
     public NewsDetailVO updateBy(@PathVariable("newsId") Integer newsId, @RequestBody @Valid NewsParam newsParam,
                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
-        return new NewsDetailVO();
+        News newsToUpdate = newsService.getWithLatestContentById(newsId);
+        newsParam.update(newsToUpdate);
+        return newsService.updateBy(newsToUpdate, newsParam.getTagIds(), newsParam.getCategoryIds(), newsParam.getPostMetas(), autoSave);
     }
 
     @PutMapping("{newsId:\\d+}/{status}")
