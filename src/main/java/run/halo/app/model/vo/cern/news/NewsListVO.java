@@ -25,4 +25,5 @@ public class NewsListVO extends NewsListDTO {
     private List<CategoryDTO> categories;
 
     private Map<String, Object> metas;
+
 }

@@ -2,10 +2,13 @@ package run.halo.app.service.assembler.cern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import run.halo.app.model.dto.CategoryDTO;
+import run.halo.app.model.dto.TagDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.Content.PatchedContent;
@@ -17,14 +20,22 @@ import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.CategoryService;
 import run.halo.app.service.ContentService;
 import run.halo.app.service.OptionService;
+import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.PostMetaService;
+import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
 import run.halo.app.service.assembler.BasePostAssembler;
 import run.halo.app.service.assembler.PostAssembler;
 import run.halo.app.utils.ServiceUtils;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * News assembler.
@@ -35,7 +46,9 @@ import java.util.Set;
 public class NewsAssembler extends BasePostAssembler<News> {
     private final ContentService contentService;
     private final TagService tagService;
+    private final PostTagService postTagService;
     private final CategoryService categoryService;
+    private final PostCategoryService postCategoryService;
     private final PostMetaService postMetaService;
     private final PostAssembler postAssembler;
 
@@ -45,16 +58,21 @@ public class NewsAssembler extends BasePostAssembler<News> {
      * @param contentService content service.
      * @param optionService option service.
      * @param tagService tag service.
+     * @param postTagService post tag service.
      * @param categoryService category service.
+     * @param postCategoryService post category service.
      * @param postMetaService post meta service.
      * @param postAssembler post assembler.
      */
-    public NewsAssembler(ContentService contentService, OptionService optionService, TagService tagService, CategoryService categoryService,
-                         PostMetaService postMetaService, PostAssembler postAssembler) {
+    public NewsAssembler(ContentService contentService, OptionService optionService, TagService tagService, PostTagService postTagService,
+                         CategoryService categoryService, PostCategoryService postCategoryService, PostMetaService postMetaService,
+                         PostAssembler postAssembler) {
         super(contentService, optionService);
         this.contentService = contentService;
         this.tagService = tagService;
+        this.postTagService = postTagService;
         this.categoryService = categoryService;
+        this.postCategoryService = postCategoryService;
         this.postMetaService = postMetaService;
         this.postAssembler = postAssembler;
     }
@@ -68,10 +86,48 @@ public class NewsAssembler extends BasePostAssembler<News> {
     @NonNull
     public Page<NewsListVO> convertToListVo(Page<News> newsPage) {
         Assert.notNull(newsPage, "News page must not be null");
+        List<NewsListVO> newsListVOList = convertToListVo(newsPage.getContent());
+        Map<Integer, NewsListVO> newsListVOMap = newsListVOList.stream().collect(Collectors.toMap(NewsListVO::getId, Function.identity()));
         return newsPage.map(news -> {
-            NewsListVO newsListVO = new NewsListVO();
-            return newsListVO;
+            Integer newsId = news.getId();
+            return newsListVOMap.get(newsId);
         });
+    }
+
+    /**
+     * convert news-list list to news-list vo list.
+     *
+     * @param newsList news list.
+     * @return news list vo list.
+     */
+    public List<NewsListVO> convertToListVo(List<News> newsList) {
+        Set<Integer> newsIds = ServiceUtils.fetchProperty(newsList, News::getId);
+        // Get tag list map
+        Map<Integer, List<Tag>> tagListMap = postTagService.listTagListMapBy(newsIds);
+        // Get category list map
+        Map<Integer, List<Category>> categoryListMap = postCategoryService.listCategoryListMap(newsIds);
+        // Get post meta list map
+        Map<Integer, List<PostMeta>> postMetaListMap = postMetaService.listPostMetaAsMap(newsIds);
+        return newsList.stream().map(news -> {
+            NewsListVO newsListVO = new NewsListVO().convertFrom(news);
+
+            Integer newsId = news.getId();
+            List<TagDTO> tags =
+                Optional.ofNullable(tagListMap.get(newsId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull).map(tagService::convertTo)
+                    .collect(Collectors.toList());
+            newsListVO.setTags(tags);
+
+            List<CategoryDTO> categories =
+                Optional.ofNullable(categoryListMap.get(newsId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                    .map(categoryService::convertTo).collect(Collectors.toList());
+            newsListVO.setCategories(categories);
+
+            List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(newsId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                .collect(Collectors.toList());
+            newsListVO.setMetas(postMetaService.convertToMap(metas));
+            newsListVO.setFullPath(postAssembler.buildFullPath(news));
+            return newsListVO;
+        }).collect(Collectors.toList());
     }
 
     /**
