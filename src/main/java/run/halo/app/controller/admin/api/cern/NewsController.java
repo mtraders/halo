@@ -66,7 +66,6 @@ public class NewsController {
         return newsAssembler.convertToListVo(newsPage);
     }
 
-
     @GetMapping("{newsId:\\d+}")
     @ApiOperation("Get a news")
     public NewsDetailVO getBy(@PathVariable("newsId") Integer newsId) {
@@ -92,14 +91,18 @@ public class NewsController {
 
     @PutMapping("{newsId:\\d+}/{status}")
     @ApiOperation("Update news status")
-    public void updateStatusBy(@PathVariable("newsId") Integer newsId, @PathVariable("status") PostStatus status) {
-
+    public NewsListVO updateStatusBy(@PathVariable("newsId") Integer newsId, @PathVariable("status") PostStatus status) {
+        News news = newsService.updateStatus(status, newsId);
+        return new NewsListVO().convertFrom(news);
     }
 
     @PutMapping("{newsId:\\d+}/status/draft/content")
     @ApiOperation("Update draft news")
     public NewsDetailVO updateDraftBy(@PathVariable("newsId") Integer newsId, @RequestBody PostContentParam contentParam) {
-        return new NewsDetailVO();
+        News newsToUse = newsService.getById(newsId);
+        String formattedContent = contentParam.decideContentBy(newsToUse.getEditorType());
+        News news = newsService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), newsId);
+        return newsAssembler.convertToDetailVo(news);
     }
 
     @DeleteMapping("{newsId:\\d+}")
