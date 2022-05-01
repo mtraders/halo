@@ -70,6 +70,16 @@ public class PostController {
 
     private final PostAuthentication postAuthentication;
 
+    /**
+     * post controller constructor.
+     *
+     * @param postService post service.
+     * @param postCommentRenderAssembler post comment render assembler.
+     * @param postCommentService post comment service.
+     * @param optionService option service.
+     * @param postRenderAssembler post render assembler.
+     * @param postAuthentication post authentication.
+     */
     public PostController(PostService postService, PostCommentRenderAssembler postCommentRenderAssembler, PostCommentService postCommentService,
                           OptionService optionService, PostRenderAssembler postRenderAssembler, PostAuthentication postAuthentication) {
         this.postService = postService;
@@ -88,7 +98,7 @@ public class PostController {
      * @param pageable store the priority of the sort algorithm
      * @param keyword search articles with keyword
      * @param categoryId search articles with categoryId
-     * @return published articles that contains keywords and specific categoryId
+     * @return published articles that contain keywords and specific categoryId
      */
     @GetMapping
     @ApiOperation("Lists posts")

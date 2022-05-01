@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import javax.validation.constraints.NotNull;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -59,8 +60,7 @@ public interface PostService extends BasePostService<Post> {
      * @return post created
      */
     @NonNull
-    PostDetailVO createBy(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds,
-        Set<PostMeta> metas, boolean autoSave);
+    PostDetailVO createBy(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave);
 
     /**
      * Creates post by post param.
@@ -72,8 +72,7 @@ public interface PostService extends BasePostService<Post> {
      * @return post created
      */
     @NonNull
-    PostDetailVO createBy(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds,
-        boolean autoSave);
+    PostDetailVO createBy(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, boolean autoSave);
 
     /**
      * Updates post by post, tag id set and category id set.
@@ -86,8 +85,7 @@ public interface PostService extends BasePostService<Post> {
      * @return updated post
      */
     @NonNull
-    PostDetailVO updateBy(@NonNull Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds,
-        Set<PostMeta> metas, boolean autoSave);
+    PostDetailVO updateBy(@NonNull Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave);
 
     /**
      * Gets post by post status and slug.
@@ -131,8 +129,7 @@ public interface PostService extends BasePostService<Post> {
      * @return post info
      */
     @NonNull
-    Post getBy(@NonNull Integer year, @NonNull Integer month, @NonNull String slug,
-        @NonNull PostStatus status);
+    Post getBy(@NonNull Integer year, @NonNull Integer month, @NonNull String slug, @NonNull PostStatus status);
 
     /**
      * Gets post by post year and month and slug.
@@ -144,8 +141,7 @@ public interface PostService extends BasePostService<Post> {
      * @return post info
      */
     @NonNull
-    Post getBy(@NonNull Integer year, @NonNull Integer month, @NonNull Integer day,
-        @NonNull String slug);
+    Post getBy(@NonNull Integer year, @NonNull Integer month, @NonNull Integer day, @NonNull String slug);
 
     /**
      * Gets post by post year and month and slug.
@@ -158,8 +154,7 @@ public interface PostService extends BasePostService<Post> {
      * @return post info
      */
     @NonNull
-    Post getBy(@NonNull Integer year, @NonNull Integer month, @NonNull Integer day,
-        @NonNull String slug, @NonNull PostStatus status);
+    Post getBy(@NonNull Integer year, @NonNull Integer month, @NonNull Integer day, @NonNull String slug, @NonNull PostStatus status);
 
     /**
      * Removes posts in batch.
@@ -222,18 +217,17 @@ public interface PostService extends BasePostService<Post> {
     void publishVisitEvent(@NonNull Integer postId);
 
     /**
-     * Get Post Pageable default sort
+     * Get Post Pageable default sort.
      *
      * @return post default sort
      * @description contains three parts. First, Top Priority; Second, From Custom index sort;
-     * Third, basic id sort
+     *      Third, basic id sort
      */
-    @NotNull
-    Sort getPostDefaultSort();
+    @NotNull Sort getPostDefaultSort();
 
 
     /**
-     * Lists PostMarkdown vo
+     * Lists PostMarkdown vo.
      *
      * @return a list of PostMarkdown vo
      */

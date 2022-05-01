@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,7 @@ import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostQuery;
+import run.halo.app.model.properties.PostProperties;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.repository.cern.NewsRepository;
 import run.halo.app.service.CategoryService;
@@ -50,8 +54,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * News service impl.
@@ -325,5 +333,47 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         news.setContent(postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId()));
         // Convert to news detail vo
         return newsAssembler.convertTo(news, tags, categories, postMetaList);
+    }
+
+    @Override
+    @NonNull
+    public Optional<News> getPrevPost(@NonNull News news) {
+        List<News> newsList = listPrevPosts(news, 1);
+        return CollectionUtils.isEmpty(newsList) ? Optional.empty() : Optional.of(newsList.get(0));
+    }
+
+    @Override
+    @NonNull
+    public Optional<News> getNextPost(@NonNull News news) {
+        List<News> newsList = listNextPosts(news, 1);
+        return CollectionUtils.isEmpty(newsList) ? Optional.empty() : Optional.of(newsList.get(0));
+    }
+
+    @Override
+    @NonNull
+    public List<News> listNextPosts(@NonNull News news, int size) {
+        return listFollowingNewsByDirection(news, ASC, size);
+    }
+
+    @Override
+    @NonNull
+    public List<News> listPrevPosts(@NonNull News news, int size) {
+        return listFollowingNewsByDirection(news, DESC, size);
+    }
+
+    private List<News> listFollowingNewsByDirection(@NonNull News news, Direction direction, int size) {
+        Assert.notNull(news, "News must not be null");
+        String indexSort = optionService.getByPropertyOfNonNull(PostProperties.INDEX_SORT).toString();
+        PageRequest pageRequest = PageRequest.of(0, size, Sort.by(direction, indexSort));
+        switch (indexSort) {
+            case "createTime":
+                return newsRepository.findAllByStatusAndCreateTimeAfter(PostStatus.PUBLISHED, news.getCreateTime(), pageRequest).getContent();
+            case "editTime":
+                return newsRepository.findAllByStatusAndEditTimeAfter(PostStatus.PUBLISHED, news.getEditTime(), pageRequest).getContent();
+            case "visits":
+                return newsRepository.findAllByStatusAndVisitsAfter(PostStatus.PUBLISHED, news.getVisits(), pageRequest).getContent();
+            default:
+                return Collections.emptyList();
+        }
     }
 }

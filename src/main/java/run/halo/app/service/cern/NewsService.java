@@ -11,6 +11,7 @@ import run.halo.app.service.base.BasePostService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface NewsService extends BasePostService<News> {
@@ -69,5 +70,4 @@ public interface NewsService extends BasePostService<News> {
      */
     @NonNull
     List<News> removeByIds(@NonNull Collection<Integer> ids);
-
 }

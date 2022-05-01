@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
+import run.halo.app.service.PostService;
 import run.halo.app.service.assembler.cern.NewsAssembler;
 import run.halo.app.service.cern.NewsService;
 
@@ -34,15 +36,19 @@ public class NewsController {
     private final NewsService newsService;
     private final NewsAssembler newsAssembler;
 
+    private final PostService postService;
+
     /**
      * News content controller constructor.
      *
      * @param newsService news service.
      * @param newsAssembler news assembler.
+     * @param postService post service.
      */
-    public NewsController(NewsService newsService, NewsAssembler newsAssembler) {
+    public NewsController(NewsService newsService, NewsAssembler newsAssembler, PostService postService) {
         this.newsService = newsService;
         this.newsAssembler = newsAssembler;
+        this.postService = postService;
     }
 
     /**
@@ -81,24 +87,87 @@ public class NewsController {
         return newsAssembler.convertToListVo(newsPage);
     }
 
+    /**
+     * get news detail.
+     *
+     * @param newsId news id.
+     * @param formatDisabled format disabled or not.
+     * @param sourceDisabled source disabled.
+     * @return news detail.
+     */
     @GetMapping("{newsId:\\d+}")
     @ApiOperation("Get a news")
-    public NewsDetailVO getBy(@PathVariable("newsId") Integer newsId) {
-        return null;
+    public NewsDetailVO getBy(@PathVariable("newsId") Integer newsId,
+                              @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
+                              @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
+        News news = newsService.getById(newsId);
+        NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVo(news);
+        if (formatDisabled) {
+            // Clear the format content
+            newsDetailVO.setContent(null);
+        }
+
+        if (sourceDisabled) {
+            // Clear the original content
+            newsDetailVO.setOriginalContent(null);
+        }
+
+        postService.publishVisitEvent(newsDetailVO.getId());
+
+        return newsDetailVO;
     }
 
+    /**
+     * get news by slug.
+     *
+     * @param slug slug.
+     * @param formatDisabled format disable or not.
+     * @param sourceDisabled source disable or not.
+     * @return news detail
+     */
     @GetMapping("/slug")
     @ApiOperation("Get a news by slug")
-    public NewsDetailVO getBy(@RequestParam("slug") String slug) {
-        return null;
+    public NewsDetailVO getBy(@RequestParam("slug") String slug,
+                              @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
+                              @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
+        News news = newsService.getBySlug(slug);
+        NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVo(news);
+
+        if (formatDisabled) {
+            // Clear the format content
+            newsDetailVO.setContent(null);
+        }
+
+        if (sourceDisabled) {
+            // Clear the original content
+            newsDetailVO.setOriginalContent(null);
+        }
+
+        postService.publishVisitEvent(newsDetailVO.getId());
+
+        return newsDetailVO;
     }
 
+    /**
+     * Get prev news by current post id.
+     *
+     * @param newsId news id.
+     * @return news detail
+     */
     @GetMapping("{newsId:\\d+}/prev")
     @ApiOperation("Get prev news by current post id")
     public NewsDetailVO getPrevNewsBy(@PathVariable("newsId") Integer newsId) {
-        return null;
+        News news = newsService.getById(newsId);
+        News prevNews = newsService.getPrevPost(news).orElseThrow(() -> new NotFoundException("查询不到该新闻信息"));
+        return newsAssembler.convertToDetailVo(prevNews);
     }
 
+    /**
+     * Get next news by current post id.
+     *
+     * @param newsId news id.
+     * @return news detail.
+     */
     @GetMapping("{newsId:\\d+}/next")
     @ApiOperation("Get next news by current post id")
     public NewsDetailVO getNextNewsBy(@PathVariable("newsId") Integer newsId) {
