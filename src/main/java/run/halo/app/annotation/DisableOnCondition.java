@@ -9,7 +9,7 @@ import org.springframework.core.annotation.AliasFor;
 import run.halo.app.model.enums.Mode;
 
 /**
- * 该注解可以限制某些条件下禁止访问api
+ * 该注解可以限制某些条件下禁止访问api.
  *
  * @author guqing
  * @date 2020-02-14 13:48
@@ -18,9 +18,15 @@ import run.halo.app.model.enums.Mode;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DisableOnCondition {
+    /**
+     * halo mode value.
+     */
     @AliasFor("mode")
     Mode value() default Mode.DEMO;
 
+    /**
+     * halo mode.
+     */
     @AliasFor("value")
     Mode mode() default Mode.DEMO;
 }
