@@ -171,6 +171,8 @@ public class NewsController {
     @GetMapping("{newsId:\\d+}/next")
     @ApiOperation("Get next news by current post id")
     public NewsDetailVO getNextNewsBy(@PathVariable("newsId") Integer newsId) {
-        return null;
+        News news = newsService.getById(newsId);
+        News nextNews = newsService.getNextPost(news).orElseThrow(() -> new NotFoundException("查询不到该新闻信息"));
+        return newsAssembler.convertToDetailVo(nextNews);
     }
 }

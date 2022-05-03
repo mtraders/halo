@@ -80,6 +80,7 @@ import run.halo.app.utils.SlugUtils;
  * @author evanwang
  * @author coor.top
  * @author Raremaa
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  * @date 2019-03-14
  */
 @Slf4j
@@ -112,6 +113,24 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     private final ApplicationContext applicationContext;
 
+    /**
+     * post service impl.
+     *
+     * @param basePostRepository base post repository.
+     * @param postAssembler post assembler.
+     * @param optionService option service.
+     * @param postRepository post repository.
+     * @param tagService tag service.
+     * @param categoryService category service.
+     * @param postTagService post tag service.
+     * @param postCategoryService post category service.
+     * @param postCommentService post comment service.
+     * @param eventPublisher event publisher.
+     * @param postMetaService post meta service.
+     * @param contentService content service.
+     * @param contentPatchLogService content patch log service.
+     * @param applicationContext application context.
+     */
     public PostServiceImpl(BasePostRepository<Post> basePostRepository, PostAssembler postAssembler, OptionService optionService,
                            PostRepository postRepository, TagService tagService, CategoryService categoryService, PostTagService postTagService,
                            PostCategoryService postCategoryService, PostCommentService postCommentService, ApplicationEventPublisher eventPublisher,
@@ -134,7 +153,8 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
     }
 
     @Override
-    public Page<Post> pageBy(PostQuery postQuery, Pageable pageable) {
+    @NonNull
+    public Page<Post> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable) {
         Assert.notNull(postQuery, "Post query must not be null");
         Assert.notNull(pageable, "Page info must not be null");
 
