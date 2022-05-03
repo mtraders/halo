@@ -90,7 +90,7 @@ public class User extends BaseEntity {
     private UserType userType;
 
     /**
-     * two factor auth key.
+     * two-factor auth key.
      */
     @Column(name = "mfa_key", length = 64)
     private String mfaKey;

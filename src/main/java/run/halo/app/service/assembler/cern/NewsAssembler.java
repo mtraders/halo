@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import run.halo.app.model.dto.CategoryDTO;
 import run.halo.app.model.dto.TagDTO;
+import run.halo.app.model.dto.cern.CernPostListDTO;
 import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
@@ -177,7 +178,7 @@ public class NewsAssembler extends BasePostAssembler<News> {
         return newsDetailVO;
     }
 
-    private <T extends NewsListDTO> void generateAndSetSummaryIfAbsent(@NonNull News news, @NonNull T newsListDTO) {
+    private <T extends CernPostListDTO<News>> void generateAndSetSummaryIfAbsent(@NonNull News news, @NonNull T newsListDTO) {
         Assert.notNull(news, "The news must not be null.");
         if (StringUtils.isNotBlank(newsListDTO.getSummary())) {
             return;

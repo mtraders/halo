@@ -25,7 +25,6 @@ import static run.halo.app.model.support.CernConst.NOTIFICATION_POST_TYPE;
 @Entity(name = "Notification")
 @DiscriminatorValue(NOTIFICATION_POST_TYPE)
 public class Notification extends BasePost {
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
