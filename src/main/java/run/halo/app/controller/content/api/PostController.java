@@ -113,6 +113,13 @@ public class PostController {
         return postRenderAssembler.convertToListVo(postPage);
     }
 
+    /**
+     * Lists posts by keyword.
+     *
+     * @param keyword keyword.
+     * @param pageable pageable.
+     * @return post lists by keyword.
+     */
     @PostMapping(value = "search")
     @ApiOperation("Lists posts by keyword")
     public Page<BasePostSimpleDTO> pageBy(@RequestParam(value = "keyword") String keyword,
@@ -121,6 +128,14 @@ public class PostController {
         return postRenderAssembler.convertToSimple(postPage);
     }
 
+    /**
+     * get post by id.
+     *
+     * @param postId post id.
+     * @param formatDisabled format disabled or not.
+     * @param sourceDisabled source disabled or not.
+     * @return post detail vo.
+     */
     @GetMapping("{postId:\\d+}")
     @ApiOperation("Gets a post")
     public PostDetailVO getBy(@PathVariable("postId") Integer postId,
@@ -147,6 +162,14 @@ public class PostController {
         return postDetailVO;
     }
 
+    /**
+     * get a post by slug.
+     *
+     * @param slug slug
+     * @param formatDisabled format distabled or not
+     * @param sourceDisabled source deisabled or not
+     * @return post detail vo.
+     */
     @GetMapping("/slug")
     @ApiOperation("Gets a post")
     public PostDetailVO getBy(@RequestParam("slug") String slug,
@@ -173,6 +196,12 @@ public class PostController {
         return postDetailVO;
     }
 
+    /**
+     * Gets previous post by current post id.
+     *
+     * @param postId post id.
+     * @return post detail vo.
+     */
     @GetMapping("{postId:\\d+}/prev")
     @ApiOperation("Gets previous post by current post id.")
     public PostDetailVO getPrevPostBy(@PathVariable("postId") Integer postId) {
@@ -182,6 +211,12 @@ public class PostController {
         return postRenderAssembler.convertToDetailVo(prevPost);
     }
 
+    /**
+     * Gets next post by current post id.
+     *
+     * @param postId post id.
+     * @return post detail vo.
+     */
     @GetMapping("{postId:\\d+}/next")
     @ApiOperation("Gets next post by current post id.")
     public PostDetailVO getNextPostBy(@PathVariable("postId") Integer postId) {
@@ -191,6 +226,14 @@ public class PostController {
         return postRenderAssembler.convertToDetailVo(nextPost);
     }
 
+    /**
+     * list top comments.
+     *
+     * @param postId post id.
+     * @param page page.
+     * @param sort sort.
+     * @return top comments.
+     */
     @GetMapping("{postId:\\d+}/comments/top_view")
     public Page<CommentWithHasChildrenVO> listTopComments(@PathVariable("postId") Integer postId,
                                                           @RequestParam(name = "page", required = false, defaultValue = "0") int page,
@@ -202,6 +245,14 @@ public class PostController {
         return comments;
     }
 
+    /**
+     * list comment children.
+     *
+     * @param postId post id.
+     * @param commentParentId comment parent id.
+     * @param sort sort.
+     * @return comment list.
+     */
     @GetMapping("{postId:\\d+}/comments/{commentParentId:\\d+}/children")
     public List<BaseCommentDTO> listChildrenBy(@PathVariable("postId") Integer postId, @PathVariable("commentParentId") Long commentParentId,
                                                @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
@@ -213,6 +264,14 @@ public class PostController {
         return postCommentRenderAssembler.convertTo(postComments);
     }
 
+    /**
+     * Lists comments with tree view.
+     *
+     * @param postId post id.
+     * @param page page
+     * @param sort sort
+     * @return comments with tree view.
+     */
     @GetMapping("{postId:\\d+}/comments/tree_view")
     @ApiOperation("Lists comments with tree view")
     public Page<BaseCommentVO> listCommentsTree(@PathVariable("postId") Integer postId,
@@ -224,6 +283,14 @@ public class PostController {
         return comments;
     }
 
+    /**
+     * Lists comment with list view.
+     *
+     * @param postId post id.
+     * @param page page.
+     * @param sort sort.
+     * @return Lists comment with list view.
+     */
     @GetMapping("{postId:\\d+}/comments/list_view")
     @ApiOperation("Lists comment with list view")
     public Page<BaseCommentWithParentVO> listComments(@PathVariable("postId") Integer postId,
@@ -236,6 +303,12 @@ public class PostController {
         return comments;
     }
 
+    /**
+     * comments a post.
+     *
+     * @param postCommentParam post comment param.
+     * @return post comments.
+     */
     @PostMapping("comments")
     @ApiOperation("Comments a post")
     @CacheLock(autoDelete = false, traceRequest = true)
@@ -248,6 +321,11 @@ public class PostController {
         return postCommentRenderAssembler.convertTo(postCommentService.createBy(postCommentParam));
     }
 
+    /**
+     * like a post.
+     *
+     * @param postId post id.
+     */
     @PostMapping("{postId:\\d+}/likes")
     @ApiOperation("Likes a post")
     @CacheLock(autoDelete = false, traceRequest = true)
