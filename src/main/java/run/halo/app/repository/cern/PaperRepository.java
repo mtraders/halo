@@ -6,7 +6,7 @@ import run.halo.app.repository.base.BasePostRepository;
 /**
  * paper repository.
  *
- * @author lizc (lizc@fists.cn)
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 public interface PaperRepository extends BasePostRepository<Paper> {
 }
