@@ -39,6 +39,12 @@ public class ContentPatchLogServiceImpl extends AbstractCrudService<ContentPatch
 
     private final ContentRepository contentRepository;
 
+    /**
+     * Constructor of Content patch log service.
+     *
+     * @param contentPatchLogRepository content patch log repository.
+     * @param contentRepository content repository
+     */
     public ContentPatchLogServiceImpl(ContentPatchLogRepository contentPatchLogRepository,
         ContentRepository contentRepository) {
         super(contentPatchLogRepository);
