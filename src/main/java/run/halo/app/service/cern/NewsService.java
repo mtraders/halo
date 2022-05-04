@@ -6,6 +6,7 @@ import org.springframework.lang.NonNull;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.params.PostQuery;
+import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.service.base.BasePostService;
 
@@ -23,7 +24,7 @@ public interface NewsService extends BasePostService<News> {
      * @return news list vo.
      */
     @NonNull
-    Page<News> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable);
+    Page<News> pageBy(@NonNull CernPostQuery postQuery, @NonNull Pageable pageable);
 
     /**
      * Pages news by keyword.

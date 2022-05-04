@@ -14,6 +14,7 @@ import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostQuery;
+import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.PostService;
@@ -64,10 +65,10 @@ public class NewsController {
     public Page<NewsListVO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
                                    @RequestParam(value = "keyword", required = false) String keyword,
                                    @RequestParam(value = "categoryId", required = false) Integer categoryId) {
-        PostQuery postQuery = new PostQuery();
+        CernPostQuery postQuery = new CernPostQuery();
         postQuery.setKeyword(keyword);
         postQuery.setCategoryId(categoryId);
-        postQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
+        postQuery.setStatus(Set.of(PostStatus.PUBLISHED));
         Page<News> newsPage = newsService.pageBy(postQuery, pageable);
         return newsAssembler.convertToListVo(newsPage);
     }

@@ -18,6 +18,7 @@ import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.PostQuery;
+import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.params.cern.NewsParam;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
@@ -61,7 +62,7 @@ public class NewsController {
     @GetMapping
     @ApiOperation("List news")
     public Page<? extends NewsListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
-                                              PostQuery newsQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
+                                              CernPostQuery newsQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
         Page<News> newsPage = newsService.pageBy(newsQuery, pageable);
         if (more) {
             return newsAssembler.convertToListVo(newsPage);

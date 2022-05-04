@@ -29,6 +29,7 @@ import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostQuery;
+import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.properties.PostProperties;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.repository.cern.NewsRepository;
@@ -154,7 +155,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
      * @return news list vo.
      */
     @NonNull
-    public Page<News> pageBy(@NonNull PostQuery postQuery, @NonNull Pageable pageable) {
+    public Page<News> pageBy(@NonNull CernPostQuery postQuery, @NonNull Pageable pageable) {
         Assert.notNull(postQuery, "Post query must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
         return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
@@ -172,21 +173,21 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         Assert.notNull(keyword, "Keyword must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
 
-        PostQuery postQuery = new PostQuery();
+        CernPostQuery postQuery = new CernPostQuery();
         postQuery.setKeyword(keyword);
-        postQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
+        postQuery.setStatus(Set.of(PostStatus.PUBLISHED));
 
         // Build specification and find all
         return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
     }
 
     @NonNull
-    private Specification<News> buildSpecByQuery(@NonNull PostQuery postQuery) {
+    private Specification<News> buildSpecByQuery(@NonNull CernPostQuery postQuery) {
         Assert.notNull(postQuery, "News query must not be null");
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new LinkedList<>();
 
-            Set<PostStatus> statuses = postQuery.getStatuses();
+            Set<PostStatus> statuses = postQuery.getStatus();
             if (!CollectionUtils.isEmpty(statuses)) {
                 predicates.add(root.get("status").in(statuses));
             }
@@ -208,13 +209,13 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
                 String likeCondition = String.format("%%%s%%", StringUtils.strip(postQuery.getKeyword()));
 
                 // Build like predicate
-                Subquery<News> postSubquery = query.subquery(News.class);
-                Root<Content> contentRoot = postSubquery.from(Content.class);
-                postSubquery.select(contentRoot.get("id")).where(criteriaBuilder.like(contentRoot.get("originalContent"), likeCondition));
+                Subquery<News> postSubQuery = query.subquery(News.class);
+                Root<Content> contentRoot = postSubQuery.from(Content.class);
+                postSubQuery.select(contentRoot.get("id")).where(criteriaBuilder.like(contentRoot.get("originalContent"), likeCondition));
 
                 Predicate titleLike = criteriaBuilder.like(root.get("title"), likeCondition);
 
-                predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubquery)));
+                predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubQuery)));
             }
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
