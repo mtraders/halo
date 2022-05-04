@@ -1,7 +1,6 @@
 package run.halo.app.controller.admin.api.cern;
 
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -184,7 +183,7 @@ public class NewsController {
     @GetMapping("preview/{newsId:\\d+}")
     @ApiOperation("Get a news preview")
     public String preview(@PathVariable("newsId") Integer newsId) {
-        return StringUtils.EMPTY;
+        return newsId.toString();
     }
 
 }

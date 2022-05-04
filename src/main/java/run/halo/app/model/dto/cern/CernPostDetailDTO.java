@@ -23,10 +23,10 @@ public abstract class CernPostDetailDTO<POST extends BasePost> extends CernPostL
     @NonNull
     @SuppressWarnings("unchecked")
     public <T extends CernPostListDTO<POST>> T convertFrom(@NonNull POST cernPost) {
-        CernPostDetailDTO<POST> cernDetailDTO = super.convertFrom(cernPost);
+        CernPostDetailDTO<POST> cernPostDetailDTO = super.convertFrom(cernPost);
         Content.PatchedContent content = cernPost.getContent();
-        cernDetailDTO.setContent(content.getContent());
-        cernDetailDTO.setOriginalContent(content.getOriginalContent());
-        return (T) cernDetailDTO;
+        cernPostDetailDTO.setContent(content.getContent());
+        cernPostDetailDTO.setOriginalContent(content.getOriginalContent());
+        return (T) cernPostDetailDTO;
     }
 }

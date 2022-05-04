@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import run.halo.app.model.dto.cern.CernPostListDTO;
 import run.halo.app.model.entity.cern.News;
+import run.halo.app.model.enums.cern.PostType;
 
 /**
  * News list dto.
@@ -15,11 +16,12 @@ import run.halo.app.model.entity.cern.News;
 @ToString
 @EqualsAndHashCode(callSuper = true)
 public class NewsListDTO extends CernPostListDTO<News> {
-    // news special field
+    // news special fields
     private String source;
     private String sourceLink;
 
-    public boolean isTopped() {
-        return this.getTopPriority() != null && this.getTopPriority() > 0;
+    @Override
+    public PostType getPostType() {
+        return PostType.NEWS;
     }
 }

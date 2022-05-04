@@ -20,6 +20,13 @@ public class NotificationDetailDTO extends NotificationListDTO {
     private String content;
     private Long commentCount;
 
+    /**
+     * convert notification entity to notification detail dto.
+     *
+     * @param notification notification entity.
+     * @param <T> notification detail dto.
+     * @return notificattion dto
+     */
     @NonNull
     @SuppressWarnings("unchecked")
     public <T extends NotificationListDTO> T convertFrom(@NonNull Notification notification) {
