@@ -1,6 +1,7 @@
 package run.halo.app.service.assembler;
 
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import run.halo.app.model.entity.Content;
@@ -69,6 +70,7 @@ public class PostRenderAssembler extends PostAssembler {
     }
 
     @Override
+    @NonNull
     public PostDetailVO convertToDetailVo(Post post) {
         Assert.notNull(post, "The post must not be null.");
         post.setContent(PatchedContent.of(contentService.getById(post.getId())));
