@@ -32,7 +32,7 @@ public class DisableOnConditionAspect {
     }
 
     /**
-     * aruond for disable api.
+     * around for disable api.
      *
      * @param joinPoint joinPoint
      * @param disableApi disable api.

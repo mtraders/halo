@@ -1,7 +1,6 @@
 package run.halo.app.controller.admin.api.cern;
 
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -14,18 +13,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import run.halo.app.cache.AbstractCacheStore;
+import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
+import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.params.cern.NewsParam;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
-import run.halo.app.service.OptionService;
 import run.halo.app.service.assembler.cern.NewsAssembler;
 import run.halo.app.service.cern.NewsService;
 
 import javax.validation.Valid;
+import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -39,31 +39,63 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class NewsController {
 
     private final NewsService newsService;
-    private final AbstractCacheStore acheStore;
-    private final OptionService optionService;
     private final NewsAssembler newsAssembler;
 
-    public NewsController(NewsService newsService, AbstractCacheStore acheStore, OptionService optionService, NewsAssembler newsAssembler) {
+    /**
+     * news controller constructor.
+     *
+     * @param newsService news service
+     * @param newsAssembler news assembler.
+     */
+    public NewsController(NewsService newsService, NewsAssembler newsAssembler) {
         this.newsService = newsService;
-        this.acheStore = acheStore;
-        this.optionService = optionService;
         this.newsAssembler = newsAssembler;
     }
 
+    /**
+     * get news list.
+     *
+     * @param pageable page info
+     * @return news list vo list.
+     */
     @GetMapping
-    @ApiOperation("Get a page of news")
-    public Page<NewsListVO> pageBy(@PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
-        Page<News> newsPage = newsService.pageBy(pageable);
-        return newsAssembler.convertToListVo(newsPage);
+    @ApiOperation("List news")
+    public Page<? extends NewsListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
+                                              PostQuery newsQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
+        Page<News> newsPage = newsService.pageBy(newsQuery, pageable);
+        if (more) {
+            return newsAssembler.convertToListVo(newsPage);
+        }
+        return newsAssembler.convertToListDTO(newsPage);
     }
 
+    /**
+     * get latest news dto.
+     *
+     * @param top count
+     * @return new list dto list.
+     */
+    @GetMapping("latest")
+    @ApiOperation("Get latest news")
+    public List<NewsListDTO> pageLatest(@RequestParam(name = "top", defaultValue = "10") int top) {
+        Page<News> newsPage = newsService.pageLatest(top);
+        return newsAssembler.convertToListDTO(newsPage).getContent();
+    }
 
     @GetMapping("{newsId:\\d+}")
     @ApiOperation("Get a news")
     public NewsDetailVO getBy(@PathVariable("newsId") Integer newsId) {
-        return new NewsDetailVO();
+        News news = newsService.getWithLatestContentById(newsId);
+        return newsAssembler.convertToDetailVo(news);
     }
 
+    /**
+     * Create a news.
+     *
+     * @param newsParam news param.
+     * @param autoSave auto save or not.
+     * @return news detail vo.
+     */
     @PostMapping
     @ApiOperation("Create a news")
     public NewsDetailVO createBy(@RequestBody @Valid NewsParam newsParam,
@@ -71,35 +103,87 @@ public class NewsController {
         return newsService.createBy(newsParam.convertTo(), newsParam.getTagIds(), newsParam.getCategoryIds(), newsParam.getPostMetas(), autoSave);
     }
 
+    /**
+     * Update news.
+     *
+     * @param newsId news id.
+     * @param newsParam news param.
+     * @param autoSave auto save flag.
+     * @return news detail vo.
+     */
     @PutMapping("{newsId:\\d+}")
     @ApiOperation("Update a news")
     public NewsDetailVO updateBy(@PathVariable("newsId") Integer newsId, @RequestBody @Valid NewsParam newsParam,
                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
-        return new NewsDetailVO();
+        News newsToUpdate = newsService.getWithLatestContentById(newsId);
+        newsParam.update(newsToUpdate);
+        return newsService.updateBy(newsToUpdate, newsParam.getTagIds(), newsParam.getCategoryIds(), newsParam.getPostMetas(), autoSave);
     }
 
+    /**
+     * Update news status.
+     *
+     * @param newsId news id.
+     * @param status status.
+     * @return news list vo.
+     */
     @PutMapping("{newsId:\\d+}/{status}")
     @ApiOperation("Update news status")
-    public void updateStatusBy(@PathVariable("newsId") Integer newsId, @PathVariable("status") PostStatus status) {
-
+    public NewsListVO updateStatusBy(@PathVariable("newsId") Integer newsId, @PathVariable("status") PostStatus status) {
+        News news = newsService.updateStatus(status, newsId);
+        return new NewsListVO().convertFrom(news);
     }
 
+    /**
+     * Update draft news.
+     *
+     * @param newsId news id.
+     * @param contentParam content param.
+     * @return news detail vo.
+     */
     @PutMapping("{newsId:\\d+}/status/draft/content")
     @ApiOperation("Update draft news")
     public NewsDetailVO updateDraftBy(@PathVariable("newsId") Integer newsId, @RequestBody PostContentParam contentParam) {
-        return new NewsDetailVO();
+        News newsToUse = newsService.getById(newsId);
+        String formattedContent = contentParam.decideContentBy(newsToUse.getEditorType());
+        News news = newsService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), newsId);
+        return newsAssembler.convertToDetailVo(news);
     }
 
+    /**
+     * delete a news.
+     *
+     * @param newsId news id.
+     * @return news entity.
+     */
     @DeleteMapping("{newsId:\\d+}")
     @ApiOperation("Delete a news")
-    public NewsDetailVO deleteBy(@PathVariable("newsId") Integer newsId) {
-        return new NewsDetailVO();
+    public News deletePermanently(@PathVariable("newsId") Integer newsId) {
+        return newsService.removeById(newsId);
     }
 
+    /**
+     * deletes news permanently in batch.
+     *
+     * @param ids ids
+     * @return news entities
+     */
+    @DeleteMapping
+    @ApiOperation("Deletes news permanently in batch by id array")
+    public List<News> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
+        return newsService.removeByIds(ids);
+    }
+
+    /**
+     * get a news preview.
+     *
+     * @param newsId news id.
+     * @return preview content.
+     */
     @GetMapping("preview/{newsId:\\d+}")
     @ApiOperation("Get a news preview")
     public String preview(@PathVariable("newsId") Integer newsId) {
-        return StringUtils.EMPTY;
+        return newsId.toString();
     }
 
 }

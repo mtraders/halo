@@ -24,7 +24,7 @@ public class NewsParam extends BasePostParam implements InputConverter<News> {
     @Size(max = 255, message = "新闻来源长度不能超过 {max}")
     private String source;
     @Size(max = 255, message = "新闻链接长度不能超过 {max}")
-    private String link;
+    private String sourceLink;
     // related fields.
     private Set<Integer> tagIds;
     private Set<Integer> categoryIds;

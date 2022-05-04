@@ -27,6 +27,12 @@ public class PatchUtils {
 
     private static final Splitter lineSplitter = Splitter.on('\n');
 
+    /**
+     * create patch content.
+     *
+     * @param deltasJson deltas json string.
+     * @return Patch String
+     */
     public static Patch<String> create(String deltasJson) {
         List<Delta> deltas = JsonUtils.jsonToObject(deltasJson, new TypeReference<>() {});
         Patch<String> patch = new Patch<>();
@@ -54,6 +60,12 @@ public class PatchUtils {
         return patch;
     }
 
+    /**
+     * Patch to json.
+     *
+     * @param patch patch
+     * @return patch json string.
+     */
     public static String patchToJson(Patch<String> patch) {
         List<AbstractDelta<String>> deltas = patch.getDeltas();
         try {
@@ -63,6 +75,13 @@ public class PatchUtils {
         }
     }
 
+    /**
+     * restore content.
+     *
+     * @param json json string.
+     * @param original original string.
+     * @return content
+     */
     public static String restoreContent(String json, String original) {
         Patch<String> patch = PatchUtils.create(json);
         try {
@@ -72,11 +91,24 @@ public class PatchUtils {
         }
     }
 
+    /**
+     * diff to json patch.
+     *
+     * @param original original.
+     * @param revised revised.
+     * @return json patch string.
+     */
     public static String diffToJsonPatch(String original, String revised) {
         Patch<String> patch = DiffUtils.diff(breakLine(original), breakLine(revised));
         return PatchUtils.patchToJson(patch);
     }
 
+    /**
+     * break line.
+     *
+     * @param content content.
+     * @return line splitter.
+     */
     public static List<String> breakLine(String content) {
         if (StringUtils.isBlank(content)) {
             return Collections.emptyList();

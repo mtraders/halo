@@ -35,7 +35,7 @@ import run.halo.app.service.ThemeService;
 import run.halo.app.service.assembler.PostRenderAssembler;
 
 /**
- * Post Model
+ * Post Model.
  *
  * @author ryanwang
  * @author guqing

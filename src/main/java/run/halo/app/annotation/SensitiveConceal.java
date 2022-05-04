@@ -8,8 +8,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * sensitive conceal annotation.
+ *
  * @author giveup
- * @description SensitiveConceal
  * @date 8:18 PM 26/5/2020
  */
 @Target(ElementType.METHOD)

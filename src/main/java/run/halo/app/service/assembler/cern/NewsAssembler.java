@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import run.halo.app.model.dto.CategoryDTO;
 import run.halo.app.model.dto.TagDTO;
+import run.halo.app.model.dto.cern.CernPostListDTO;
+import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.Content.PatchedContent;
@@ -176,22 +178,63 @@ public class NewsAssembler extends BasePostAssembler<News> {
         return newsDetailVO;
     }
 
-    private void generateAndSetSummaryIfAbsent(@NonNull News news, @NonNull NewsDetailVO newsDetailVO) {
+    private <T extends CernPostListDTO<News>> void generateAndSetSummaryIfAbsent(@NonNull News news, @NonNull T newsListDTO) {
         Assert.notNull(news, "The news must not be null.");
-        if (StringUtils.isNotBlank(newsDetailVO.getSummary())) {
+        if (StringUtils.isNotBlank(newsListDTO.getSummary())) {
             return;
         }
         PatchedContent patchedContent = news.getContentOfNullable();
         if (patchedContent == null) {
             Content newsContent = contentService.getByIdOfNullable(news.getId());
             if (newsContent != null) {
-                newsDetailVO.setSummary(generateSummary(newsContent.getContent()));
+                newsListDTO.setSummary(generateSummary(newsContent.getContent()));
             } else {
-                newsDetailVO.setSummary(StringUtils.EMPTY);
+                newsListDTO.setSummary(StringUtils.EMPTY);
             }
         } else {
-            newsDetailVO.setSummary(generateSummary(patchedContent.getContent()));
+            newsListDTO.setSummary(generateSummary(patchedContent.getContent()));
         }
+    }
+
+    /**
+     * convert to news detail vo.
+     *
+     * @param news news
+     * @return news detail vo.
+     */
+    public NewsDetailVO convertToDetailVo(News news) {
+        // List tags
+        List<Tag> tags = postTagService.listTagsBy(news.getId());
+        // List categories
+        List<Category> categories = postCategoryService.listCategoriesBy(news.getId());
+        // List metas
+        List<PostMeta> metas = postMetaService.listBy(news.getId());
+        // Convert to detail vo
+        return convertTo(news, tags, categories, metas);
+    }
+
+    /**
+     * convert to list dto.
+     *
+     * @param news news entity
+     * @return news list dto.
+     */
+    @NonNull
+    public NewsListDTO convertToListDTO(News news) {
+        Assert.notNull(news, "News must not be null");
+        NewsListDTO newsListDTO = new NewsListDTO().convertFrom(news);
+        generateAndSetSummaryIfAbsent(news, newsListDTO);
+
+        // Post currently drafting in process
+        Boolean isInProcess = contentService.draftingInProgress(news.getId());
+        newsListDTO.setInProgress(isInProcess);
+        return newsListDTO;
+    }
+
+    @NonNull
+    public Page<NewsListDTO> convertToListDTO(@NonNull Page<News> newsPage) {
+        Assert.notNull(newsPage, "News page cannot be null");
+        return newsPage.map(this::convertToListDTO);
     }
 
 }

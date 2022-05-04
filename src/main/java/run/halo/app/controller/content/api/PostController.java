@@ -3,9 +3,11 @@ package run.halo.app.controller.content.api;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import io.swagger.annotations.ApiOperation;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,11 +70,18 @@ public class PostController {
 
     private final PostAuthentication postAuthentication;
 
-    public PostController(PostService postService,
-        PostCommentRenderAssembler postCommentRenderAssembler,
-        PostCommentService postCommentService,
-        OptionService optionService, PostRenderAssembler postRenderAssembler,
-        PostAuthentication postAuthentication) {
+    /**
+     * post controller constructor.
+     *
+     * @param postService post service.
+     * @param postCommentRenderAssembler post comment render assembler.
+     * @param postCommentService post comment service.
+     * @param optionService option service.
+     * @param postRenderAssembler post render assembler.
+     * @param postAuthentication post authentication.
+     */
+    public PostController(PostService postService, PostCommentRenderAssembler postCommentRenderAssembler, PostCommentService postCommentService,
+                          OptionService optionService, PostRenderAssembler postRenderAssembler, PostAuthentication postAuthentication) {
         this.postService = postService;
         this.postCommentRenderAssembler = postCommentRenderAssembler;
         this.postCommentService = postCommentService;
@@ -89,14 +98,13 @@ public class PostController {
      * @param pageable store the priority of the sort algorithm
      * @param keyword search articles with keyword
      * @param categoryId search articles with categoryId
-     * @return published articles that contains keywords and specific categoryId
+     * @return published articles that contain keywords and specific categoryId
      */
     @GetMapping
     @ApiOperation("Lists posts")
-    public Page<PostListVO> pageBy(
-        @PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
-        @RequestParam(value = "keyword", required = false) String keyword,
-        @RequestParam(value = "categoryId", required = false) Integer categoryId) {
+    public Page<PostListVO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
+                                   @RequestParam(value = "keyword", required = false) String keyword,
+                                   @RequestParam(value = "categoryId", required = false) Integer categoryId) {
         PostQuery postQuery = new PostQuery();
         postQuery.setKeyword(keyword);
         postQuery.setCategoryId(categoryId);
@@ -105,21 +113,34 @@ public class PostController {
         return postRenderAssembler.convertToListVo(postPage);
     }
 
+    /**
+     * Lists posts by keyword.
+     *
+     * @param keyword keyword.
+     * @param pageable pageable.
+     * @return post lists by keyword.
+     */
     @PostMapping(value = "search")
     @ApiOperation("Lists posts by keyword")
     public Page<BasePostSimpleDTO> pageBy(@RequestParam(value = "keyword") String keyword,
-        @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
+                                          @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
         Page<Post> postPage = postService.pageBy(keyword, pageable);
         return postRenderAssembler.convertToSimple(postPage);
     }
 
+    /**
+     * get post by id.
+     *
+     * @param postId post id.
+     * @param formatDisabled format disabled or not.
+     * @param sourceDisabled source disabled or not.
+     * @return post detail vo.
+     */
     @GetMapping("{postId:\\d+}")
     @ApiOperation("Gets a post")
     public PostDetailVO getBy(@PathVariable("postId") Integer postId,
-        @RequestParam(value = "formatDisabled", required = false, defaultValue = "true")
-            Boolean formatDisabled,
-        @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false")
-            Boolean sourceDisabled) {
+                              @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
+                              @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         Post post = postService.getById(postId);
 
         checkAuthenticate(postId);
@@ -141,13 +162,19 @@ public class PostController {
         return postDetailVO;
     }
 
+    /**
+     * get a post by slug.
+     *
+     * @param slug slug
+     * @param formatDisabled format distabled or not
+     * @param sourceDisabled source deisabled or not
+     * @return post detail vo.
+     */
     @GetMapping("/slug")
     @ApiOperation("Gets a post")
     public PostDetailVO getBy(@RequestParam("slug") String slug,
-        @RequestParam(value = "formatDisabled", required = false, defaultValue = "true")
-            Boolean formatDisabled,
-        @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false")
-            Boolean sourceDisabled) {
+                              @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
+                              @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         Post post = postService.getBySlug(slug);
 
         checkAuthenticate(post.getId());
@@ -169,76 +196,119 @@ public class PostController {
         return postDetailVO;
     }
 
+    /**
+     * Gets previous post by current post id.
+     *
+     * @param postId post id.
+     * @return post detail vo.
+     */
     @GetMapping("{postId:\\d+}/prev")
     @ApiOperation("Gets previous post by current post id.")
     public PostDetailVO getPrevPostBy(@PathVariable("postId") Integer postId) {
         Post post = postService.getById(postId);
-        Post prevPost =
-            postService.getPrevPost(post).orElseThrow(() -> new NotFoundException("查询不到该文章的信息"));
+        Post prevPost = postService.getPrevPost(post).orElseThrow(() -> new NotFoundException("查询不到该文章的信息"));
         checkAuthenticate(prevPost.getId());
         return postRenderAssembler.convertToDetailVo(prevPost);
     }
 
+    /**
+     * Gets next post by current post id.
+     *
+     * @param postId post id.
+     * @return post detail vo.
+     */
     @GetMapping("{postId:\\d+}/next")
     @ApiOperation("Gets next post by current post id.")
     public PostDetailVO getNextPostBy(@PathVariable("postId") Integer postId) {
         Post post = postService.getById(postId);
-        Post nextPost =
-            postService.getNextPost(post).orElseThrow(() -> new NotFoundException("查询不到该文章的信息"));
+        Post nextPost = postService.getNextPost(post).orElseThrow(() -> new NotFoundException("查询不到该文章的信息"));
         checkAuthenticate(nextPost.getId());
         return postRenderAssembler.convertToDetailVo(nextPost);
     }
 
+    /**
+     * list top comments.
+     *
+     * @param postId post id.
+     * @param page page.
+     * @param sort sort.
+     * @return top comments.
+     */
     @GetMapping("{postId:\\d+}/comments/top_view")
     public Page<CommentWithHasChildrenVO> listTopComments(@PathVariable("postId") Integer postId,
-        @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-        @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
+                                                          @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+                                                          @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
         checkAuthenticate(postId);
         Page<CommentWithHasChildrenVO> comments =
-            postCommentService.pageTopCommentsBy(postId, CommentStatus.PUBLISHED,
-                PageRequest.of(page, optionService.getCommentPageSize(), sort));
+            postCommentService.pageTopCommentsBy(postId, CommentStatus.PUBLISHED, PageRequest.of(page, optionService.getCommentPageSize(), sort));
         comments.getContent().forEach(postCommentRenderAssembler::clearSensitiveField);
         return comments;
     }
 
+    /**
+     * list comment children.
+     *
+     * @param postId post id.
+     * @param commentParentId comment parent id.
+     * @param sort sort.
+     * @return comment list.
+     */
     @GetMapping("{postId:\\d+}/comments/{commentParentId:\\d+}/children")
-    public List<BaseCommentDTO> listChildrenBy(@PathVariable("postId") Integer postId,
-        @PathVariable("commentParentId") Long commentParentId,
-        @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
+    public List<BaseCommentDTO> listChildrenBy(@PathVariable("postId") Integer postId, @PathVariable("commentParentId") Long commentParentId,
+                                               @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
         checkAuthenticate(postId);
         // Find all children comments
-        List<PostComment> postComments = postCommentService
-            .listChildrenBy(postId, commentParentId, CommentStatus.PUBLISHED, sort);
+        List<PostComment> postComments = postCommentService.listChildrenBy(postId, commentParentId, CommentStatus.PUBLISHED, sort);
         // Convert to base comment dto
 
         return postCommentRenderAssembler.convertTo(postComments);
     }
 
+    /**
+     * Lists comments with tree view.
+     *
+     * @param postId post id.
+     * @param page page
+     * @param sort sort
+     * @return comments with tree view.
+     */
     @GetMapping("{postId:\\d+}/comments/tree_view")
     @ApiOperation("Lists comments with tree view")
     public Page<BaseCommentVO> listCommentsTree(@PathVariable("postId") Integer postId,
-        @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-        @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
+                                                @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+                                                @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
         checkAuthenticate(postId);
-        Page<BaseCommentVO> comments = postCommentService
-            .pageVosBy(postId, PageRequest.of(page, optionService.getCommentPageSize(), sort));
+        Page<BaseCommentVO> comments = postCommentService.pageVosBy(postId, PageRequest.of(page, optionService.getCommentPageSize(), sort));
         comments.getContent().forEach(postCommentRenderAssembler::clearSensitiveField);
         return comments;
     }
 
+    /**
+     * Lists comment with list view.
+     *
+     * @param postId post id.
+     * @param page page.
+     * @param sort sort.
+     * @return Lists comment with list view.
+     */
     @GetMapping("{postId:\\d+}/comments/list_view")
     @ApiOperation("Lists comment with list view")
     public Page<BaseCommentWithParentVO> listComments(@PathVariable("postId") Integer postId,
-        @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-        @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
+                                                      @RequestParam(name = "page", required = false, defaultValue = "0") int page,
+                                                      @SortDefault(sort = "createTime", direction = DESC) Sort sort) {
         checkAuthenticate(postId);
         Page<BaseCommentWithParentVO> comments =
-            postCommentService.pageWithParentVoBy(postId,
-                PageRequest.of(page, optionService.getCommentPageSize(), sort));
+            postCommentService.pageWithParentVoBy(postId, PageRequest.of(page, optionService.getCommentPageSize(), sort));
         comments.getContent().forEach(postCommentRenderAssembler::clearSensitiveField);
         return comments;
     }
 
+    /**
+     * comments a post.
+     *
+     * @param postCommentParam post comment param.
+     * @return post comments.
+     */
     @PostMapping("comments")
     @ApiOperation("Comments a post")
     @CacheLock(autoDelete = false, traceRequest = true)
@@ -247,11 +317,15 @@ public class PostController {
         postCommentService.validateCommentBlackListStatus();
 
         // Escape content
-        postCommentParam.setContent(HtmlUtils
-            .htmlEscape(postCommentParam.getContent(), StandardCharsets.UTF_8.displayName()));
+        postCommentParam.setContent(HtmlUtils.htmlEscape(postCommentParam.getContent(), StandardCharsets.UTF_8.displayName()));
         return postCommentRenderAssembler.convertTo(postCommentService.createBy(postCommentParam));
     }
 
+    /**
+     * like a post.
+     *
+     * @param postId post id.
+     */
     @PostMapping("{postId:\\d+}/likes")
     @ApiOperation("Likes a post")
     @CacheLock(autoDelete = false, traceRequest = true)
