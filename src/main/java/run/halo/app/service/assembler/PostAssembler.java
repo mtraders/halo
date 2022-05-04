@@ -117,6 +117,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
      * @return base post minimal dto list.
      */
     @Override
+    @NonNull
     public List<BasePostMinimalDTO> convertToMinimal(List<Post> posts) {
         if (CollectionUtils.isEmpty(posts)) {
             return Collections.emptyList();
