@@ -6,6 +6,7 @@ import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.enums.cern.PostType;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -30,19 +31,25 @@ public class CernPostQuery {
 
     private PostType type;
 
+    /**
+     * get post type.
+     *
+     * @return post type.
+     */
     public PostType getType() {
-        if (type == null) {
+        if (Objects.isNull(type)) {
             return PostType.BASE;
         }
         return type;
     }
 
+    /**
+     * set post type.
+     *
+     * @param type post type.
+     */
     public void setType(PostType type) {
-        if (type == null) {
-            this.type = PostType.BASE;
-        } else {
-            this.type = type;
-        }
+        this.type = Objects.requireNonNullElse(type, PostType.BASE);
     }
 
 }

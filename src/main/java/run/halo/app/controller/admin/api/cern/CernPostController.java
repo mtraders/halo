@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.model.dto.cern.CernPostListDTO;
 import run.halo.app.model.entity.cern.News;
-import run.halo.app.model.enums.cern.PostType;
 import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.service.assembler.cern.NewsAssembler;
 import run.halo.app.service.cern.NewsService;
@@ -42,7 +41,6 @@ public class CernPostController {
     @ApiOperation("List cern posts")
     public Page<? extends CernPostListDTO<?>> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
                                                      CernPostQuery postQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
-
         Page<News> newsPage = newsService.pageBy(postQuery, pageable);
         if (more) {
             return newsAssembler.convertToListVo(newsPage);
