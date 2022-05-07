@@ -10,6 +10,7 @@ import org.springframework.util.Assert;
 import run.halo.app.model.dto.CategoryDTO;
 import run.halo.app.model.dto.TagDTO;
 import run.halo.app.model.dto.cern.CernPostListDTO;
+import run.halo.app.model.dto.cern.news.NewsDetailDTO;
 import run.halo.app.model.dto.cern.news.NewsListDTO;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
@@ -171,7 +172,6 @@ public class NewsAssembler extends BasePostAssembler<News> {
         newsDetailVO.setContent(newsContent.getContent());
         newsDetailVO.setOriginalContent(newsContent.getOriginalContent());
 
-        // News currently drafting in process
         Boolean inProgress = contentService.draftingInProgress(news.getId());
         newsDetailVO.setInProgress(inProgress);
 

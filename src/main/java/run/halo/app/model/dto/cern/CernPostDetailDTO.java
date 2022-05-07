@@ -8,7 +8,7 @@ import run.halo.app.model.entity.Content;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class CernPostDetailDTO<POST extends BasePost> extends CernPostListDTO<POST> {
+public class CernPostDetailDTO<POST extends BasePost> extends CernPostListDTO<POST> {
     private String originalContent;
     private String content;
 

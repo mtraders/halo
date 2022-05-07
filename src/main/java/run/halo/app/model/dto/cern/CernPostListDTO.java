@@ -10,7 +10,7 @@ import run.halo.app.model.enums.cern.PostType;
 import java.util.Date;
 
 @Data
-public abstract class CernPostListDTO<POST extends BasePost> implements OutputConverter<CernPostListDTO<POST>, POST> {
+public class CernPostListDTO<POST extends BasePost> implements OutputConverter<CernPostListDTO<POST>, POST> {
     private Integer id;
     private String title;
     private PostStatus status;
@@ -34,5 +34,7 @@ public abstract class CernPostListDTO<POST extends BasePost> implements OutputCo
         return this.topPriority != null && this.topPriority > 0;
     }
 
-    public abstract PostType getPostType();
+    public PostType getPostType() {
+        return PostType.BASE;
+    }
 }
