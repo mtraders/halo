@@ -18,17 +18,17 @@ public class NewsDetailDTO extends NewsListDTO {
     /**
      * Convert from domain.(shallow)
      *
-     * @param news domain data
+     * @param domain domain data
      * @return converted dto data
      */
     @Override
     @NonNull
     @SuppressWarnings("unchecked")
-    public <T extends CernPostListDTO<News>> T convertFrom(@NonNull News news) {
-        NewsDetailDTO newsDetailDTO = super.convertFrom(news);
-        Content.PatchedContent content = news.getContent();
-        newsDetailDTO.setContent(content.getContent());
-        newsDetailDTO.setOriginalContent(content.getOriginalContent());
-        return (T) newsDetailDTO;
+    public <T extends CernPostListDTO<News>> T convertFrom(@NonNull News domain) {
+        NewsDetailDTO detailDTO = super.convertFrom(domain);
+        Content.PatchedContent content = domain.getContent();
+        detailDTO.setContent(content.getContent());
+        detailDTO.setOriginalContent(content.getOriginalContent());
+        return (T) detailDTO;
     }
 }
