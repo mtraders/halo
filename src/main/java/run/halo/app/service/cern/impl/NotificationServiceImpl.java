@@ -21,7 +21,7 @@ import run.halo.app.model.entity.PostTag;
 import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.Notification;
 import run.halo.app.model.enums.LogType;
-import run.halo.app.model.params.cern.CernPostQuery;
+import run.halo.app.model.params.cern.NotificationQuery;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
 import run.halo.app.repository.cern.NotificationRepository;
 import run.halo.app.service.CategoryService;
@@ -125,7 +125,7 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
      */
     @Override
     @NonNull
-    public Page<Notification> pageBy(@NonNull CernPostQuery<Notification> notificationQuery, @NonNull Pageable pageable) {
+    public Page<Notification> pageBy(@NonNull NotificationQuery notificationQuery, @NonNull Pageable pageable) {
         Assert.notNull(notificationQuery, "Notification query info must not be null");
         Assert.notNull(pageable, "Notification page info must not be null");
         Specification<Notification> notificationSpecification = notificationAssembler.buildSpecByQuery(notificationQuery, Notification.class);

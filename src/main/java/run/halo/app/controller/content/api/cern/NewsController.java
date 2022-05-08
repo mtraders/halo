@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
-import run.halo.app.model.params.PostQuery;
-import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.params.cern.NewsQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
@@ -66,11 +64,11 @@ public class NewsController {
     public Page<NewsListVO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
                                    @RequestParam(value = "keyword", required = false) String keyword,
                                    @RequestParam(value = "categoryId", required = false) Integer categoryId) {
-        NewsQuery postQuery = new NewsQuery();
-        postQuery.setKeyword(keyword);
-        postQuery.setCategoryId(categoryId);
-        postQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
-        Page<News> newsPage = newsService.pageBy(postQuery, pageable);
+        NewsQuery newsQuery = new NewsQuery();
+        newsQuery.setKeyword(keyword);
+        newsQuery.setCategoryId(categoryId);
+        newsQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
+        Page<News> newsPage = newsService.pageBy(newsQuery, pageable);
         return newsAssembler.convertToListVo(newsPage);
     }
 
