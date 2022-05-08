@@ -130,8 +130,7 @@ public class NewsController {
     @PutMapping("{id:\\d+}/{status}")
     @ApiOperation("Update news status")
     public NewsListVO updateStatusBy(@PathVariable("id") Integer newsId, @PathVariable("status") PostStatus status) {
-        News news = newsService.updateStatus(status, newsId);
-        return new NewsListVO().convertFrom(news);
+        return newsAssembler.convertToListVo(newsService.updateStatus(status, newsId));
     }
 
     /**

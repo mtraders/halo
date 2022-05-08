@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.model.dto.cern.notification.NotificationListDTO;
 import run.halo.app.model.entity.cern.Notification;
+import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.params.cern.NotificationParam;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
+import run.halo.app.model.vo.cern.notification.NotificationListVO;
 import run.halo.app.service.assembler.cern.NotificationAssembler;
 import run.halo.app.service.cern.NotificationService;
 
@@ -114,6 +116,20 @@ public class NotificationController {
         Set<Integer> tagIds = notificationParam.getTagIds();
         Set<Integer> categoryIds = notificationParam.getCategoryIds();
         return notificationService.updateBy(notificationToUpdate, tagIds, categoryIds, autoSave);
+    }
+
+    /**
+     * Update notification status.
+     *
+     * @param notificationId notification id.
+     * @param status status.
+     * @return notification list vo.
+     */
+    @PutMapping("{id:\\d+}/{status}")
+    @ApiOperation("Update news status")
+    public NotificationListVO updateStatusBy(@PathVariable("id") Integer notificationId, @PathVariable("status") PostStatus status) {
+        Notification notification = notificationService.updateStatus(status, notificationId);
+        return notificationAssembler.convertToListVO(notification);
     }
 
 }

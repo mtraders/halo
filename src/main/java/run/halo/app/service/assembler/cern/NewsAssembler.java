@@ -126,6 +126,26 @@ public class NewsAssembler extends CernPostAssembler<News> {
     }
 
     /**
+     * convert news entity to list vo.
+     *
+     * @param news news entity.
+     * @return news list vo.
+     */
+    @NonNull
+    public NewsListVO convertToListVo(@NonNull News news) {
+        Integer id = news.getId();
+        List<Tag> tags = postTagService.listTagsBy(id);
+        List<Category> categories = postCategoryService.listCategoriesBy(id);
+        List<PostMeta> metas = postMetaService.listBy(id);
+        NewsListVO newsListVO = new NewsListVO().convertFrom(news);
+        newsListVO.setTags(tagService.convertTo(tags));
+        newsListVO.setCategories(categoryService.convertTo(categories));
+        newsListVO.setMetas(postMetaService.convertToMap(metas));
+        newsListVO.setFullPath(buildFullPath(news));
+        return newsListVO;
+    }
+
+    /**
      * Converts to news detail vo.
      *
      * @param news news must not be null.
