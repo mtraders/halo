@@ -82,15 +82,15 @@ public class NewsController {
         return newsAssembler.convertToListDTO(newsPage).getContent();
     }
 
-    @GetMapping("{newsId:\\d+}")
+    @GetMapping("{id:\\d+}")
     @ApiOperation("Get a news")
-    public NewsDetailVO getBy(@PathVariable("newsId") Integer newsId) {
+    public NewsDetailVO getBy(@PathVariable("id") Integer newsId) {
         News news = newsService.getWithLatestContentById(newsId);
         return newsAssembler.convertToDetailVo(news);
     }
 
     /**
-     * Create a news.
+     * Create news.
      *
      * @param newsParam news param.
      * @param autoSave auto save or not.
@@ -111,9 +111,9 @@ public class NewsController {
      * @param autoSave auto save flag.
      * @return news detail vo.
      */
-    @PutMapping("{newsId:\\d+}")
+    @PutMapping("{id:\\d+}")
     @ApiOperation("Update a news")
-    public NewsDetailVO updateBy(@PathVariable("newsId") Integer newsId, @RequestBody @Valid NewsParam newsParam,
+    public NewsDetailVO updateBy(@PathVariable("id") Integer newsId, @RequestBody @Valid NewsParam newsParam,
                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
         News newsToUpdate = newsService.getWithLatestContentById(newsId);
         newsParam.update(newsToUpdate);
@@ -127,9 +127,9 @@ public class NewsController {
      * @param status status.
      * @return news list vo.
      */
-    @PutMapping("{newsId:\\d+}/{status}")
+    @PutMapping("{id:\\d+}/{status}")
     @ApiOperation("Update news status")
-    public NewsListVO updateStatusBy(@PathVariable("newsId") Integer newsId, @PathVariable("status") PostStatus status) {
+    public NewsListVO updateStatusBy(@PathVariable("id") Integer newsId, @PathVariable("status") PostStatus status) {
         News news = newsService.updateStatus(status, newsId);
         return new NewsListVO().convertFrom(news);
     }
@@ -141,9 +141,9 @@ public class NewsController {
      * @param contentParam content param.
      * @return news detail vo.
      */
-    @PutMapping("{newsId:\\d+}/status/draft/content")
+    @PutMapping("{id:\\d+}/status/draft/content")
     @ApiOperation("Update draft news")
-    public NewsDetailVO updateDraftBy(@PathVariable("newsId") Integer newsId, @RequestBody PostContentParam contentParam) {
+    public NewsDetailVO updateDraftBy(@PathVariable("id") Integer newsId, @RequestBody PostContentParam contentParam) {
         News newsToUse = newsService.getById(newsId);
         String formattedContent = contentParam.decideContentBy(newsToUse.getEditorType());
         News news = newsService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), newsId);
@@ -156,9 +156,9 @@ public class NewsController {
      * @param newsId news id.
      * @return news entity.
      */
-    @DeleteMapping("{newsId:\\d+}")
+    @DeleteMapping("{id:\\d+}")
     @ApiOperation("Delete a news")
-    public News deletePermanently(@PathVariable("newsId") Integer newsId) {
+    public News deletePermanently(@PathVariable("id") Integer newsId) {
         return newsService.removeById(newsId);
     }
 
@@ -180,9 +180,9 @@ public class NewsController {
      * @param newsId news id.
      * @return preview content.
      */
-    @GetMapping("preview/{newsId:\\d+}")
+    @GetMapping("preview/{id:\\d+}")
     @ApiOperation("Get a news preview")
-    public String preview(@PathVariable("newsId") Integer newsId) {
+    public String preview(@PathVariable("id") Integer newsId) {
         return newsId.toString();
     }
 

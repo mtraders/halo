@@ -90,6 +90,20 @@ public enum LogType implements ValueEnum<Integer> {
      * News deleted.
      */
     NEWS_DELETED(102),
+
+    /**
+     * Notification create.
+     */
+    NOTIFICATION_PUBLISHED(103),
+
+    /**
+     * Notification edited.
+     */
+    NOTIFICATION_EDITED(104),
+    /**
+     * Notification deleted.
+     */
+    NOTIFICATION_DELETED(105),
     ;
 
 

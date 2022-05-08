@@ -4,8 +4,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
+import run.halo.app.model.dto.cern.CernPostDetailDTO;
+import run.halo.app.model.dto.cern.CernPostListDTO;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.cern.Notification;
+import run.halo.app.model.enums.cern.PostType;
 
 /**
  * notification detail dto.
@@ -18,22 +21,21 @@ import run.halo.app.model.entity.cern.Notification;
 public class NotificationDetailDTO extends NotificationListDTO {
     private String originalContent;
     private String content;
-    private Long commentCount;
 
     /**
-     * convert notification entity to notification detail dto.
+     * Convert from domain.(shallow)
      *
-     * @param notification notification entity.
-     * @param <T> notification detail dto.
-     * @return notificattion dto
+     * @param domain domain data
+     * @return converted dto data
      */
+    @Override
     @NonNull
     @SuppressWarnings("unchecked")
-    public <T extends NotificationListDTO> T convertFrom(@NonNull Notification notification) {
-        NotificationDetailDTO notificationDetailDTO = super.convertFrom(notification);
-        Content.PatchedContent content = notification.getContent();
-        notificationDetailDTO.setContent(content.getContent());
-        notificationDetailDTO.setOriginalContent(content.getOriginalContent());
-        return (T) notificationDetailDTO;
+    public <T extends CernPostListDTO<Notification>> T convertFrom(Notification domain) {
+        NotificationDetailDTO detailDTO = super.convertFrom(domain);
+        Content.PatchedContent content = domain.getContent();
+        detailDTO.setContent(content.getContent());
+        detailDTO.setOriginalContent(content.getOriginalContent());
+        return (T) detailDTO;
     }
 }

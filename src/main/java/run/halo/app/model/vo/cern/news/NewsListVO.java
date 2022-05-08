@@ -18,8 +18,6 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 public class NewsListVO extends NewsListDTO {
 
-    private Long commentCount = 0L;
-
     private List<TagDTO> tags;
 
     private List<CategoryDTO> categories;
