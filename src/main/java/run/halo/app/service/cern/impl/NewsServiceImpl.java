@@ -29,6 +29,7 @@ import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.params.cern.CernPostQuery;
+import run.halo.app.model.params.cern.NewsQuery;
 import run.halo.app.model.properties.PostProperties;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.repository.cern.NewsRepository;
@@ -149,15 +150,15 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
     /**
      * pages news.
      *
-     * @param postQuery post query.
+     * @param newsQuery post query.
      * @param pageable pageable.
      * @return news list vo.
      */
     @NonNull
-    public Page<News> pageBy(@NonNull CernPostQuery postQuery, @NonNull Pageable pageable) {
-        Assert.notNull(postQuery, "Post query must not be null");
+    public Page<News> pageBy(@NonNull NewsQuery newsQuery, @NonNull Pageable pageable) {
+        Assert.notNull(newsQuery, "Post query must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
-        return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
+        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery, News.class), pageable);
     }
 
     /**
@@ -172,52 +173,12 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         Assert.notNull(keyword, "Keyword must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
 
-        CernPostQuery postQuery = new CernPostQuery();
-        postQuery.setKeyword(keyword);
-        postQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
+        NewsQuery newsQuery = new NewsQuery();
+        newsQuery.setKeyword(keyword);
+        newsQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
 
         // Build specification and find all
-        return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
-    }
-
-    @NonNull
-    private Specification<News> buildSpecByQuery(@NonNull CernPostQuery postQuery) {
-        Assert.notNull(postQuery, "News query must not be null");
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new LinkedList<>();
-
-            Set<PostStatus> statuses = postQuery.getStatuses();
-            if (!CollectionUtils.isEmpty(statuses)) {
-                predicates.add(root.get("status").in(statuses));
-            }
-
-            if (postQuery.getCategoryId() != null) {
-                List<Integer> categoryIds =
-                    categoryService.listAllByParentId(postQuery.getCategoryId()).stream().map(Category::getId).collect(Collectors.toList());
-                Subquery<Post> postSubquery = query.subquery(Post.class);
-                Root<PostCategory> postCategoryRoot = postSubquery.from(PostCategory.class);
-                postSubquery.select(postCategoryRoot.get("postId"));
-                postSubquery.where(criteriaBuilder.equal(root.get("id"), postCategoryRoot.get("postId")),
-                    postCategoryRoot.get("categoryId").in(categoryIds));
-                predicates.add(criteriaBuilder.exists(postSubquery));
-            }
-
-            if (postQuery.getKeyword() != null) {
-
-                // Format like condition
-                String likeCondition = String.format("%%%s%%", StringUtils.strip(postQuery.getKeyword()));
-
-                // Build like predicate
-                Subquery<News> postSubQuery = query.subquery(News.class);
-                Root<Content> contentRoot = postSubQuery.from(Content.class);
-                postSubQuery.select(contentRoot.get("id")).where(criteriaBuilder.like(contentRoot.get("originalContent"), likeCondition));
-
-                Predicate titleLike = criteriaBuilder.like(root.get("title"), likeCondition);
-
-                predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubQuery)));
-            }
-            return query.where(predicates.toArray(new Predicate[0])).getRestriction();
-        };
+        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery, News.class), pageable);
     }
 
     @Override
