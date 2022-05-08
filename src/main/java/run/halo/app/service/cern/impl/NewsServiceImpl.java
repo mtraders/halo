@@ -72,8 +72,6 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsService {
 
     private final NewsRepository newsRepository;
-    private final ContentService contentService;
-    private final ContentPatchLogService contentPatchLogService;
     private final OptionService optionService;
     private final ApplicationEventPublisher eventPublisher;
     private final NewsAssembler newsAssembler;
@@ -114,8 +112,6 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
                            PostCommentService postCommentService) {
         super(newsRepository, optionService, contentService, contentPatchLogService);
         this.newsRepository = newsRepository;
-        this.contentService = contentService;
-        this.contentPatchLogService = contentPatchLogService;
         this.optionService = optionService;
         this.eventPublisher = eventPublisher;
         this.newsAssembler = newsAssembler;
