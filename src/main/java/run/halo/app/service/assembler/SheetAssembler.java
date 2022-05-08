@@ -174,7 +174,7 @@ public class SheetAssembler extends BasePostAssembler<Sheet> {
      * @param sheet sheet
      * @return a full path to access.
      */
-    private String buildFullPath(Sheet sheet) {
+    public String buildFullPath(Sheet sheet) {
         StringBuilder fullPath = new StringBuilder();
 
         SheetPermalinkType permalinkType = optionService.getSheetPermalinkType();

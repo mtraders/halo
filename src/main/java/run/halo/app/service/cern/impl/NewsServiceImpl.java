@@ -21,7 +21,6 @@ import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.PostCategory;
-import run.halo.app.model.entity.PostComment;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.PostTag;
 import run.halo.app.model.entity.Tag;
@@ -288,7 +287,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         List<PostMeta> metas = postMetaService.removeByPostId(newsId);
         log.debug("Removed news metas: [{}]", metas);
         // Remove news comments
-        List<PostComment> newsComments = postCommentService.removeByPostId(newsId);
+        postCommentService.removeByPostId(newsId);
         // Remove news content
         Content newsContent = postContentService.removeById(newsId);
         log.debug("Removed news content: [{}]", newsContent);
