@@ -59,9 +59,7 @@ public class NotificationController {
     public Page<? extends NotificationListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
                                                       CernPostQuery<Notification> cernPostQuery,
                                                       @RequestParam(value = "more", defaultValue = "true") Boolean more) {
-
         Page<Notification> pageData = notificationService.pageBy(cernPostQuery, pageable);
-
         if (more) {
             return notificationAssembler.convertToListVo(pageData);
         }
