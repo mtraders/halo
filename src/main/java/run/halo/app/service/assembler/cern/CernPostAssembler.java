@@ -3,7 +3,6 @@ package run.halo.app.service.assembler.cern;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.model.dto.cern.CernPostListDTO;
@@ -15,6 +14,7 @@ import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.service.CategoryService;
 import run.halo.app.service.ContentService;
+import run.halo.app.service.OptionService;
 import run.halo.app.service.assembler.BasePostAssembler;
 
 import javax.persistence.criteria.Predicate;
@@ -25,24 +25,27 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Component
-public class CernAssembler<POST extends BasePost> {
+/**
+ * Cern assembler.
+ *
+ * @param <POST> post extends base post.
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
+ */
+public class CernPostAssembler<POST extends BasePost> extends BasePostAssembler<POST> {
     private final CategoryService categoryService;
     private final ContentService contentService;
-    private final BasePostAssembler<POST> postAssembler;
 
     /**
      * constructor of cern query service.
      *
      * @param categoryService category service.
      * @param contentService content service.
-     * @param postAssembler post assembler.
+     * @param optionService option service.
      */
-    public CernAssembler(CategoryService categoryService, ContentService contentService,
-                         BasePostAssembler<POST> postAssembler) {
+    public CernPostAssembler(CategoryService categoryService, ContentService contentService, OptionService optionService) {
+        super(contentService, optionService);
         this.categoryService = categoryService;
         this.contentService = contentService;
-        this.postAssembler = postAssembler;
     }
 
     /**
@@ -98,7 +101,7 @@ public class CernAssembler<POST extends BasePost> {
      * @param postDTOT post dto.
      * @param <DTOT> post dto.
      */
-    public <DTOT extends CernPostListDTO<POST>> void generateAndSetSummaryIfAbsent(@NonNull POST post, @NonNull DTOT postDTOT) {
+    private <DTOT extends CernPostListDTO<POST>> void generateAndSetSummaryIfAbsent(@NonNull POST post, @NonNull DTOT postDTOT) {
         Assert.notNull(post, "The post must not be null.");
         if (StringUtils.isNotBlank(postDTOT.getSummary())) {
             return;
@@ -107,12 +110,29 @@ public class CernAssembler<POST extends BasePost> {
         if (patchedContent == null) {
             Content newsContent = contentService.getByIdOfNullable(post.getId());
             if (newsContent != null) {
-                postDTOT.setSummary(postAssembler.generateSummary(newsContent.getContent()));
+                postDTOT.setSummary(generateSummary(newsContent.getContent()));
             } else {
                 postDTOT.setSummary(StringUtils.EMPTY);
             }
         } else {
-            postDTOT.setSummary(postAssembler.generateSummary(patchedContent.getContent()));
+            postDTOT.setSummary(generateSummary(patchedContent.getContent()));
         }
+    }
+
+    /**
+     * generate dto info if absent.
+     *
+     * @param post post entity
+     * @param postDTOT post dto
+     * @param <DTOT> post dto.
+     */
+    public <DTOT extends CernPostListDTO<POST>> void generateAndSetDTOInfoIfAbsent(@NonNull POST post, @NonNull DTOT postDTOT) {
+        // summary
+        generateAndSetSummaryIfAbsent(post, postDTOT);
+        // Post currently drafting in process
+        Boolean isInProcess = contentService.draftingInProgress(post.getId());
+        postDTOT.setInProgress(isInProcess);
+        // full path
+        postDTOT.setFullPath(buildFullPath(post));
     }
 }

@@ -29,8 +29,8 @@ import run.halo.app.service.OptionService;
 import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
+import run.halo.app.service.assembler.cern.CernPostAssembler;
 import run.halo.app.service.assembler.cern.NotificationAssembler;
-import run.halo.app.service.assembler.cern.CernAssembler;
 import run.halo.app.service.cern.NotificationService;
 import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.ServiceUtils;
@@ -47,10 +47,7 @@ import java.util.Set;
 @Service
 public class NotificationServiceImpl extends BasePostServiceImpl<Notification> implements NotificationService {
     private final NotificationRepository notificationRepository;
-    private final ContentService contentService;
     private final ContentPatchLogService contentPatchLogService;
-    private final OptionService optionService;
-    private final CernAssembler<Notification> notificationCernAssembler;
     private final ApplicationContext applicationContext;
     private final ApplicationEventPublisher eventPublisher;
     private final TagService tagService;
@@ -69,7 +66,7 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
      * @param optionService option service.
      * @param contentService content service.
      * @param contentPatchLogService content patch log service.
-     * @param notificationCernAssembler notification query service.
+     * @param notificationCernPostAssembler notification query service.
      * @param applicationContext application context
      * @param eventPublisher event publisher.
      * @param tagService tag service.
@@ -81,18 +78,14 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
      * @param notificationAssembler notification assembler.
      */
     public NotificationServiceImpl(NotificationRepository notificationRepository, OptionService optionService, ContentService contentService,
-                                   ContentPatchLogService contentPatchLogService, CernAssembler<Notification> notificationCernAssembler,
-                                   ApplicationContext applicationContext, ApplicationEventPublisher eventPublisher,
-                                   TagService tagService, PostTagService postTagService,
-                                   CategoryService categoryService, PostCategoryService postCategoryService,
+                                   ContentPatchLogService contentPatchLogService,
+                                   ApplicationContext applicationContext, ApplicationEventPublisher eventPublisher, TagService tagService,
+                                   PostTagService postTagService, CategoryService categoryService, PostCategoryService postCategoryService,
                                    ContentService postContentService, ContentPatchLogService postContentPatchLogService,
                                    NotificationAssembler notificationAssembler) {
         super(notificationRepository, optionService, contentService, contentPatchLogService);
         this.notificationRepository = notificationRepository;
-        this.contentService = contentService;
         this.contentPatchLogService = contentPatchLogService;
-        this.optionService = optionService;
-        this.notificationCernAssembler = notificationCernAssembler;
         this.applicationContext = applicationContext;
         this.eventPublisher = eventPublisher;
         this.tagService = tagService;
@@ -132,7 +125,7 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
     public Page<Notification> pageBy(@NonNull CernPostQuery<Notification> notificationQuery, @NonNull Pageable pageable) {
         Assert.notNull(notificationQuery, "Notification query info must not be null");
         Assert.notNull(pageable, "Notification page info must not be null");
-        Specification<Notification> notificationSpecification = notificationCernAssembler.buildSpecByQuery(notificationQuery, Notification.class);
+        Specification<Notification> notificationSpecification = notificationAssembler.buildSpecByQuery(notificationQuery, Notification.class);
         return notificationRepository.findAll(notificationSpecification, pageable);
     }
 

@@ -20,8 +20,6 @@ import run.halo.app.service.OptionService;
 import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
-import run.halo.app.service.assembler.BasePostAssembler;
-import run.halo.app.service.assembler.PostAssembler;
 import run.halo.app.utils.ServiceUtils;
 
 import java.util.LinkedList;
@@ -39,16 +37,12 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 @Component
-public class NotificationAssembler extends BasePostAssembler<Notification> {
+public class NotificationAssembler extends CernPostAssembler<Notification> {
 
-    private final ContentService contentService;
     private final TagService tagService;
     private final CategoryService categoryService;
     private final PostCategoryService postCategoryService;
-    private final OptionService optionService;
     private final PostTagService postTagService;
-    private final CernAssembler<Notification> cernAssembler;
-    private final PostAssembler postAssembler;
 
     /**
      * constructor of notification assembler.
@@ -56,24 +50,16 @@ public class NotificationAssembler extends BasePostAssembler<Notification> {
      * @param contentService content service.
      * @param tagService tag service.
      * @param categoryService category service.
-     * @param optionService option service.
      * @param postTagService post tag service.
      * @param postCategoryService post category service.
-     * @param cernAssembler cern assembler.
-     * @param postAssembler post assembler.
      */
     public NotificationAssembler(ContentService contentService, TagService tagService, CategoryService categoryService, OptionService optionService,
-                                 PostTagService postTagService, PostCategoryService postCategoryService, CernAssembler<Notification> cernAssembler,
-                                 PostAssembler postAssembler) {
-        super(contentService, optionService);
-        this.contentService = contentService;
+                                 PostTagService postTagService, PostCategoryService postCategoryService) {
+        super(categoryService, contentService, optionService);
         this.tagService = tagService;
         this.categoryService = categoryService;
-        this.optionService = optionService;
         this.postTagService = postTagService;
         this.postCategoryService = postCategoryService;
-        this.cernAssembler = cernAssembler;
-        this.postAssembler = postAssembler;
     }
 
     /**
@@ -133,19 +119,15 @@ public class NotificationAssembler extends BasePostAssembler<Notification> {
     public NotificationDetailVO convertTo(@NonNull Notification notification, @Nullable List<Tag> tags, @Nullable List<Category> categories) {
         Assert.notNull(notification, "notification must not be null");
         NotificationDetailVO detailVO = new NotificationDetailVO().convertFrom(notification);
-        cernAssembler.generateAndSetSummaryIfAbsent(notification, detailVO);
+        generateAndSetDTOInfoIfAbsent(notification, detailVO);
 
         detailVO.setTags(tagService.convertTo(tags));
         detailVO.setCategories(categoryService.convertTo(categories));
-
-        detailVO.setFullPath(postAssembler.buildFullPath(notification));
 
         Content.PatchedContent newsContent = notification.getContent();
         detailVO.setContent(newsContent.getContent());
         detailVO.setOriginalContent(newsContent.getOriginalContent());
 
-        Boolean inProgress = contentService.draftingInProgress(notification.getId());
-        detailVO.setInProgress(inProgress);
         return detailVO;
     }
 
@@ -185,11 +167,7 @@ public class NotificationAssembler extends BasePostAssembler<Notification> {
     public NotificationListDTO convertToListDTO(@NonNull Notification notification) {
         Assert.notNull(notification, "Notification must not be null");
         NotificationListDTO notificationListDTO = new NotificationListDTO().convertFrom(notification);
-        cernAssembler.generateAndSetSummaryIfAbsent(notification, notificationListDTO);
-        // Post currently drafting in process
-        Boolean isInProcess = contentService.draftingInProgress(notification.getId());
-        notificationListDTO.setInProgress(isInProcess);
-        notificationListDTO.setFullPath(postAssembler.buildFullPath(notification));
+        generateAndSetDTOInfoIfAbsent(notification, notificationListDTO);
         return notificationListDTO;
     }
 
