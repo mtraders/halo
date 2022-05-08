@@ -145,7 +145,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
     public Page<News> pageBy(@NonNull NewsQuery newsQuery, @NonNull Pageable pageable) {
         Assert.notNull(newsQuery, "Post query must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
-        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery, News.class), pageable);
+        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery), pageable);
     }
 
     /**
@@ -165,7 +165,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         newsQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
 
         // Build specification and find all
-        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery, News.class), pageable);
+        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery), pageable);
     }
 
     @Override
