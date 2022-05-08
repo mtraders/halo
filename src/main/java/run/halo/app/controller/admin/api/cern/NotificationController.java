@@ -83,10 +83,16 @@ public class NotificationController {
         return notificationService.createBy(notification, tagIds, categoryIds, autoSave);
     }
 
+    /**
+     * get a notification.
+     *
+     * @param notificationId id param
+     * @return notification detail vo.
+     */
     @GetMapping("{id:\\d+}")
     @ApiOperation("Get a notification")
-    public NotificationDetailVO getBy(@PathVariable("id") Integer id) {
-        Notification notification = notificationService.getWithLatestContentById(id);
+    public NotificationDetailVO getBy(@PathVariable("id") Integer notificationId) {
+        Notification notification = notificationService.getWithLatestContentById(notificationId);
         return notificationAssembler.convertToDetailVo(notification);
     }
 
