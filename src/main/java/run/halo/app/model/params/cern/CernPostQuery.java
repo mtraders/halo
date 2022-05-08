@@ -3,7 +3,6 @@ package run.halo.app.model.params.cern;
 import lombok.Data;
 import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.enums.PostStatus;
-
 import java.util.Set;
 
 /**

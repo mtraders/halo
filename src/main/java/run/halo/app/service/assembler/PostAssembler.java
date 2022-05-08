@@ -1,17 +1,5 @@
 package run.halo.app.service.assembler;
 
-import static run.halo.app.model.support.HaloConst.URL_SEPARATOR;
-
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -19,7 +7,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.model.dto.post.BasePostMinimalDTO;
-import run.halo.app.model.dto.post.BasePostSimpleDTO;
 import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content.PatchedContent;
@@ -42,6 +29,19 @@ import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static run.halo.app.model.support.HaloConst.URL_SEPARATOR;
 
 /**
  * Post assembler.
@@ -68,13 +68,21 @@ public class PostAssembler extends BasePostAssembler<Post> {
 
     private final OptionService optionService;
 
-    public PostAssembler(ContentService contentService,
-        OptionService optionService, PostTagService postTagService,
-        PostCategoryService postCategoryService,
-        PostMetaService postMetaService,
-        PostCommentService postCommentService,
-        TagService tagService,
-        CategoryService categoryService) {
+    /**
+     * post assembler constructor.
+     *
+     * @param contentService content service.
+     * @param optionService option service.
+     * @param postTagService post tag service.
+     * @param postCategoryService post category service.
+     * @param postMetaService post meta service.
+     * @param postCommentService post comment service.
+     * @param tagService tag service.
+     * @param categoryService category service.
+     */
+    public PostAssembler(ContentService contentService, OptionService optionService, PostTagService postTagService,
+                         PostCategoryService postCategoryService, PostMetaService postMetaService, PostCommentService postCommentService,
+                         TagService tagService, CategoryService categoryService) {
         super(contentService, optionService);
         this.postTagService = postTagService;
         this.postCategoryService = postCategoryService;
@@ -86,6 +94,12 @@ public class PostAssembler extends BasePostAssembler<Post> {
         this.optionService = optionService;
     }
 
+    /**
+     * convert to minimal.
+     *
+     * @param post post must not be null.
+     * @return base post minimal dto.
+     */
     @Override
     public BasePostMinimalDTO convertToMinimal(Post post) {
         Assert.notNull(post, "Post must not be null");
@@ -96,15 +110,20 @@ public class PostAssembler extends BasePostAssembler<Post> {
         return basePostMinimalDTO;
     }
 
+    /**
+     * convert to minimal.
+     *
+     * @param posts posts must not be null.
+     * @return base post minimal dto list.
+     */
     @Override
+    @NonNull
     public List<BasePostMinimalDTO> convertToMinimal(List<Post> posts) {
         if (CollectionUtils.isEmpty(posts)) {
             return Collections.emptyList();
         }
 
-        return posts.stream()
-            .map(this::convertToMinimal)
-            .collect(Collectors.toList());
+        return posts.stream().map(this::convertToMinimal).collect(Collectors.toList());
     }
 
     /**
@@ -118,8 +137,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
         // List tags
         List<Tag> tags = postTagService.listTagsBy(post.getId());
         // List categories
-        List<Category> categories = postCategoryService
-            .listCategoriesBy(post.getId());
+        List<Category> categories = postCategoryService.listCategoriesBy(post.getId());
         // List metas
         List<PostMeta> metas = postMetaService.listBy(post.getId());
         // Convert to detail vo
@@ -155,12 +173,10 @@ public class PostAssembler extends BasePostAssembler<Post> {
         Map<Integer, List<Tag>> tagListMap = postTagService.listTagListMapBy(postIds);
 
         // Get category list map
-        Map<Integer, List<Category>> categoryListMap = postCategoryService
-            .listCategoryListMap(postIds);
+        Map<Integer, List<Category>> categoryListMap = postCategoryService.listCategoryListMap(postIds);
 
         // Get comment count
-        Map<Integer, Long> commentCountMap = postCommentService.countByStatusAndPostIds(
-            CommentStatus.PUBLISHED, postIds);
+        Map<Integer, Long> commentCountMap = postCommentService.countByStatusAndPostIds(CommentStatus.PUBLISHED, postIds);
 
         // Get post meta list map
         Map<Integer, List<PostMeta>> postMetaListMap = postMetaService.listPostMetaAsMap(postIds);
@@ -173,24 +189,16 @@ public class PostAssembler extends BasePostAssembler<Post> {
             Optional.ofNullable(tagListMap.get(post.getId())).orElseGet(LinkedList::new);
 
             // Set tags
-            postListVO.setTags(Optional.ofNullable(tagListMap.get(post.getId()))
-                .orElseGet(LinkedList::new)
-                .stream()
-                .filter(Objects::nonNull)
-                .map(tagService::convertTo)
-                .collect(Collectors.toList()));
+            postListVO.setTags(Optional.ofNullable(tagListMap.get(post.getId())).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                .map(tagService::convertTo).collect(Collectors.toList()));
 
             // Set categories
-            postListVO.setCategories(Optional.ofNullable(categoryListMap.get(post.getId()))
-                .orElseGet(LinkedList::new)
-                .stream()
-                .filter(Objects::nonNull)
-                .map(categoryService::convertTo)
-                .collect(Collectors.toList()));
+            postListVO.setCategories(
+                Optional.ofNullable(categoryListMap.get(post.getId())).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                    .map(categoryService::convertTo).collect(Collectors.toList()));
 
             // Set post metas
-            List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(post.getId()))
-                .orElseGet(LinkedList::new);
+            List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(post.getId())).orElseGet(LinkedList::new);
             postListVO.setMetas(postMetaService.convertToMap(metas));
 
             // Set comment count
@@ -221,12 +229,10 @@ public class PostAssembler extends BasePostAssembler<Post> {
         Map<Integer, List<Tag>> tagListMap = postTagService.listTagListMapBy(postIds);
 
         // Get category list map
-        Map<Integer, List<Category>> categoryListMap = postCategoryService
-            .listCategoryListMap(postIds);
+        Map<Integer, List<Category>> categoryListMap = postCategoryService.listCategoryListMap(postIds);
 
         // Get comment count
-        Map<Integer, Long> commentCountMap =
-            postCommentService.countByStatusAndPostIds(CommentStatus.PUBLISHED, postIds);
+        Map<Integer, Long> commentCountMap = postCommentService.countByStatusAndPostIds(CommentStatus.PUBLISHED, postIds);
 
         // Get post meta list map
         Map<Integer, List<PostMeta>> postMetaListMap = postMetaService.listPostMetaAsMap(postIds);
@@ -239,24 +245,16 @@ public class PostAssembler extends BasePostAssembler<Post> {
             Optional.ofNullable(tagListMap.get(post.getId())).orElseGet(LinkedList::new);
 
             // Set tags
-            postListVO.setTags(Optional.ofNullable(tagListMap.get(post.getId()))
-                .orElseGet(LinkedList::new)
-                .stream()
-                .filter(Objects::nonNull)
-                .map(tagService::convertTo)
-                .collect(Collectors.toList()));
+            postListVO.setTags(Optional.ofNullable(tagListMap.get(post.getId())).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                .map(tagService::convertTo).collect(Collectors.toList()));
 
             // Set categories
-            postListVO.setCategories(Optional.ofNullable(categoryListMap.get(post.getId()))
-                .orElseGet(LinkedList::new)
-                .stream()
-                .filter(Objects::nonNull)
-                .map(categoryService::convertTo)
-                .collect(Collectors.toList()));
+            postListVO.setCategories(
+                Optional.ofNullable(categoryListMap.get(post.getId())).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                    .map(categoryService::convertTo).collect(Collectors.toList()));
 
             // Set post metas
-            List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(post.getId()))
-                .orElseGet(LinkedList::new);
+            List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(post.getId())).orElseGet(LinkedList::new);
             postListVO.setMetas(postMetaService.convertToMap(metas));
 
             // Set comment count
@@ -279,8 +277,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
      * @return post detail vo
      */
     @NonNull
-    public PostDetailVO convertTo(@NonNull Post post, @Nullable List<Tag> tags,
-        @Nullable List<Category> categories, List<PostMeta> postMetaList) {
+    public PostDetailVO convertTo(@NonNull Post post, @Nullable List<Tag> tags, @Nullable List<Category> categories, List<PostMeta> postMetaList) {
         Assert.notNull(post, "Post must not be null");
 
         // Convert to base detail vo
@@ -304,8 +301,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
         postDetailVO.setMetaIds(metaIds);
         postDetailVO.setMetas(postMetaService.convertTo(postMetaList));
 
-        postDetailVO.setCommentCount(postCommentService.countByStatusAndPostId(
-            CommentStatus.PUBLISHED, post.getId()));
+        postDetailVO.setCommentCount(postCommentService.countByStatusAndPostId(CommentStatus.PUBLISHED, post.getId()));
 
         postDetailVO.setFullPath(buildFullPath(post));
 
@@ -322,7 +318,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
 
 
     /**
-     * Convert to year archives
+     * Convert to year archives.
      *
      * @param posts posts must not be null
      * @return list of ArchiveYearVO
@@ -332,8 +328,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
 
         posts.forEach(post -> {
             Calendar calendar = DateUtils.convertTo(post.getCreateTime());
-            yearPostMap.computeIfAbsent(calendar.get(Calendar.YEAR), year -> new LinkedList<>())
-                .add(post);
+            yearPostMap.computeIfAbsent(calendar.get(Calendar.YEAR), year -> new LinkedList<>()).add(post);
         });
 
         List<ArchiveYearVO> archives = new LinkedList<>();
@@ -355,7 +350,7 @@ public class PostAssembler extends BasePostAssembler<Post> {
     }
 
     /**
-     * Convert to month archives
+     * Convert to month archives.
      *
      * @param posts posts must not be null
      * @return list of ArchiveMonthVO
@@ -368,28 +363,23 @@ public class PostAssembler extends BasePostAssembler<Post> {
             Calendar calendar = DateUtils.convertTo(post.getCreateTime());
 
             yearMonthPostMap.computeIfAbsent(calendar.get(Calendar.YEAR), year -> new HashMap<>())
-                .computeIfAbsent(calendar.get(Calendar.MONTH) + 1,
-                    month -> new LinkedList<>())
-                .add(post);
+                .computeIfAbsent(calendar.get(Calendar.MONTH) + 1, month -> new LinkedList<>()).add(post);
         });
 
         List<ArchiveMonthVO> archives = new LinkedList<>();
 
-        yearMonthPostMap.forEach((year, monthPostMap) ->
-            monthPostMap.forEach((month, postList) -> {
-                ArchiveMonthVO archive = new ArchiveMonthVO();
-                archive.setYear(year);
-                archive.setMonth(month);
-                archive.setPosts(convertToListVo(postList));
+        yearMonthPostMap.forEach((year, monthPostMap) -> monthPostMap.forEach((month, postList) -> {
+            ArchiveMonthVO archive = new ArchiveMonthVO();
+            archive.setYear(year);
+            archive.setMonth(month);
+            archive.setPosts(convertToListVo(postList));
 
-                archives.add(archive);
-            }));
+            archives.add(archive);
+        }));
 
         // Sort this list
         archives.sort(new ArchiveMonthVO.ArchiveComparator());
 
         return archives;
     }
-
-
 }
