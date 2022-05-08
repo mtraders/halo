@@ -189,6 +189,7 @@ public class NotificationAssembler extends BasePostAssembler<Notification> {
         // Post currently drafting in process
         Boolean isInProcess = contentService.draftingInProgress(notification.getId());
         notificationListDTO.setInProgress(isInProcess);
+        notificationListDTO.setFullPath(postAssembler.buildFullPath(notification));
         return notificationListDTO;
     }
 
