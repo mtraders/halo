@@ -188,6 +188,7 @@ public class BasePost extends BaseEntity {
     @Transient
     private PatchedContent content;
 
+
     @Override
     public void prePersist() {
         super.prePersist();
