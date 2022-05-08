@@ -2,9 +2,11 @@ package run.halo.app.service.assembler.cern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import run.halo.app.model.dto.cern.CernPostListDTO;
 import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
@@ -12,6 +14,8 @@ import run.halo.app.model.entity.PostCategory;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.service.CategoryService;
+import run.halo.app.service.ContentService;
+import run.halo.app.service.assembler.BasePostAssembler;
 
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -22,16 +26,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class QueryAssembler<POST extends BasePost> {
+public class CernAssembler<POST extends BasePost> {
     private final CategoryService categoryService;
+    private final ContentService contentService;
+    private final BasePostAssembler<POST> postAssembler;
 
     /**
      * constructor of cern query service.
      *
      * @param categoryService category service.
+     * @param contentService content service.
+     * @param postAssembler post assembler.
      */
-    public QueryAssembler(CategoryService categoryService) {
+    public CernAssembler(CategoryService categoryService, ContentService contentService,
+                         BasePostAssembler<POST> postAssembler) {
         this.categoryService = categoryService;
+        this.contentService = contentService;
+        this.postAssembler = postAssembler;
     }
 
     /**
@@ -78,5 +89,30 @@ public class QueryAssembler<POST extends BasePost> {
             }
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
+    }
+
+    /**
+     * generate and set summary if absent to dto.
+     *
+     * @param post post entity.
+     * @param postDTOT post dto.
+     * @param <DTOT> post dto.
+     */
+    public <DTOT extends CernPostListDTO<POST>> void generateAndSetSummaryIfAbsent(@NonNull POST post, @NonNull DTOT postDTOT) {
+        Assert.notNull(post, "The post must not be null.");
+        if (StringUtils.isNotBlank(postDTOT.getSummary())) {
+            return;
+        }
+        Content.PatchedContent patchedContent = post.getContentOfNullable();
+        if (patchedContent == null) {
+            Content newsContent = contentService.getByIdOfNullable(post.getId());
+            if (newsContent != null) {
+                postDTOT.setSummary(postAssembler.generateSummary(newsContent.getContent()));
+            } else {
+                postDTOT.setSummary(StringUtils.EMPTY);
+            }
+        } else {
+            postDTOT.setSummary(postAssembler.generateSummary(patchedContent.getContent()));
+        }
     }
 }

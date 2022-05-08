@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,6 +83,13 @@ public class NotificationController {
         Set<Integer> tagIds = notificationParam.getTagIds();
         Set<Integer> categoryIds = notificationParam.getCategoryIds();
         return notificationService.createBy(notification, tagIds, categoryIds, autoSave);
+    }
+
+    @GetMapping("{id:\\d+}")
+    @ApiOperation("Get a notification")
+    public NotificationDetailVO getBy(@PathVariable("id") Integer id) {
+        Notification notification = notificationService.getWithLatestContentById(id);
+        return notificationAssembler.convertToDetailVo(notification);
     }
 
 }

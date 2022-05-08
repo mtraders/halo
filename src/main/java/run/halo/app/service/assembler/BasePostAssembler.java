@@ -154,8 +154,14 @@ public class BasePostAssembler<POST extends BasePost> {
         return postDetail;
     }
 
+    /**
+     * generate summary by html content.
+     *
+     * @param htmlContent html content.
+     * @return summary
+     */
     @NonNull
-    protected String generateSummary(@Nullable String htmlContent) {
+    public String generateSummary(@Nullable String htmlContent) {
         if (StringUtils.isBlank(htmlContent)) {
             return StringUtils.EMPTY;
         }

@@ -90,7 +90,7 @@ public class NewsController {
     }
 
     /**
-     * Create a news.
+     * Create news.
      *
      * @param newsParam news param.
      * @param autoSave auto save or not.
