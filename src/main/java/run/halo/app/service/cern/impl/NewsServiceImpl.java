@@ -1,7 +1,6 @@
 package run.halo.app.service.cern.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -9,7 +8,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +17,6 @@ import run.halo.app.event.cern.NewsUpdateEvent;
 import run.halo.app.event.logger.LogEvent;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
-import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.PostCategory;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.PostTag;
@@ -27,8 +24,7 @@ import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
-import run.halo.app.model.params.PostQuery;
-import run.halo.app.model.params.cern.CernPostQuery;
+import run.halo.app.model.params.cern.NewsQuery;
 import run.halo.app.model.properties.PostProperties;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.repository.cern.NewsRepository;
@@ -47,12 +43,8 @@ import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -71,8 +63,6 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsService {
 
     private final NewsRepository newsRepository;
-    private final ContentService contentService;
-    private final ContentPatchLogService contentPatchLogService;
     private final OptionService optionService;
     private final ApplicationEventPublisher eventPublisher;
     private final NewsAssembler newsAssembler;
@@ -113,8 +103,6 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
                            PostCommentService postCommentService) {
         super(newsRepository, optionService, contentService, contentPatchLogService);
         this.newsRepository = newsRepository;
-        this.contentService = contentService;
-        this.contentPatchLogService = contentPatchLogService;
         this.optionService = optionService;
         this.eventPublisher = eventPublisher;
         this.newsAssembler = newsAssembler;
@@ -149,15 +137,15 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
     /**
      * pages news.
      *
-     * @param postQuery post query.
+     * @param newsQuery post query.
      * @param pageable pageable.
      * @return news list vo.
      */
     @NonNull
-    public Page<News> pageBy(@NonNull CernPostQuery postQuery, @NonNull Pageable pageable) {
-        Assert.notNull(postQuery, "Post query must not be null");
+    public Page<News> pageBy(@NonNull NewsQuery newsQuery, @NonNull Pageable pageable) {
+        Assert.notNull(newsQuery, "Post query must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
-        return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
+        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery, News.class), pageable);
     }
 
     /**
@@ -172,52 +160,12 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         Assert.notNull(keyword, "Keyword must not be null");
         Assert.notNull(pageable, "Pageable must not be null");
 
-        CernPostQuery postQuery = new CernPostQuery();
-        postQuery.setKeyword(keyword);
-        postQuery.setStatus(Set.of(PostStatus.PUBLISHED));
+        NewsQuery newsQuery = new NewsQuery();
+        newsQuery.setKeyword(keyword);
+        newsQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
 
         // Build specification and find all
-        return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
-    }
-
-    @NonNull
-    private Specification<News> buildSpecByQuery(@NonNull CernPostQuery postQuery) {
-        Assert.notNull(postQuery, "News query must not be null");
-        return (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new LinkedList<>();
-
-            Set<PostStatus> statuses = postQuery.getStatus();
-            if (!CollectionUtils.isEmpty(statuses)) {
-                predicates.add(root.get("status").in(statuses));
-            }
-
-            if (postQuery.getCategoryId() != null) {
-                List<Integer> categoryIds =
-                    categoryService.listAllByParentId(postQuery.getCategoryId()).stream().map(Category::getId).collect(Collectors.toList());
-                Subquery<Post> postSubquery = query.subquery(Post.class);
-                Root<PostCategory> postCategoryRoot = postSubquery.from(PostCategory.class);
-                postSubquery.select(postCategoryRoot.get("postId"));
-                postSubquery.where(criteriaBuilder.equal(root.get("id"), postCategoryRoot.get("postId")),
-                    postCategoryRoot.get("categoryId").in(categoryIds));
-                predicates.add(criteriaBuilder.exists(postSubquery));
-            }
-
-            if (postQuery.getKeyword() != null) {
-
-                // Format like condition
-                String likeCondition = String.format("%%%s%%", StringUtils.strip(postQuery.getKeyword()));
-
-                // Build like predicate
-                Subquery<News> postSubQuery = query.subquery(News.class);
-                Root<Content> contentRoot = postSubQuery.from(Content.class);
-                postSubQuery.select(contentRoot.get("id")).where(criteriaBuilder.like(contentRoot.get("originalContent"), likeCondition));
-
-                Predicate titleLike = criteriaBuilder.like(root.get("title"), likeCondition);
-
-                predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubQuery)));
-            }
-            return query.where(predicates.toArray(new Predicate[0])).getRestriction();
-        };
+        return newsRepository.findAll(newsAssembler.buildSpecByQuery(newsQuery, News.class), pageable);
     }
 
     @Override
