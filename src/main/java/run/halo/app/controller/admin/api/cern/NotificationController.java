@@ -7,6 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -94,6 +95,25 @@ public class NotificationController {
     public NotificationDetailVO getBy(@PathVariable("id") Integer notificationId) {
         Notification notification = notificationService.getWithLatestContentById(notificationId);
         return notificationAssembler.convertToDetailVo(notification);
+    }
+
+    /**
+     * Update notification.
+     *
+     * @param notificationId notification id
+     * @param notificationParam notification param
+     * @param autoSave autoSave flag.
+     * @return notification detail vo.
+     */
+    @PutMapping("{id:\\d+}")
+    @ApiOperation("Update a notification")
+    public NotificationDetailVO updateBy(@PathVariable("id") Integer notificationId, @RequestBody @Valid NotificationParam notificationParam,
+                                         @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
+        Notification notificationToUpdate = notificationService.getWithLatestContentById(notificationId);
+        notificationParam.update(notificationToUpdate);
+        Set<Integer> tagIds = notificationParam.getTagIds();
+        Set<Integer> categoryIds = notificationParam.getCategoryIds();
+        return notificationService.updateBy(notificationToUpdate, tagIds, categoryIds, autoSave);
     }
 
 }

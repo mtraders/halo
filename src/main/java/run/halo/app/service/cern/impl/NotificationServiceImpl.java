@@ -29,10 +29,10 @@ import run.halo.app.service.OptionService;
 import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
-import run.halo.app.service.assembler.cern.CernPostAssembler;
 import run.halo.app.service.assembler.cern.NotificationAssembler;
 import run.halo.app.service.cern.NotificationService;
 import run.halo.app.service.impl.BasePostServiceImpl;
+import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
 import java.util.List;
@@ -66,7 +66,6 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
      * @param optionService option service.
      * @param contentService content service.
      * @param contentPatchLogService content patch log service.
-     * @param notificationCernPostAssembler notification query service.
      * @param applicationContext application context
      * @param eventPublisher event publisher.
      * @param tagService tag service.
@@ -78,11 +77,10 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
      * @param notificationAssembler notification assembler.
      */
     public NotificationServiceImpl(NotificationRepository notificationRepository, OptionService optionService, ContentService contentService,
-                                   ContentPatchLogService contentPatchLogService,
-                                   ApplicationContext applicationContext, ApplicationEventPublisher eventPublisher, TagService tagService,
-                                   PostTagService postTagService, CategoryService categoryService, PostCategoryService postCategoryService,
-                                   ContentService postContentService, ContentPatchLogService postContentPatchLogService,
-                                   NotificationAssembler notificationAssembler) {
+                                   ContentPatchLogService contentPatchLogService, ApplicationContext applicationContext,
+                                   ApplicationEventPublisher eventPublisher, TagService tagService, PostTagService postTagService,
+                                   CategoryService categoryService, PostCategoryService postCategoryService, ContentService postContentService,
+                                   ContentPatchLogService postContentPatchLogService, NotificationAssembler notificationAssembler) {
         super(notificationRepository, optionService, contentService, contentPatchLogService);
         this.notificationRepository = notificationRepository;
         this.contentPatchLogService = contentPatchLogService;
@@ -152,7 +150,28 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
     }
 
     /**
-     * create or update notifitcation.
+     * Update a notification.
+     *
+     * @param notification notification to update
+     * @param tagIds tag ids
+     * @param categoryIds category ids
+     * @param autoSave auto save flag.
+     * @return notification detail vo.
+     */
+    @Override
+    @NonNull
+    public NotificationDetailVO updateBy(@NonNull Notification notification, Set<Integer> tagIds, Set<Integer> categoryIds, boolean autoSave) {
+        notification.setEditTime(DateUtils.now());
+        NotificationDetailVO detailVO = createOrUpdate(notification, tagIds, categoryIds);
+        if (!autoSave) {
+            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.NOTIFICATION_PUBLISHED, detailVO.getTitle());
+            eventPublisher.publishEvent(logEvent);
+        }
+        return detailVO;
+    }
+
+    /**
+     * create or update notification.
      *
      * @param notification notification entity.
      * @param tagIds tag ids.

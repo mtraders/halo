@@ -38,4 +38,17 @@ public interface NotificationService extends BasePostService<Notification> {
      */
     @NonNull
     NotificationDetailVO createBy(@NonNull Notification notification, Set<Integer> tagIds, Set<Integer> categoryIds, boolean autoSave);
+
+
+    /**
+     * Update a notification.
+     *
+     * @param notification notification to update
+     * @param tagIds tag ids
+     * @param categoryIds category ids
+     * @param autoSave auto save flag.
+     * @return notification detail vo.
+     */
+    @NonNull
+    NotificationDetailVO updateBy(@NonNull Notification notification, Set<Integer> tagIds, Set<Integer> categoryIds, boolean autoSave);
 }
