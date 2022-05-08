@@ -1,6 +1,9 @@
 package run.halo.app.service.assembler.cern;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -13,6 +16,7 @@ import run.halo.app.model.entity.Content.PatchedContent;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.News;
+import run.halo.app.model.params.cern.NewsQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.CategoryService;
@@ -24,6 +28,7 @@ import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
 import run.halo.app.utils.ServiceUtils;
 
+import javax.persistence.criteria.Predicate;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -121,6 +126,26 @@ public class NewsAssembler extends CernPostAssembler<News> {
     }
 
     /**
+     * convert news entity to list vo.
+     *
+     * @param news news entity.
+     * @return news list vo.
+     */
+    @NonNull
+    public NewsListVO convertToListVo(@NonNull News news) {
+        Integer id = news.getId();
+        List<Tag> tags = postTagService.listTagsBy(id);
+        List<Category> categories = postCategoryService.listCategoriesBy(id);
+        List<PostMeta> metas = postMetaService.listBy(id);
+        NewsListVO newsListVO = new NewsListVO().convertFrom(news);
+        newsListVO.setTags(tagService.convertTo(tags));
+        newsListVO.setCategories(categoryService.convertTo(categories));
+        newsListVO.setMetas(postMetaService.convertToMap(metas));
+        newsListVO.setFullPath(buildFullPath(news));
+        return newsListVO;
+    }
+
+    /**
      * Converts to news detail vo.
      *
      * @param news news must not be null.
@@ -197,4 +222,22 @@ public class NewsAssembler extends CernPostAssembler<News> {
         return newsPage.map(this::convertToListDTO);
     }
 
+    /**
+     * build cern spec by query.
+     *
+     * @return Specification
+     */
+    public Specification<News> buildSpecByQuery(NewsQuery newsQuery) {
+        Specification<News> newsSpecification = super.buildSpecByQuery(newsQuery, News.class);
+        return (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = Lists.newLinkedList();
+            Predicate predicate = newsSpecification.toPredicate(root, query, criteriaBuilder);
+            predicates.add(predicate);
+            // add source
+            if (StringUtils.isNotBlank(newsQuery.getSource())) {
+                predicates.add(criteriaBuilder.equal(root.get("source"), newsQuery.getSource()));
+            }
+            return query.where(predicates.toArray(new Predicate[0])).getRestriction();
+        };
+    }
 }
