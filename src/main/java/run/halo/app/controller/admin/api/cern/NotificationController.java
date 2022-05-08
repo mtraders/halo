@@ -17,8 +17,8 @@ import run.halo.app.model.dto.cern.notification.NotificationListDTO;
 import run.halo.app.model.entity.cern.Notification;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
-import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.params.cern.NotificationParam;
+import run.halo.app.model.params.cern.NotificationQuery;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
 import run.halo.app.model.vo.cern.notification.NotificationListVO;
 import run.halo.app.service.assembler.cern.NotificationAssembler;
@@ -56,16 +56,16 @@ public class NotificationController {
      * get notification list.
      *
      * @param pageable page info.
-     * @param cernPostQuery cern post query info.
+     * @param notificationQuery notification query info.
      * @param more more info or not
      * @return notification list data.
      */
     @GetMapping
     @ApiOperation(value = "get notification list")
     public Page<? extends NotificationListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
-                                                      CernPostQuery<Notification> cernPostQuery,
+                                                      NotificationQuery notificationQuery,
                                                       @RequestParam(value = "more", defaultValue = "true") Boolean more) {
-        Page<Notification> pageData = notificationService.pageBy(cernPostQuery, pageable);
+        Page<Notification> pageData = notificationService.pageBy(notificationQuery, pageable);
         if (more) {
             return notificationAssembler.convertToListVo(pageData);
         }
