@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.model.dto.cern.notification.NotificationListDTO;
 import run.halo.app.model.entity.cern.Notification;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.cern.CernPostQuery;
 import run.halo.app.model.params.cern.NotificationParam;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
@@ -130,6 +131,22 @@ public class NotificationController {
     public NotificationListVO updateStatusBy(@PathVariable("id") Integer notificationId, @PathVariable("status") PostStatus status) {
         Notification notification = notificationService.updateStatus(status, notificationId);
         return notificationAssembler.convertToListVO(notification);
+    }
+
+    /**
+     * Update draft notification.
+     *
+     * @param notificationId notification id.
+     * @param contentParam content param.
+     * @return notification detail vo.
+     */
+    @PutMapping("{id:\\d+}/status/draft/content")
+    @ApiOperation("Update draft notification")
+    public NotificationDetailVO updateDraftBy(@PathVariable("id") Integer notificationId, @RequestBody PostContentParam contentParam) {
+        Notification notificationToUse = notificationService.getById(notificationId);
+        String formattedContent = contentParam.decideContentBy(notificationToUse.getEditorType());
+        Notification notification = notificationService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), notificationId);
+        return notificationAssembler.convertToDetailVo(notification);
     }
 
 }
