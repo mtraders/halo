@@ -174,7 +174,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
 
         CernPostQuery postQuery = new CernPostQuery();
         postQuery.setKeyword(keyword);
-        postQuery.setStatus(Set.of(PostStatus.PUBLISHED));
+        postQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
 
         // Build specification and find all
         return newsRepository.findAll(buildSpecByQuery(postQuery), pageable);
@@ -186,7 +186,7 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new LinkedList<>();
 
-            Set<PostStatus> statuses = postQuery.getStatus();
+            Set<PostStatus> statuses = postQuery.getStatuses();
             if (!CollectionUtils.isEmpty(statuses)) {
                 predicates.add(root.get("status").in(statuses));
             }

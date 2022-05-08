@@ -3,6 +3,7 @@ package run.halo.app.model.params.cern;
 import lombok.Data;
 import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.enums.PostStatus;
+
 import java.util.Set;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Set;
  */
 @Data
 public class CernPostQuery<T extends BasePost> {
-    private String keyword;
-    private Set<PostStatus> statuses;
-    private Integer categoryId;
+    protected String keyword;
+    protected Set<PostStatus> statuses;
+    protected Integer categoryId;
 }

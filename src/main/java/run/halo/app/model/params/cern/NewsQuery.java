@@ -1,9 +1,8 @@
 package run.halo.app.model.params.cern;
 
 import lombok.Data;
-import run.halo.app.model.enums.PostStatus;
-
-import java.util.Set;
+import lombok.EqualsAndHashCode;
+import run.halo.app.model.entity.cern.News;
 
 /**
  * News query.
@@ -11,9 +10,7 @@ import java.util.Set;
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 @Data
-public class NewsQuery {
-    private String keyword;
-    private Set<PostStatus> status;
-    private Integer categoryId;
+@EqualsAndHashCode(callSuper = true)
+public class NewsQuery extends CernPostQuery<News> {
     private String source;
 }
