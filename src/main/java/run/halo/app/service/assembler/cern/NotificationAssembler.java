@@ -99,10 +99,10 @@ public class NotificationAssembler extends CernPostAssembler<Notification> {
                 Optional.ofNullable(tagListMap.get(id)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull).map(tagService::convertTo)
                     .collect(Collectors.toList());
             notificationListVO.setTags(tags);
-
             List<CategoryDTO> categories = Optional.ofNullable(categoryListMap.get(id)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
                 .map(categoryService::convertTo).collect(Collectors.toList());
             notificationListVO.setCategories(categories);
+            generateAndSetDTOInfoIfAbsent(notification, notificationListVO);
             return notificationListVO;
         }).collect(Collectors.toList());
     }

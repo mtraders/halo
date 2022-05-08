@@ -10,8 +10,10 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import run.halo.app.event.cern.NotificationUpdateEvent;
 import run.halo.app.event.logger.LogEvent;
+import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.PostCategory;
@@ -35,8 +37,11 @@ import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * notification service impl.
@@ -170,6 +175,7 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
         return detailVO;
     }
 
+
     /**
      * create or update notification.
      *
@@ -181,7 +187,6 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
     private NotificationDetailVO createOrUpdate(@NonNull Notification notification, Set<Integer> tagIds, Set<Integer> categoryIds) {
         Assert.notNull(notification, "Notification must not be null");
         notification = super.createOrUpdateBy(notification);
-
         Integer id = notification.getId();
         // remove existed tags and categories
         postTagService.removeByPostId(id);
@@ -200,5 +205,50 @@ public class NotificationServiceImpl extends BasePostServiceImpl<Notification> i
         notification.setContent(postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId()));
 
         return notificationAssembler.convertTo(notification, tags, categories);
+    }
+
+    /**
+     * Removes by id.
+     *
+     * @param notificationId notification id
+     * @return DOMAIN
+     * @throws NotFoundException If the specified id does not exist
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public Notification removeById(@NonNull Integer notificationId) throws NotFoundException {
+        Assert.notNull(notificationId, "notification id must not be null");
+        log.debug("Removing notification: {}", notificationId);
+        // Remove notification tags
+        List<PostTag> notificationTags = postTagService.removeByPostId(notificationId);
+        log.debug("Removed notification tags: [{}]", notificationTags);
+        // Remove notification categories
+        List<PostCategory> notificationCategories = postCategoryService.removeByPostId(notificationId);
+        log.debug("Removed notification categories: [{}]", notificationCategories);
+        // Remove notification content
+        Content notificationContent = postContentService.removeById(notificationId);
+        log.debug("Removed notification content: [{}]", notificationContent);
+        Notification deletedNotification = super.removeById(notificationId);
+        deletedNotification.setContent(Content.PatchedContent.of(notificationContent));
+        // Log it
+        eventPublisher.publishEvent(new LogEvent(this, notificationId.toString(), LogType.NOTIFICATION_DELETED, deletedNotification.getTitle()));
+        return deletedNotification;
+    }
+
+    /**
+     * Remove Notification in batch.
+     *
+     * @param ids ids must not be null.
+     * @return a list of deleted Notification.
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public List<Notification> removeByIds(@NonNull Collection<Integer> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return ids.stream().map(this::removeById).collect(Collectors.toList());
     }
 }

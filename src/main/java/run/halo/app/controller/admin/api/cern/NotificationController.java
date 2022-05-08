@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ import run.halo.app.service.assembler.cern.NotificationAssembler;
 import run.halo.app.service.cern.NotificationService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -149,4 +151,33 @@ public class NotificationController {
         return notificationAssembler.convertToDetailVo(notification);
     }
 
+    /**
+     * Delete a notification permanently.
+     *
+     * @param notificationId notification id.
+     * @return notification entity.
+     */
+    @DeleteMapping("{id:\\d+}")
+    @ApiOperation("Delete a notification permanently.")
+    public Notification deletePermanently(@PathVariable("id") Integer notificationId) {
+        return notificationService.removeById(notificationId);
+    }
+
+    @DeleteMapping
+    @ApiOperation("Deletes notifications permanently in batch by id array")
+    public List<Notification> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
+        return notificationService.removeByIds(ids);
+    }
+
+    /**
+     * get a notification preview.
+     *
+     * @param notificationId notification id.
+     * @return preview content.
+     */
+    @GetMapping("preview/{id:\\d+}")
+    @ApiOperation("Get a notification preview")
+    public String preview(@PathVariable("id") Integer notificationId) {
+        return notificationId.toString();
+    }
 }
