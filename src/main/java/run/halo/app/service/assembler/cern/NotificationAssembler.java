@@ -63,8 +63,8 @@ public class NotificationAssembler extends BasePostAssembler<Notification> {
      * @param postAssembler post assembler.
      */
     public NotificationAssembler(ContentService contentService, TagService tagService, CategoryService categoryService, OptionService optionService,
-                                 PostTagService postTagService, PostCategoryService postCategoryService,
-                                 CernAssembler<Notification> cernAssembler, PostAssembler postAssembler) {
+                                 PostTagService postTagService, PostCategoryService postCategoryService, CernAssembler<Notification> cernAssembler,
+                                 PostAssembler postAssembler) {
         super(contentService, optionService);
         this.contentService = contentService;
         this.tagService = tagService;
@@ -157,17 +157,39 @@ public class NotificationAssembler extends BasePostAssembler<Notification> {
      */
     @NonNull
     public NotificationDetailVO convertToDetailVo(@NonNull Notification notification) {
-        return new NotificationDetailVO().convertFrom(notification);
+        Integer id = notification.getId();
+        List<Tag> tags = postTagService.listTagsBy(id);
+        List<Category> categories = postCategoryService.listCategoriesBy(id);
+        return convertTo(notification, tags, categories);
     }
 
     /**
      * convert notification entities to notification dtos.
      *
-     * @param notifications notification list
+     * @param notificationPage notification list
      * @return notification dtos.
      */
-    public Page<NotificationListDTO> convertToListDTO(Page<Notification> notifications) {
-        return null;
+    @NonNull
+    public Page<NotificationListDTO> convertToListDTO(Page<Notification> notificationPage) {
+        Assert.notNull(notificationPage, "Notification page cannot be null");
+        return notificationPage.map(this::convertToListDTO);
+    }
+
+    /**
+     * convert to list dto.
+     *
+     * @param notification notification entity.
+     * @return notification list dto.
+     */
+    @NonNull
+    public NotificationListDTO convertToListDTO(@NonNull Notification notification) {
+        Assert.notNull(notification, "Notification must not be null");
+        NotificationListDTO notificationListDTO = new NotificationListDTO().convertFrom(notification);
+        cernAssembler.generateAndSetSummaryIfAbsent(notification, notificationListDTO);
+        // Post currently drafting in process
+        Boolean isInProcess = contentService.draftingInProgress(notification.getId());
+        notificationListDTO.setInProgress(isInProcess);
+        return notificationListDTO;
     }
 
 }
