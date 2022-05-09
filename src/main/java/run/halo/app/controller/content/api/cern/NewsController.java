@@ -106,14 +106,11 @@ public class NewsController {
             // Clear the format content
             newsDetailVO.setContent(null);
         }
-
         if (sourceDisabled) {
             // Clear the original content
             newsDetailVO.setOriginalContent(null);
         }
-
         postService.publishVisitEvent(newsDetailVO.getId());
-
         return newsDetailVO;
     }
 
@@ -132,19 +129,15 @@ public class NewsController {
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         News news = newsService.getBySlug(slug);
         NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVo(news);
-
         if (formatDisabled) {
             // Clear the format content
             newsDetailVO.setContent(null);
         }
-
         if (sourceDisabled) {
             // Clear the original content
             newsDetailVO.setOriginalContent(null);
         }
-
         postService.publishVisitEvent(newsDetailVO.getId());
-
         return newsDetailVO;
     }
 

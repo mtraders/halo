@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.cern.Notification;
 import run.halo.app.model.params.cern.NotificationQuery;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
@@ -119,11 +120,31 @@ public class NotificationController {
         return detailVO;
     }
 
-    public NotificationDetailVO getPrevNotificationBy(Integer id) {
-        return null;
+    /**
+     * get prev notification by current notification id.
+     *
+     * @param id id
+     * @return notification detail.
+     */
+    @GetMapping("{id:\\d+}/prev")
+    @ApiOperation("Get prev notification by current post id")
+    public NotificationDetailVO getPrevNotificationBy(@PathVariable("id") Integer id) {
+        Notification notification = notificationService.getById(id);
+        Notification prevNotification = notificationService.getPrevPost(notification).orElseThrow(() -> new NotFoundException("查询不到该通知信息"));
+        return notificationAssembler.convertToDetailVo(prevNotification);
     }
 
-    public NotificationDetailVO getNextNotificationBy(Integer id) {
-        return null;
+    /**
+     * get next notification by current notification id.
+     *
+     * @param id id
+     * @return notification detail.
+     */
+    @GetMapping("{id:\\d+}/next")
+    @ApiOperation("Get next notification by current post id")
+    public NotificationDetailVO getNextNotificationBy(@PathVariable("id") Integer id) {
+        Notification notification = notificationService.getById(id);
+        Notification prevNotification = notificationService.getNextPost(notification).orElseThrow(() -> new NotFoundException("查询不到该通知信息"));
+        return notificationAssembler.convertToDetailVo(prevNotification);
     }
 }
