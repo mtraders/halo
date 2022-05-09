@@ -132,7 +132,7 @@ public class NotificationController {
     @ApiOperation("Update news status")
     public NotificationListVO updateStatusBy(@PathVariable("id") Integer notificationId, @PathVariable("status") PostStatus status) {
         Notification notification = notificationService.updateStatus(status, notificationId);
-        return notificationAssembler.convertToListVO(notification);
+        return notificationAssembler.convertToListVo(notification);
     }
 
     /**
