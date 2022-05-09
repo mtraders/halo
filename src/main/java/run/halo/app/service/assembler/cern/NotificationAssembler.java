@@ -114,7 +114,7 @@ public class NotificationAssembler extends CernPostAssembler<Notification> {
      * @return notification list vo.
      */
     @NonNull
-    public NotificationListVO convertToListVO(@NonNull Notification notification) {
+    public NotificationListVO convertToListVo(@NonNull Notification notification) {
         Integer id = notification.getId();
         List<TagDTO> tagDTOS = tagService.convertTo(postTagService.listTagsBy(id));
         List<CategoryDTO> categoryDTOS = categoryService.convertTo(postCategoryService.listCategoriesBy(id));
