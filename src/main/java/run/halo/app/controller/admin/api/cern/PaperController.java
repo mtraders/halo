@@ -17,7 +17,7 @@ import run.halo.app.service.cern.PaperService;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
-@RestController
+@RestController("ApiAdminCernPaperController")
 @RequestMapping("/api/admin/cern/papers")
 public class PaperController {
     private final PaperService paperService;
