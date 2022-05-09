@@ -30,11 +30,11 @@ import java.util.List;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
- * News controller.
+ * News admin controller.
  *
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
-@RestController
+@RestController("ApiAdminCernNewsController")
 @RequestMapping("/api/admin/cern/news")
 public class NewsController {
 

@@ -29,7 +29,7 @@ import java.util.List;
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 @Slf4j
-@RestController
+@RestController("ApiAdminCernPersonnelController")
 @RequestMapping("/api/admin/cern/personnel")
 public class PersonnelController {
 

@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Paper admin controller.
+ * Paper content controller.
  *
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
