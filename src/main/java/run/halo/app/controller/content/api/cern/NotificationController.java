@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,8 +39,7 @@ public class NotificationController {
      * @param notificationAssembler notification assembler.
      * @param postService post service.
      */
-    public NotificationController(NotificationService notificationService,
-                                  NotificationAssembler notificationAssembler, PostService postService) {
+    public NotificationController(NotificationService notificationService, NotificationAssembler notificationAssembler, PostService postService) {
         this.notificationService = notificationService;
         this.notificationAssembler = notificationAssembler;
         this.postService = postService;
@@ -65,8 +65,30 @@ public class NotificationController {
         return notificationAssembler.convertToListVo(notificationPage);
     }
 
-    public NotificationDetailVO getBy(Integer id) {
-        return null;
+    /**
+     * get notification detail.
+     *
+     * @param id notification id
+     * @param formatDisabled format disable or not
+     * @param sourceDisabled source disable or not
+     * @return notification detail
+     */
+    @GetMapping("{id:\\d+}")
+    @ApiOperation("get notification detail")
+    public NotificationDetailVO getBy(@PathVariable("id") Integer id,
+                                      @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
+                                      @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
+        Notification notification = notificationService.getById(id);
+        NotificationDetailVO notificationDetailVO = notificationAssembler.convertToDetailVo(notification);
+        if (formatDisabled) {
+            // clear the format content
+            notificationDetailVO.setContent(null);
+        }
+        if (sourceDisabled) {
+            // clear the original content
+            notificationDetailVO.setOriginalContent(null);
+        }
+        return notificationDetailVO;
     }
 
     public NotificationDetailVO getBy(String slug) {
