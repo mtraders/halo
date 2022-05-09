@@ -79,20 +79,44 @@ public class NotificationController {
                                       @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                                       @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         Notification notification = notificationService.getById(id);
-        NotificationDetailVO notificationDetailVO = notificationAssembler.convertToDetailVo(notification);
+        NotificationDetailVO detailVO = notificationAssembler.convertToDetailVo(notification);
         if (formatDisabled) {
             // clear the format content
-            notificationDetailVO.setContent(null);
+            detailVO.setContent(null);
         }
         if (sourceDisabled) {
             // clear the original content
-            notificationDetailVO.setOriginalContent(null);
+            detailVO.setOriginalContent(null);
         }
-        return notificationDetailVO;
+        postService.publishVisitEvent(detailVO.getId());
+        return detailVO;
     }
 
-    public NotificationDetailVO getBy(String slug) {
-        return null;
+    /**
+     * get notification by slug.
+     *
+     * @param slug slug
+     * @param formatDisabled format disable or not
+     * @param sourceDisabled source disable or not
+     * @return notification detail
+     */
+    @GetMapping("/slug")
+    @ApiOperation("get notification by slug")
+    public NotificationDetailVO getBy(@RequestParam("slug") String slug,
+                                      @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
+                                      @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
+        Notification notification = notificationService.getBySlug(slug);
+        NotificationDetailVO detailVO = notificationAssembler.convertToDetailVo(notification);
+        if (formatDisabled) {
+            // clear the format content
+            detailVO.setContent(null);
+        }
+        if (sourceDisabled) {
+            // clear the original content
+            detailVO.setOriginalContent(null);
+        }
+        postService.publishVisitEvent(detailVO.getId());
+        return detailVO;
     }
 
     public NotificationDetailVO getPrevNotificationBy(Integer id) {
