@@ -180,6 +180,35 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
         return detailVO;
     }
 
+    /**
+     * Removes by id.
+     *
+     * @param paperId id
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public Paper removeById(@NonNull Integer paperId) {
+        Assert.notNull(paperId, "Paper id must not be null");
+        log.debug("Removing paper: {}", paperId);
+        // Remove paper tags
+        List<PostTag> paperTags = postTagService.removeByPostId(paperId);
+        log.debug("Removed paper tags: [{}]", paperTags);
+        // Remove paper categories
+        List<PostCategory> paperCategories = postCategoryService.removeByPostId(paperId);
+        log.debug("Remove paper categories: [{}]", paperCategories);
+        // Remove paper personnel
+        List<PostPersonnel> paperPersonnel = postPersonnelService.removeByPostId(paperId);
+        log.debug("Remove paper personnel: [{}]", paperPersonnel);
+        // Remove paper content
+        Content paperContent = contentService.removeById(paperId);
+        log.debug("Removed paper content: [{}]", paperContent);
+        Paper deletedPaper = super.removeById(paperId);
+        deletedPaper.setContent(Content.PatchedContent.of(paperContent));
+        eventPublisher.publishEvent(new LogEvent(this, paperId.toString(), LogType.PAPER_DELETED, deletedPaper.getTitle()));
+        return deletedPaper;
+    }
+
     private PaperDetailVO createOrUpdate(@NonNull Paper paper, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> authorIds) {
         Assert.notNull(paper, "Paper must not be null");
         paper = super.createOrUpdateBy(paper);

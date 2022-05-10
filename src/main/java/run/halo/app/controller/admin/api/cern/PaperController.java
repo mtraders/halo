@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.model.dto.cern.paper.PaperListDTO;
 import run.halo.app.model.entity.cern.Paper;
+import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.cern.paper.PaperParam;
 import run.halo.app.model.params.cern.paper.PaperQuery;
 import run.halo.app.model.vo.cern.paper.PaperDetailVO;
+import run.halo.app.model.vo.cern.paper.PaperListVO;
 import run.halo.app.service.assembler.cern.PaperAssembler;
 import run.halo.app.service.cern.PaperService;
 
@@ -119,17 +123,45 @@ public class PaperController {
     }
 
 
-    public PaperDetailVO updateStatusBy() {
-        return null;
+    /**
+     * Update paper status.
+     *
+     * @param paperId paper id.
+     * @param status status.
+     * @return paper list vo.
+     */
+    @PutMapping("{id:\\d+}/{status}")
+    @ApiOperation("Update paper status")
+    public PaperListVO updateStatusBy(@PathVariable("id") Integer paperId, @PathVariable("status") PostStatus status) {
+        return paperAssembler.convertToListVO(paperService.updateStatus(status, paperId));
     }
 
-
-    public PaperDetailVO updateDraftBy() {
-        return null;
+    /**
+     * Update draft paper.
+     *
+     * @param paperId paper id
+     * @param contentParam content param
+     * @return paper detail vo.
+     */
+    @PutMapping("{id:\\d+}")
+    @ApiOperation("Update draft news")
+    public PaperDetailVO updateDraftBy(@PathVariable("id") Integer paperId, @RequestBody PostContentParam contentParam) {
+        Paper paperToUse = paperService.getById(paperId);
+        String formattedContent = contentParam.decideContentBy(paperToUse.getEditorType());
+        Paper paper = paperService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), paperId);
+        return paperAssembler.convertToDetailVO(paper);
     }
 
-    public Paper deletePermanently() {
-        return null;
+    /**
+     * Delete a paper.
+     *
+     * @param paperId paper id
+     * @return deleted paper entity.
+     */
+    @DeleteMapping("{id:\\d+}")
+    @ApiOperation("Delete a paper")
+    public Paper deletePermanently(@PathVariable("id") Integer paperId) {
+        return paperService.removeById(paperId);
     }
 
     public List<Paper> deletePermanentlyInBatch() {

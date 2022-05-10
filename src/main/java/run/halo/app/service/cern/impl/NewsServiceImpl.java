@@ -219,6 +219,12 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
         return ids.stream().map(this::removeById).collect(Collectors.toList());
     }
 
+    /**
+     * Removed by id.
+     *
+     * @param newsId news id.
+     * @return deleted news entity.
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @NonNull

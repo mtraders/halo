@@ -133,12 +133,26 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
                 Optional.ofNullable(categoryListMap.get(paperId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
                     .map(categoryService::convertTo).collect(Collectors.toList());
             paperListVO.setCategories(categories);
-            List<PersonnelDTO> personnelDTOS =
+            List<PersonnelDTO> authors =
                 Optional.ofNullable(authorListMap.get(paperId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
                     .map(personnelService::convertTo).collect(Collectors.toList());
-            paperListVO.setAuthors(personnelDTOS);
+            paperListVO.setAuthors(authors);
+            paperListVO.setFullPath(buildFullPath(paper));
             return paperListVO;
         }).collect(Collectors.toList());
+    }
+
+    public PaperListVO convertToListVO(@NonNull Paper paper) {
+        Integer id = paper.getId();
+        List<Tag> tags = postTagService.listTagsBy(id);
+        List<Category> categories = postCategoryService.listCategoriesBy(id);
+        List<Personnel> personnelList = postPersonnelService.listPersonnelListBy(id);
+        PaperListVO paperListVO = new PaperListVO().convertFrom(paper);
+        paperListVO.setTags(tagService.convertTo(tags));
+        paperListVO.setCategories(categoryService.convertTo(categories));
+        paperListVO.setAuthors(personnelService.convertTo(personnelList));
+        paperListVO.setFullPath(buildFullPath(paper));
+        return paperListVO;
     }
 
     /**
@@ -175,6 +189,7 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
         detailVO.setTags(tagService.convertTo(tags));
         detailVO.setCategories(categoryService.convertTo(categories));
         detailVO.setAuthors(personnelService.convertTo(personnelList));
+        detailVO.setFullPath(buildFullPath(paper));
 
         Content.PatchedContent newsContent = paper.getContent();
         detailVO.setContent(newsContent.getContent());
