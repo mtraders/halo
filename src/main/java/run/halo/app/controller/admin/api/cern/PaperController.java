@@ -8,17 +8,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.model.dto.cern.paper.PaperListDTO;
 import run.halo.app.model.entity.cern.Paper;
+import run.halo.app.model.params.cern.paper.PaperParam;
 import run.halo.app.model.params.cern.paper.PaperQuery;
 import run.halo.app.model.vo.cern.paper.PaperDetailVO;
 import run.halo.app.service.assembler.cern.PaperAssembler;
 import run.halo.app.service.cern.PaperService;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -76,10 +80,22 @@ public class PaperController {
         return paperAssembler.convertToDetailVO(paper);
     }
 
+    /**
+     * create a paper.
+     *
+     * @param paperParam paper param
+     * @param autoSave auto-save
+     * @return paper detail vo.
+     */
     @PostMapping
     @ApiOperation("Create a paper")
-    public PaperDetailVO createBy() {
-        return null;
+    public PaperDetailVO createBy(@RequestBody @Valid PaperParam paperParam,
+                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
+        Paper paper = paperParam.convertTo();
+        Set<Integer> tagIds = paperParam.getTagIds();
+        Set<Integer> categoryIds = paperParam.getCategoryIds();
+        Set<Integer> authorIds = paperParam.getAuthorIds();
+        return paperService.createBy(paper, tagIds, categoryIds, authorIds, autoSave);
     }
 
     @PutMapping

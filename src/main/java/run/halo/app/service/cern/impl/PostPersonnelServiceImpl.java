@@ -108,8 +108,73 @@ public class PostPersonnelServiceImpl extends AbstractCrudService<PostPersonnel,
      * @return deleted post personnel
      */
     @Override
-    public @NotNull List<PostPersonnel> removeByPersonnelId(@NotNull Integer personnelId) {
-        return Collections.emptyList();
+    @NonNull
+    public List<PostPersonnel> removeByPersonnelId(@NonNull Integer personnelId) {
+        Assert.notNull(personnelId, "personnel id must not be null");
+        return postPersonnelRepository.deleteByPersonnelId(personnelId);
+    }
+
+    /**
+     * Merges or creates post personnel by post id and personnel id set if absent.
+     *
+     * @param postId post id must not be null
+     * @param personnelIds personnel id set
+     * @return a list of post personnel
+     */
+    @Override
+    @NonNull
+    public List<PostPersonnel> mergeOrCreateByIfAbsent(@NonNull Integer postId, Set<Integer> personnelIds) {
+        Assert.notNull(postId, "Post id must not be null");
+        if (CollectionUtils.isEmpty(personnelIds)) {
+            return Collections.emptyList();
+        }
+        // Create post personnel
+        List<PostPersonnel> postPersonnelListStaging = personnelIds.stream().map(personnelId -> {
+            // Build post personnel
+            PostPersonnel postPersonnel = new PostPersonnel();
+            postPersonnel.setPostId(postId);
+            postPersonnel.setPersonnelId(personnelId);
+            return postPersonnel;
+        }).collect(Collectors.toList());
+
+        List<PostPersonnel> postPersonnelListToRemove = Lists.newLinkedList();
+        List<PostPersonnel> postPersonnelListToCreate = Lists.newLinkedList();
+
+        List<PostPersonnel> postPersonnelList = postPersonnelRepository.findAllByPostId(postId);
+        postPersonnelList.forEach(postPersonnel -> {
+            if (!postPersonnelListStaging.contains(postPersonnel)) {
+                postPersonnelListToRemove.add(postPersonnel);
+            }
+        });
+        postPersonnelListStaging.forEach(postPersonnelStaging -> {
+            if (!postPersonnelList.contains(postPersonnelStaging)) {
+                postPersonnelListToCreate.add(postPersonnelStaging);
+            }
+        });
+
+        // Remove post personnel
+        removeAll(postPersonnelListToRemove);
+        // Remove all post personnel need to remove
+        postPersonnelList.removeAll(postPersonnelListToRemove);
+
+        // Add all created post personnel
+        postPersonnelList.addAll(createInBatch(postPersonnelListToCreate));
+
+        // Return post personnel
+        return postPersonnelList;
+    }
+
+    /**
+     * remove post personnel by post id.
+     *
+     * @param postId post id
+     * @return post personnel.
+     */
+    @Override
+    @NonNull
+    public List<PostPersonnel> removeByPostId(@NonNull Integer postId) {
+        Assert.notNull(postId, "post id must not be null");
+        return postPersonnelRepository.deleteByPostId(postId);
     }
 
     /**

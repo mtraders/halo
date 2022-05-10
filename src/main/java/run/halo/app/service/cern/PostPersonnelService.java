@@ -3,7 +3,6 @@ package run.halo.app.service.cern;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.entity.cern.PostPersonnel;
 import run.halo.app.model.vo.cern.personnel.PersonnelListVO;
@@ -12,6 +11,7 @@ import run.halo.app.service.base.CrudService;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Post personnel service.
@@ -37,6 +37,24 @@ public interface PostPersonnelService extends CrudService<PostPersonnel, Integer
     @NonNull
     List<PostPersonnel> removeByPersonnelId(@NonNull Integer personnelId);
 
+    /**
+     * Merges or creates post personnel by post id and personnel id set if absent.
+     *
+     * @param postId post id must not be null
+     * @param personnelIds personnel id set
+     * @return a list of post personnel
+     */
+    @NonNull
+    List<PostPersonnel> mergeOrCreateByIfAbsent(@NonNull Integer postId, @Nullable Set<Integer> personnelIds);
+
+    /**
+     * remove post personnel by post id.
+     *
+     * @param postId post id
+     * @return post personnel.
+     */
+    @NonNull
+    List<PostPersonnel> removeByPostId(@NonNull Integer postId);
 
     /**
      * List personnel list map by post id collection.

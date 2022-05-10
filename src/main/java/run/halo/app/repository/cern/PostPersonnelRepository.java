@@ -39,4 +39,31 @@ public interface PostPersonnelRepository extends BaseRepository<PostPersonnel, I
     @NonNull
     @Query(value = "select distinct pp.personnel_id from post_personnel pp where pp.post_id = ?1", nativeQuery = true)
     Set<Integer> findAllPersonnelIdsByPostId(@NonNull Integer postId);
+
+    /**
+     * Deletes post personnel by post id.
+     *
+     * @param postId post id must not be null
+     * @return a list of post personnel deleted
+     */
+    @NonNull
+    List<PostPersonnel> deleteByPostId(@NonNull Integer postId);
+
+    /**
+     * delete post personnel by personnel id.
+     *
+     * @param personnelId personnel id must not be null.
+     * @return a list of post personnel deleted.
+     */
+    @NonNull
+    List<PostPersonnel> deleteByPersonnelId(@NonNull Integer personnelId);
+
+    /**
+     * Find all post personnel by post id.
+     *
+     * @param postId post id must not be null.
+     * @return a list of post personnel.
+     */
+    @NonNull
+    List<PostPersonnel> findAllByPostId(@NonNull Integer postId);
 }

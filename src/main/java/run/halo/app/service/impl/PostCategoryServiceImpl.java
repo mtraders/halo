@@ -1,19 +1,5 @@
 package run.halo.app.service.impl;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Queue;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -41,6 +27,21 @@ import run.halo.app.service.base.AbstractCrudService;
 import run.halo.app.utils.HaloUtils;
 import run.halo.app.utils.ServiceUtils;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 /**
  * Post category service implementation.
  *
@@ -56,14 +57,12 @@ public class PostCategoryServiceImpl extends AbstractCrudService<PostCategory, I
     private final PostCategoryRepository postCategoryRepository;
 
     private final PostRepository postRepository;
-
+    private final OptionService optionService;
     private CategoryService categoryService;
 
-    private final OptionService optionService;
-
     public PostCategoryServiceImpl(PostCategoryRepository postCategoryRepository,
-        PostRepository postRepository,
-        OptionService optionService) {
+                                   PostRepository postRepository,
+                                   OptionService optionService) {
         super(postCategoryRepository);
         this.postCategoryRepository = postCategoryRepository;
         this.postRepository = postRepository;
@@ -334,7 +333,7 @@ public class PostCategoryServiceImpl extends AbstractCrudService<PostCategory, I
     }
 
     private void populatePostIds(List<CategoryVO> categoryTree,
-        Predicate<PostStatus> statusFilter) {
+                                 Predicate<PostStatus> statusFilter) {
         Assert.notNull(categoryTree, "The categoryTree must not be null.");
         Map<Integer, Set<Integer>> categoryPostIdsMap =
             postCategoryRepository.findAllWithPostStatus()
