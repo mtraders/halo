@@ -3,11 +3,14 @@ package run.halo.app.service.cern;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import run.halo.app.model.entity.cern.Paper;
 import run.halo.app.model.params.cern.paper.PaperQuery;
 import run.halo.app.model.vo.cern.paper.PaperDetailVO;
 import run.halo.app.service.base.BasePostService;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -52,4 +55,13 @@ public interface PaperService extends BasePostService<Paper> {
      */
     @NonNull
     PaperDetailVO updateBy(@NonNull Paper paper, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> authorIds, boolean autoSave);
+
+    /**
+     * remove paper by ids.
+     *
+     * @param ids paper ids.
+     * @return delete papers.
+     */
+    @NonNull
+    List<Paper> removeByIds(@Nullable Collection<Integer> ids);
 }

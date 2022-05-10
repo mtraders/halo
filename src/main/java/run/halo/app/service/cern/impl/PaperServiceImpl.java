@@ -7,9 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import run.halo.app.event.cern.PaperUpdateEvent;
 import run.halo.app.event.logger.LogEvent;
 import run.halo.app.model.entity.Category;
@@ -39,8 +41,11 @@ import run.halo.app.service.impl.BasePostServiceImpl;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 /**
@@ -178,6 +183,21 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
             eventPublisher.publishEvent(logEvent);
         }
         return detailVO;
+    }
+
+    /**
+     * remove paper by ids.
+     *
+     * @param ids paper ids.
+     * @return delete papers.
+     */
+    @Override
+    @NonNull
+    public List<Paper> removeByIds(@Nullable Collection<Integer> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return ids.stream().map(this::removeById).collect(Collectors.toList());
     }
 
     /**

@@ -153,7 +153,7 @@ public class PaperController {
     }
 
     /**
-     * Delete a paper.
+     * Delete a paper permanently.
      *
      * @param paperId paper id
      * @return deleted paper entity.
@@ -164,12 +164,28 @@ public class PaperController {
         return paperService.removeById(paperId);
     }
 
-    public List<Paper> deletePermanentlyInBatch() {
-        return null;
+    /**
+     * delete paper permanently in batch.
+     *
+     * @param ids paper ids.
+     * @return deleted paper entities.
+     */
+    @DeleteMapping
+    @ApiOperation("Deletes news permanently in batch by id array")
+    public List<Paper> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
+        return paperService.removeByIds(ids);
     }
 
-    public String preview() {
-        return null;
+    /**
+     * get a paper preview.
+     *
+     * @param paperId paper id.
+     * @return preview content.
+     */
+    @GetMapping("preview/{id:\\d+}")
+    @ApiOperation("Get a news preview")
+    public String preview(@PathVariable("id") Integer paperId) {
+        return paperId.toString();
     }
 
 }
