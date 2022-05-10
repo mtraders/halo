@@ -91,17 +91,31 @@ public class PaperController {
     @ApiOperation("Create a paper")
     public PaperDetailVO createBy(@RequestBody @Valid PaperParam paperParam,
                                   @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
-        Paper paper = paperParam.convertTo();
+        Paper paperToCreate = paperParam.convertTo();
         Set<Integer> tagIds = paperParam.getTagIds();
         Set<Integer> categoryIds = paperParam.getCategoryIds();
         Set<Integer> authorIds = paperParam.getAuthorIds();
-        return paperService.createBy(paper, tagIds, categoryIds, authorIds, autoSave);
+        return paperService.createBy(paperToCreate, tagIds, categoryIds, authorIds, autoSave);
     }
 
-    @PutMapping
+    /**
+     * Update paper.
+     *
+     * @param paperId paper id
+     * @param paperParam paper param
+     * @param autoSave auto-save
+     * @return paper detail.
+     */
+    @PutMapping("{id:\\d+}")
     @ApiOperation("Update a paper")
-    public PaperDetailVO updateBy() {
-        return null;
+    public PaperDetailVO updateBy(@PathVariable("id") Integer paperId, @RequestBody @Valid PaperParam paperParam,
+                                  @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
+        Paper paperToUpdate = paperService.getWithLatestContentById(paperId);
+        paperParam.update(paperToUpdate);
+        Set<Integer> tagIds = paperParam.getTagIds();
+        Set<Integer> categoryIds = paperParam.getCategoryIds();
+        Set<Integer> authorIds = paperParam.getAuthorIds();
+        return paperService.updateBy(paperToUpdate, tagIds, categoryIds, authorIds, autoSave);
     }
 
 

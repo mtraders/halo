@@ -39,4 +39,17 @@ public interface PaperService extends BasePostService<Paper> {
      */
     @NonNull
     PaperDetailVO createBy(@NonNull Paper paper, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> authorIds, boolean autoSave);
+
+    /**
+     * update paper by paper param.
+     *
+     * @param paper paper entity.
+     * @param tagIds tag id list.
+     * @param categoryIds category id list.
+     * @param authorIds author id list.
+     * @param autoSave auto-save or not
+     * @return paper detail vo.
+     */
+    @NonNull
+    PaperDetailVO updateBy(@NonNull Paper paper, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> authorIds, boolean autoSave);
 }

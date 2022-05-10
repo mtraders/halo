@@ -36,6 +36,7 @@ import run.halo.app.service.cern.PaperService;
 import run.halo.app.service.cern.PersonnelService;
 import run.halo.app.service.cern.PostPersonnelService;
 import run.halo.app.service.impl.BasePostServiceImpl;
+import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
 import java.util.List;
@@ -150,7 +151,30 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
     public PaperDetailVO createBy(@NonNull Paper paper, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> authorIds, boolean autoSave) {
         PaperDetailVO detailVO = createOrUpdate(paper, tagIds, categoryIds, authorIds);
         if (!autoSave) {
-            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.NEWS_PUBLISHED, detailVO.getTitle());
+            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PAPER_PUBLISHED, detailVO.getTitle());
+            eventPublisher.publishEvent(logEvent);
+        }
+        return detailVO;
+    }
+
+    /**
+     * update paper by paper param.
+     *
+     * @param paper paper entity.
+     * @param tagIds tag id list.
+     * @param categoryIds category id list.
+     * @param authorIds author id list.
+     * @param autoSave auto-save or not
+     * @return paper detail vo.
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public PaperDetailVO updateBy(@NonNull Paper paper, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> authorIds, boolean autoSave) {
+        paper.setEditTime(DateUtils.now());
+        PaperDetailVO detailVO = createOrUpdate(paper, tagIds, categoryIds, authorIds);
+        if (!autoSave) {
+            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PAPER_PUBLISHED, detailVO.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return detailVO;
