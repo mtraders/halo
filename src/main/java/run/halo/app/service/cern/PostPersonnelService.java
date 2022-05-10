@@ -2,11 +2,16 @@ package run.halo.app.service.cern;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.NonNull;
-import run.halo.app.model.dto.cern.personnel.PersonnelMoreDTO;
+import org.springframework.lang.Nullable;
+import run.halo.app.model.entity.Category;
+import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.entity.cern.PostPersonnel;
+import run.halo.app.model.vo.cern.personnel.PersonnelListVO;
 import run.halo.app.service.base.CrudService;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Post personnel service.
@@ -21,7 +26,7 @@ public interface PostPersonnelService extends CrudService<PostPersonnel, Integer
      * @return personnel more information.
      */
     @NonNull
-    List<PersonnelMoreDTO> listPersonnelMore(@NonNull Sort sort);
+    List<PersonnelListVO> listPersonnelMore(@NonNull Sort sort);
 
     /**
      * remove post personnel by personnel id.
@@ -31,4 +36,23 @@ public interface PostPersonnelService extends CrudService<PostPersonnel, Integer
      */
     @NonNull
     List<PostPersonnel> removeByPersonnelId(@NonNull Integer personnelId);
+
+
+    /**
+     * List personnel list map by post id collection.
+     *
+     * @param postIds post id collection.
+     * @return a personnel list map (key: postId, value: a list of personnel)
+     */
+    @NonNull
+    Map<Integer, List<Personnel>> listPersonnelListMap(@Nullable Collection<Integer> postIds);
+
+    /**
+     * Lists personnel by post id.
+     *
+     * @param postId post id must not be null
+     * @return a list of personnel
+     */
+    @NonNull
+    List<Personnel> listPersonnelListBy(@NonNull Integer postId);
 }

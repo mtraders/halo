@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -79,10 +78,10 @@ public class NewsAssembler extends CernPostAssembler<News> {
      * @return news list vo page.
      */
     @NonNull
-    public Page<NewsListVO> convertToListVo(Page<News> newsPage) {
+    public Page<NewsListVO> convertToListVO(Page<News> newsPage) {
         Assert.notNull(newsPage, "News page must not be null");
-        List<NewsListVO> newsListVOList = convertToListVo(newsPage.getContent());
-        Map<Integer, NewsListVO> newsListVOMap = newsListVOList.stream().collect(Collectors.toMap(NewsListVO::getId, Function.identity()));
+        List<NewsListVO> newsListVOList = convertToListVO(newsPage.getContent());
+        Map<Integer, NewsListVO> newsListVOMap = ServiceUtils.convertToMap(newsListVOList, NewsListVO::getId);
         return newsPage.map(news -> {
             Integer newsId = news.getId();
             return newsListVOMap.get(newsId);
@@ -95,7 +94,7 @@ public class NewsAssembler extends CernPostAssembler<News> {
      * @param newsList news list.
      * @return news list vo list.
      */
-    public List<NewsListVO> convertToListVo(List<News> newsList) {
+    public List<NewsListVO> convertToListVO(List<News> newsList) {
         Set<Integer> newsIds = ServiceUtils.fetchProperty(newsList, News::getId);
         // Get tag list map
         Map<Integer, List<Tag>> tagListMap = postTagService.listTagListMapBy(newsIds);
@@ -132,7 +131,7 @@ public class NewsAssembler extends CernPostAssembler<News> {
      * @return news list vo.
      */
     @NonNull
-    public NewsListVO convertToListVo(@NonNull News news) {
+    public NewsListVO convertToListVO(@NonNull News news) {
         Integer id = news.getId();
         List<Tag> tags = postTagService.listTagsBy(id);
         List<Category> categories = postCategoryService.listCategoriesBy(id);
@@ -191,7 +190,7 @@ public class NewsAssembler extends CernPostAssembler<News> {
      * @param news news
      * @return news detail vo.
      */
-    public NewsDetailVO convertToDetailVo(News news) {
+    public NewsDetailVO convertToDetailVO(News news) {
         // List tags
         List<Tag> tags = postTagService.listTagsBy(news.getId());
         // List categories
@@ -216,6 +215,12 @@ public class NewsAssembler extends CernPostAssembler<News> {
         return newsListDTO;
     }
 
+    /**
+     * convert to list dto page.
+     *
+     * @param newsPage news entity page
+     * @return news list dto.
+     */
     @NonNull
     public Page<NewsListDTO> convertToListDTO(@NonNull Page<News> newsPage) {
         Assert.notNull(newsPage, "News page cannot be null");

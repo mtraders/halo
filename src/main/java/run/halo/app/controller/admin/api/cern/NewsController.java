@@ -64,7 +64,7 @@ public class NewsController {
                                               NewsQuery newsQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
         Page<News> newsPage = newsService.pageBy(newsQuery, pageable);
         if (more) {
-            return newsAssembler.convertToListVo(newsPage);
+            return newsAssembler.convertToListVO(newsPage);
         }
         return newsAssembler.convertToListDTO(newsPage);
     }
@@ -86,7 +86,7 @@ public class NewsController {
     @ApiOperation("Get a news")
     public NewsDetailVO getBy(@PathVariable("id") Integer newsId) {
         News news = newsService.getWithLatestContentById(newsId);
-        return newsAssembler.convertToDetailVo(news);
+        return newsAssembler.convertToDetailVO(news);
     }
 
     /**
@@ -130,7 +130,7 @@ public class NewsController {
     @PutMapping("{id:\\d+}/{status}")
     @ApiOperation("Update news status")
     public NewsListVO updateStatusBy(@PathVariable("id") Integer newsId, @PathVariable("status") PostStatus status) {
-        return newsAssembler.convertToListVo(newsService.updateStatus(status, newsId));
+        return newsAssembler.convertToListVO(newsService.updateStatus(status, newsId));
     }
 
     /**
@@ -146,7 +146,7 @@ public class NewsController {
         News newsToUse = newsService.getById(newsId);
         String formattedContent = contentParam.decideContentBy(newsToUse.getEditorType());
         News news = newsService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), newsId);
-        return newsAssembler.convertToDetailVo(news);
+        return newsAssembler.convertToDetailVO(news);
     }
 
     /**

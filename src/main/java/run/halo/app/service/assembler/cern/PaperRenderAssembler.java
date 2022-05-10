@@ -11,6 +11,7 @@ import run.halo.app.service.ContentService;
 @Component
 public class PaperRenderAssembler extends PaperAssembler {
     public PaperRenderAssembler(ContentService contentService) {
-        super(contentService);
+        super(contentService, tagService, categoryService, postCategoryService, postTagService, postPersonnelService, personnelService,
+            contentService1);
     }
 }
