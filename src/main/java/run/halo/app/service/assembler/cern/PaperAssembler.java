@@ -183,17 +183,17 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
      * @param paper paper entity
      * @param tags tag list
      * @param categories category list
-     * @param personnelList personnel list
+     * @param authors personnel list
      * @return paper detail vo.
      */
     public PaperDetailVO convertTo(@NonNull Paper paper, @Nullable List<Tag> tags, @Nullable List<Category> categories,
-                                   @Nullable List<Personnel> personnelList) {
+                                   @Nullable List<Personnel> authors) {
         Assert.notNull(paper, "paper must not be null");
         PaperDetailVO detailVO = new PaperDetailVO().convertFrom(paper);
         generateAndSetDTOInfoIfAbsent(paper, detailVO);
         detailVO.setTags(tagService.convertTo(tags));
         detailVO.setCategories(categoryService.convertTo(categories));
-        detailVO.setAuthors(personnelService.convertTo(personnelList));
+        detailVO.setAuthors(personnelService.convertTo(authors));
         detailVO.setFullPath(buildFullPath(paper));
 
         Content.PatchedContent newsContent = paper.getContent();
@@ -213,8 +213,8 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
         Integer paperId = paper.getId();
         List<Tag> tags = postTagService.listTagsBy(paperId);
         List<Category> categories = postCategoryService.listCategoriesBy(paperId);
-        List<Personnel> personnelList = postPersonnelService.listPersonnelListBy(paperId);
-        return convertTo(paper, tags, categories, personnelList);
+        List<Personnel> authors = postPersonnelService.listPersonnelListBy(paperId);
+        return convertTo(paper, tags, categories, authors);
     }
 
     /**

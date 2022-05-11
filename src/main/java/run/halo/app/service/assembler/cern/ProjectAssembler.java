@@ -5,6 +5,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import run.halo.app.model.dto.CategoryDTO;
@@ -12,11 +13,13 @@ import run.halo.app.model.dto.TagDTO;
 import run.halo.app.model.dto.cern.personnel.PersonnelDTO;
 import run.halo.app.model.dto.cern.project.ProjectListDTO;
 import run.halo.app.model.entity.Category;
+import run.halo.app.model.entity.Content;
 import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.entity.cern.PostPersonnel;
 import run.halo.app.model.entity.cern.Project;
 import run.halo.app.model.params.cern.project.ProjectQuery;
+import run.halo.app.model.vo.cern.project.ProjectDetailVO;
 import run.halo.app.model.vo.cern.project.ProjectListVO;
 import run.halo.app.service.CategoryService;
 import run.halo.app.service.ContentService;
@@ -153,6 +156,47 @@ public class ProjectAssembler extends CernPostAssembler<Project> {
             projectListVO.setFullPath(buildFullPath(project));
             return projectListVO;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * convert from project entity to project detail vo.
+     *
+     * @param project project entity
+     * @param tags tag list
+     * @param categories category list
+     * @param managers manager list
+     * @return project detail vo.
+     */
+    public ProjectDetailVO convertTo(@NonNull Project project, @Nullable List<Tag> tags, @Nullable List<Category> categories,
+                                     @Nullable List<Personnel> managers) {
+        Assert.notNull(project, "project must not be null");
+        ProjectDetailVO detailVO = new ProjectDetailVO().convertFrom(project);
+        generateAndSetDTOInfoIfAbsent(project, detailVO);
+        detailVO.setTags(tagService.convertTo(tags));
+        detailVO.setCategories(categoryService.convertTo(categories));
+        detailVO.setManagers(personnelService.convertTo(managers));
+        detailVO.setFullPath(buildFullPath(project));
+
+        Content.PatchedContent newsContent = project.getContent();
+        detailVO.setContent(newsContent.getContent());
+        detailVO.setOriginalContent(newsContent.getOriginalContent());
+        return detailVO;
+    }
+
+    /**
+     * convert to project detail vo.
+     *
+     * @param project project entity.
+     * @return project detail vo.
+     */
+    @NonNull
+    public ProjectDetailVO convertToDetailVO(@NonNull Project project) {
+        Integer projectId = project.getId();
+
+        List<Tag> tags = postTagService.listTagsBy(projectId);
+        List<Category> categories = postCategoryService.listCategoriesBy(projectId);
+        List<Personnel> managers = postPersonnelService.listPersonnelListBy(projectId);
+        return convertTo(project, tags, categories, managers);
     }
 
     /**

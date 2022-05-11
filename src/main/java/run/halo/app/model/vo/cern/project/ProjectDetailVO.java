@@ -21,5 +21,5 @@ import java.util.List;
 public class ProjectDetailVO extends ProjectDetailDTO {
     private List<TagDTO> tags;
     private List<CategoryDTO> categories;
-    private PersonnelDTO manager;
+    private List<PersonnelDTO> managers;
 }

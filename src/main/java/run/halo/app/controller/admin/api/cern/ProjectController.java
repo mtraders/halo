@@ -74,7 +74,8 @@ public class ProjectController {
     @GetMapping("{id:\\d+}")
     @ApiOperation("Get a project")
     public ProjectDetailVO getBy(@PathVariable("id") Integer projectId) {
-        return new ProjectDetailVO();
+        Project project = projectService.getById(projectId);
+        return projectAssembler.convertToDetailVO(project);
     }
 
     /**
