@@ -1,6 +1,5 @@
 package run.halo.app.controller.admin.api.cern;
 
-import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
