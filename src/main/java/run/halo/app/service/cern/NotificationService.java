@@ -4,7 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import run.halo.app.model.entity.cern.Notification;
-import run.halo.app.model.params.cern.NotificationQuery;
+import run.halo.app.model.params.cern.notification.NotificationQuery;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
 import run.halo.app.service.base.BasePostService;
 

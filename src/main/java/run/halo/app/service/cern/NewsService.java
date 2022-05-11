@@ -6,7 +6,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.cern.News;
-import run.halo.app.model.params.cern.NewsQuery;
+import run.halo.app.model.params.cern.news.NewsQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.service.base.BasePostService;
 

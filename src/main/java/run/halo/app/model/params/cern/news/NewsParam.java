@@ -1,4 +1,4 @@
-package run.halo.app.model.params.cern;
+package run.halo.app.model.params.cern.news;
 
 import com.google.common.collect.Sets;
 import lombok.Data;

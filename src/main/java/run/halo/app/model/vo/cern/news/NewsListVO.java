@@ -17,11 +17,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class NewsListVO extends NewsListDTO {
-
     private List<TagDTO> tags;
-
     private List<CategoryDTO> categories;
-
     private Map<String, Object> metas;
-
 }

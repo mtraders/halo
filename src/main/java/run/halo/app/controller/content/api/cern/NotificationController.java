@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.cern.Notification;
-import run.halo.app.model.params.cern.NotificationQuery;
+import run.halo.app.model.params.cern.notification.NotificationQuery;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
 import run.halo.app.model.vo.cern.notification.NotificationListVO;
 import run.halo.app.service.PostService;

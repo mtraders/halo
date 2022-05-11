@@ -17,8 +17,8 @@ import run.halo.app.model.dto.cern.notification.NotificationListDTO;
 import run.halo.app.model.entity.cern.Notification;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.params.PostContentParam;
-import run.halo.app.model.params.cern.NotificationParam;
-import run.halo.app.model.params.cern.NotificationQuery;
+import run.halo.app.model.params.cern.notification.NotificationParam;
+import run.halo.app.model.params.cern.notification.NotificationQuery;
 import run.halo.app.model.vo.cern.notification.NotificationDetailVO;
 import run.halo.app.model.vo.cern.notification.NotificationListVO;
 import run.halo.app.service.assembler.cern.NotificationAssembler;
@@ -129,7 +129,7 @@ public class NotificationController {
      * @return notification list vo.
      */
     @PutMapping("{id:\\d+}/{status}")
-    @ApiOperation("Update news status")
+    @ApiOperation("Update notification status")
     public NotificationListVO updateStatusBy(@PathVariable("id") Integer notificationId, @PathVariable("status") PostStatus status) {
         Notification notification = notificationService.updateStatus(status, notificationId);
         return notificationAssembler.convertToListVo(notification);

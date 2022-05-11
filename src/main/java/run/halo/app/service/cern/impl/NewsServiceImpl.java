@@ -25,7 +25,7 @@ import run.halo.app.model.entity.Tag;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
-import run.halo.app.model.params.cern.NewsQuery;
+import run.halo.app.model.params.cern.news.NewsQuery;
 import run.halo.app.model.properties.PostProperties;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.repository.cern.NewsRepository;

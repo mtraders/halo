@@ -1,7 +1,31 @@
 package run.halo.app.controller.admin.api.cern;
 
+import com.google.common.collect.Lists;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import run.halo.app.model.dto.cern.project.ProjectListDTO;
+import run.halo.app.model.entity.cern.Project;
+import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.params.PostContentParam;
+import run.halo.app.model.params.cern.project.ProjectParam;
+import run.halo.app.model.params.cern.project.ProjectQuery;
+import run.halo.app.model.vo.cern.project.ProjectDetailVO;
+
+import javax.validation.Valid;
+import java.util.List;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * project admin controller.
@@ -12,4 +36,108 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/admin/cern/projects")
 public class ProjectController {
 
+    /**
+     * get project list.
+     *
+     * @param pageable page info.
+     * @param projectQuery project query info.
+     * @param more more info or not
+     * @return project list data.
+     */
+    @GetMapping
+    @ApiOperation(value = "get project list")
+    public Page<? extends ProjectListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
+                                                 ProjectQuery projectQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
+        return null;
+    }
+
+    /**
+     * get a project detail by id.
+     *
+     * @param projectId project id.
+     * @return project detail.
+     */
+    @GetMapping("{id:\\d+}")
+    @ApiOperation("Get a project")
+    public ProjectDetailVO getBy(@PathVariable("id") Integer projectId) {
+        return new ProjectDetailVO();
+    }
+
+    /**
+     * create a project.
+     *
+     * @param projectParam project param
+     * @param autoSave auto-save flag.
+     * @return paper detail vo.
+     */
+    @PostMapping
+    @ApiOperation("create a project")
+    public ProjectDetailVO createBy(@RequestBody @Valid ProjectParam projectParam,
+                                    @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
+        return new ProjectDetailVO();
+    }
+
+    /**
+     * update a project by id.
+     *
+     * @param projectId project id.
+     * @param projectParam project param.
+     * @param autoSave auto-save or not.
+     * @return project detail vo.
+     */
+    @PutMapping("{id:\\d+}")
+    public ProjectDetailVO updateBy(@PathVariable("id") Integer projectId, @RequestBody @Valid ProjectParam projectParam,
+                                    @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
+        return new ProjectDetailVO();
+    }
+
+    /**
+     * update project status.
+     *
+     * @param projectId project id.
+     * @param status status.
+     * @return project detail vo.
+     */
+    @PutMapping("{id:\\d+}/{status}")
+    @ApiOperation("update project status")
+    public ProjectDetailVO updateStatusBy(@PathVariable("id") Integer projectId, @PathVariable("status") PostStatus status) {
+        return new ProjectDetailVO();
+    }
+
+    /**
+     * update draft project.
+     *
+     * @param projectId project id.
+     * @param contentParam content param.
+     * @return project detail vo.
+     */
+    @PutMapping("{id:\\d+}/status/draft/content")
+    @ApiOperation("update draft project")
+    public ProjectDetailVO updateDraftBy(@PathVariable("id") Integer projectId, @RequestBody PostContentParam contentParam) {
+        return new ProjectDetailVO();
+    }
+
+    @DeleteMapping("{id:\\d+}")
+    @ApiOperation("Delete a project permanently.")
+    public Project deletePermanently(@PathVariable("id") Integer projectId) {
+        return new Project();
+    }
+
+    @DeleteMapping
+    @ApiOperation("Deletes projects permanently in batch by id array")
+    public List<Project> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
+        return Lists.newArrayList();
+    }
+
+    /**
+     * get a project preview.
+     *
+     * @param projectId project id.
+     * @return preview content.
+     */
+    @GetMapping("preview/{id:\\d+}")
+    @ApiOperation("Get a project preview")
+    public String preview(@PathVariable("id") Integer projectId) {
+        return projectId.toString();
+    }
 }
