@@ -69,7 +69,7 @@ public class NewsController {
         newsQuery.setCategoryId(categoryId);
         newsQuery.setStatuses(Set.of(PostStatus.PUBLISHED));
         Page<News> newsPage = newsService.pageBy(newsQuery, pageable);
-        return newsAssembler.convertToListVo(newsPage);
+        return newsAssembler.convertToListVO(newsPage);
     }
 
     /**
@@ -84,7 +84,7 @@ public class NewsController {
     public Page<NewsListVO> pageBy(@RequestParam(value = "keyword") String keyword,
                                    @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable) {
         Page<News> newsPage = newsService.pageBy(keyword, pageable);
-        return newsAssembler.convertToListVo(newsPage);
+        return newsAssembler.convertToListVO(newsPage);
     }
 
     /**
@@ -101,7 +101,7 @@ public class NewsController {
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         News news = newsService.getById(newsId);
-        NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVo(news);
+        NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVO(news);
         if (formatDisabled) {
             // Clear the format content
             newsDetailVO.setContent(null);
@@ -128,7 +128,7 @@ public class NewsController {
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         News news = newsService.getBySlug(slug);
-        NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVo(news);
+        NewsDetailVO newsDetailVO = newsAssembler.convertToDetailVO(news);
         if (formatDisabled) {
             // Clear the format content
             newsDetailVO.setContent(null);
@@ -152,7 +152,7 @@ public class NewsController {
     public NewsDetailVO getPrevNewsBy(@PathVariable("newsId") Integer newsId) {
         News news = newsService.getById(newsId);
         News prevNews = newsService.getPrevPost(news).orElseThrow(() -> new NotFoundException("查询不到该新闻信息"));
-        return newsAssembler.convertToDetailVo(prevNews);
+        return newsAssembler.convertToDetailVO(prevNews);
     }
 
     /**
@@ -166,6 +166,6 @@ public class NewsController {
     public NewsDetailVO getNextNewsBy(@PathVariable("newsId") Integer newsId) {
         News news = newsService.getById(newsId);
         News nextNews = newsService.getNextPost(news).orElseThrow(() -> new NotFoundException("查询不到该新闻信息"));
-        return newsAssembler.convertToDetailVo(nextNews);
+        return newsAssembler.convertToDetailVO(nextNews);
     }
 }

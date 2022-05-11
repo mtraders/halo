@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -212,13 +213,19 @@ public class NewsServiceImpl extends BasePostServiceImpl<News> implements NewsSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     @NonNull
-    public List<News> removeByIds(@NonNull Collection<Integer> ids) {
+    public List<News> removeByIds(@Nullable Collection<Integer> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }
         return ids.stream().map(this::removeById).collect(Collectors.toList());
     }
 
+    /**
+     * Removed by id.
+     *
+     * @param newsId news id.
+     * @return deleted news entity.
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     @NonNull

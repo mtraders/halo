@@ -31,7 +31,7 @@ public class NotificationDetailDTO extends NotificationListDTO {
     @Override
     @NonNull
     @SuppressWarnings("unchecked")
-    public <T extends CernPostListDTO<Notification>> T convertFrom(Notification domain) {
+    public <T extends CernPostListDTO<Notification>> T convertFrom(@NonNull Notification domain) {
         NotificationDetailDTO detailDTO = super.convertFrom(domain);
         Content.PatchedContent content = domain.getContent();
         detailDTO.setContent(content.getContent());

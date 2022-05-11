@@ -12,7 +12,6 @@ import run.halo.app.model.dto.cern.personnel.PersonnelDTO;
 import run.halo.app.service.cern.PersonnelService;
 import run.halo.app.service.cern.PostPersonnelService;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;

@@ -35,7 +35,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
  *
  * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
-@RestController
+@RestController("ApiAdminCernNotificationController")
 @RequestMapping("/api/admin/cern/notifications")
 public class NotificationController {
     private final NotificationService notificationService;

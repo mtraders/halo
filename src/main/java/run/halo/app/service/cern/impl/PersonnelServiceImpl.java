@@ -2,12 +2,12 @@ package run.halo.app.service.cern.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.util.StringUtils;
-import org.springframework.util.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import run.halo.app.exception.AlreadyExistsException;
 import run.halo.app.model.dto.cern.personnel.PersonnelDTO;
-import run.halo.app.model.dto.cern.personnel.PersonnelMoreDTO;
 import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.repository.cern.PersonnelRepository;
 import run.halo.app.service.base.AbstractCrudService;
@@ -39,7 +39,7 @@ public class PersonnelServiceImpl extends AbstractCrudService<Personnel, Integer
     }
 
     @Override
-    public @NotNull List<PersonnelDTO> convertTo(@NotNull List<Personnel> personnelList) {
+    public @NotNull List<PersonnelDTO> convertTo(@Nullable List<Personnel> personnelList) {
         if (CollectionUtils.isEmpty(personnelList)) {
             return Collections.emptyList();
         }

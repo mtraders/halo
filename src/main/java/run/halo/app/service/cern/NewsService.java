@@ -3,6 +3,7 @@ package run.halo.app.service.cern;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.params.cern.NewsQuery;
@@ -68,5 +69,5 @@ public interface NewsService extends BasePostService<News> {
      * @return a list of deleted news.
      */
     @NonNull
-    List<News> removeByIds(@NonNull Collection<Integer> ids);
+    List<News> removeByIds(@Nullable Collection<Integer> ids);
 }

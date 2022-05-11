@@ -35,10 +35,10 @@ public class Paper extends BasePost {
     private Date publishDate;
 
     /**
-     * press.
+     * publisher.
      */
-    @Column(name = "press")
-    private String press;
+    @Column(name = "publisher")
+    private String publisher;
 
     @Override
     public boolean equals(Object o) {

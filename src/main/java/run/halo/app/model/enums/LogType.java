@@ -104,6 +104,20 @@ public enum LogType implements ValueEnum<Integer> {
      * Notification deleted.
      */
     NOTIFICATION_DELETED(105),
+
+    /**
+     * Paper create.
+     */
+    PAPER_PUBLISHED(106),
+
+    /**
+     * Paper edited.
+     */
+    PAPER_EDITED(107),
+    /**
+     * Paper deleted.
+     */
+    PAPER_DELETED(108),
     ;
 
 
