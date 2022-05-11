@@ -21,6 +21,8 @@ import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.cern.project.ProjectParam;
 import run.halo.app.model.params.cern.project.ProjectQuery;
 import run.halo.app.model.vo.cern.project.ProjectDetailVO;
+import run.halo.app.service.assembler.cern.ProjectAssembler;
+import run.halo.app.service.cern.ProjectService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -36,6 +38,14 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequestMapping("/api/admin/cern/projects")
 public class ProjectController {
 
+    private final ProjectService projectService;
+    private final ProjectAssembler projectAssembler;
+
+    public ProjectController(ProjectService projectService, ProjectAssembler projectAssembler) {
+        this.projectService = projectService;
+        this.projectAssembler = projectAssembler;
+    }
+
     /**
      * get project list.
      *
@@ -48,7 +58,11 @@ public class ProjectController {
     @ApiOperation(value = "get project list")
     public Page<? extends ProjectListDTO> pageBy(@PageableDefault(sort = {"topPriority", "createTime"}, direction = DESC) Pageable pageable,
                                                  ProjectQuery projectQuery, @RequestParam(value = "more", defaultValue = "true") Boolean more) {
-        return null;
+        Page<Project> pageData = projectService.pageBy(projectQuery, pageable);
+        if (more) {
+            return projectAssembler.convertToListVO(pageData);
+        }
+        return projectAssembler.convertToListDTO(pageData);
     }
 
     /**

@@ -131,7 +131,6 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
      * @return paper page.
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @NonNull
     public Page<Paper> pageBy(@NonNull PaperQuery paperQuery, @NonNull Pageable pageable) {
         Assert.notNull(paperQuery, "Paper query must not be null");
