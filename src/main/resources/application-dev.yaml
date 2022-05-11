@@ -48,6 +48,7 @@ logging:
     org.hibernate: INFO
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
     org.hibernate.type.descriptor.sql.BasicExtractor: INFO
+    org.springframework.boot.autoconfigure.logging: INFO
   file:
     path: ${halo.work-dir}/logs
 
