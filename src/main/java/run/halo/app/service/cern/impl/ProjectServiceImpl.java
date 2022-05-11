@@ -10,6 +10,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import run.halo.app.event.cern.ProjectUpdateEvent;
 import run.halo.app.event.logger.LogEvent;
 import run.halo.app.model.entity.Category;
@@ -36,10 +37,14 @@ import run.halo.app.service.cern.PersonnelService;
 import run.halo.app.service.cern.PostPersonnelService;
 import run.halo.app.service.cern.ProjectService;
 import run.halo.app.service.impl.BasePostServiceImpl;
+import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * project service impl.
@@ -116,6 +121,75 @@ public class ProjectServiceImpl extends BasePostServiceImpl<Project> implements 
         Content.PatchedContent patchedContent = contentPatchLogService.getPatchedContentById(content.getHeadPatchLogId());
         project.setContent(patchedContent);
         return project;
+    }
+
+    /**
+     * update project by project param.
+     *
+     * @param project project entity.
+     * @param tagIds tag ids
+     * @param categoryIds category ids
+     * @param managerIds manager ids.
+     * @param autoSave auto-save flag.
+     * @return project detail vo.
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public ProjectDetailVO updateBy(@NonNull Project project, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> managerIds,
+                                    boolean autoSave) {
+        project.setEditTime(DateUtils.now());
+        ProjectDetailVO detailVO = createOrUpdate(project, tagIds, categoryIds, managerIds);
+        if (!autoSave) {
+            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PROJECT_EDITED, detailVO.getTitle());
+            eventPublisher.publishEvent(logEvent);
+        }
+        return detailVO;
+    }
+
+    /**
+     * remove project by ids.
+     *
+     * @param ids project ids
+     * @return deleted projects.
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public List<Project> removeByIds(Collection<Integer> ids) {
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        return ids.stream().map(this::removeById).collect(Collectors.toList());
+    }
+
+
+    /**
+     * Removes by id.
+     *
+     * @param projectId project id
+     * @return DOMAIN
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    @NonNull
+    public Project removeById(@NonNull Integer projectId) {
+        Assert.notNull(projectId, "Project id must not be null");
+        log.debug("Removing project: {}", projectId);
+        // Remove project tags
+        List<PostTag> projectTags = postTagService.removeByPostId(projectId);
+        log.debug("Removed project tags: [{}]", projectTags);
+        // Remove project categories
+        List<PostCategory> projectCategories = postCategoryService.removeByPostId(projectId);
+        log.debug("Remove project categories: [{}]", projectCategories);
+        // Remove project personnel
+        List<PostPersonnel> projectManagers = postPersonnelService.removeByPostId(projectId);
+        log.debug("Remove project managers: [{}]", projectManagers);
+        // Remove project content
+        Content projectContent = contentService.removeById(projectId);
+        Project deletedProject = super.removeById(projectId);
+        eventPublisher.publishEvent(new LogEvent(this, projectId.toString(), LogType.PROJECT_DELETED, deletedProject.getTitle()));
+        return deletedProject;
     }
 
     /**

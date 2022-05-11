@@ -3,6 +3,7 @@ package run.halo.app.service.cern;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import run.halo.app.model.entity.cern.Paper;
 import run.halo.app.model.entity.cern.Project;
 import run.halo.app.model.params.cern.paper.PaperQuery;
@@ -10,6 +11,8 @@ import run.halo.app.model.params.cern.project.ProjectQuery;
 import run.halo.app.model.vo.cern.project.ProjectDetailVO;
 import run.halo.app.service.base.BasePostService;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,4 +44,26 @@ public interface ProjectService extends BasePostService<Project> {
      */
     @NonNull
     ProjectDetailVO createBy(@NonNull Project project, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> managerIds, boolean autoSave);
+
+    /**
+     * update project by project param.
+     *
+     * @param project project entity.
+     * @param tagIds tag ids
+     * @param categoryIds category ids
+     * @param managerIds manager ids.
+     * @param autoSave auto-save flag.
+     * @return project detail vo.
+     */
+    @NonNull
+    ProjectDetailVO updateBy(@NonNull Project project, Set<Integer> tagIds, Set<Integer> categoryIds, Set<Integer> managerIds, boolean autoSave);
+
+    /**
+     * remove project by ids.
+     *
+     * @param ids project ids
+     * @return deleted projects.
+     */
+    @NonNull
+    List<Project> removeByIds(@Nullable Collection<Integer> ids);
 }

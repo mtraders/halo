@@ -21,6 +21,7 @@ import run.halo.app.model.params.PostContentParam;
 import run.halo.app.model.params.cern.project.ProjectParam;
 import run.halo.app.model.params.cern.project.ProjectQuery;
 import run.halo.app.model.vo.cern.project.ProjectDetailVO;
+import run.halo.app.model.vo.cern.project.ProjectListVO;
 import run.halo.app.service.assembler.cern.ProjectAssembler;
 import run.halo.app.service.cern.ProjectService;
 
@@ -106,9 +107,17 @@ public class ProjectController {
      * @return project detail vo.
      */
     @PutMapping("{id:\\d+}")
+    @ApiOperation("update a project")
     public ProjectDetailVO updateBy(@PathVariable("id") Integer projectId, @RequestBody @Valid ProjectParam projectParam,
                                     @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
-        return new ProjectDetailVO();
+        Project projectToUpdate = projectService.getWithLatestContentById(projectId);
+        projectParam.update(projectToUpdate);
+
+        Set<Integer> tagIds = projectParam.getTagIds();
+        Set<Integer> categoryIds = projectParam.getCategoryIds();
+        Set<Integer> managerIds = projectParam.getManagerIds();
+
+        return projectService.updateBy(projectToUpdate, tagIds, categoryIds, managerIds, autoSave);
     }
 
     /**
@@ -116,12 +125,12 @@ public class ProjectController {
      *
      * @param projectId project id.
      * @param status status.
-     * @return project detail vo.
+     * @return project list vo.
      */
     @PutMapping("{id:\\d+}/{status}")
     @ApiOperation("update project status")
-    public ProjectDetailVO updateStatusBy(@PathVariable("id") Integer projectId, @PathVariable("status") PostStatus status) {
-        return new ProjectDetailVO();
+    public ProjectListVO updateStatusBy(@PathVariable("id") Integer projectId, @PathVariable("status") PostStatus status) {
+        return projectAssembler.convertToListVO(projectService.updateStatus(status, projectId));
     }
 
     /**
@@ -134,19 +143,28 @@ public class ProjectController {
     @PutMapping("{id:\\d+}/status/draft/content")
     @ApiOperation("update draft project")
     public ProjectDetailVO updateDraftBy(@PathVariable("id") Integer projectId, @RequestBody PostContentParam contentParam) {
-        return new ProjectDetailVO();
+        Project projectToUse = projectService.getById(projectId);
+        String formattedContent = contentParam.decideContentBy(projectToUse.getEditorType());
+        Project project = projectService.updateDraftContent(formattedContent, contentParam.getOriginalContent(), projectId);
+        return projectAssembler.convertToDetailVO(project);
     }
 
+    /**
+     * Delete a project permanently.
+     *
+     * @param projectId project id.
+     * @return deleted project
+     */
     @DeleteMapping("{id:\\d+}")
     @ApiOperation("Delete a project permanently.")
     public Project deletePermanently(@PathVariable("id") Integer projectId) {
-        return new Project();
+        return projectService.removeById(projectId);
     }
 
     @DeleteMapping
     @ApiOperation("Deletes projects permanently in batch by id array")
     public List<Project> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
-        return Lists.newArrayList();
+        return projectService.removeByIds(ids);
     }
 
     /**

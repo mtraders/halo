@@ -19,6 +19,7 @@ import run.halo.app.model.entity.cern.Personnel;
 import run.halo.app.model.entity.cern.PostPersonnel;
 import run.halo.app.model.entity.cern.Project;
 import run.halo.app.model.params.cern.project.ProjectQuery;
+import run.halo.app.model.vo.cern.paper.PaperListVO;
 import run.halo.app.model.vo.cern.project.ProjectDetailVO;
 import run.halo.app.model.vo.cern.project.ProjectListVO;
 import run.halo.app.service.CategoryService;
@@ -153,9 +154,30 @@ public class ProjectAssembler extends CernPostAssembler<Project> {
                 Optional.ofNullable(managerListMap.get(projectId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
                     .map(personnelService::convertTo).collect(Collectors.toList());
             projectListVO.setManagers(managers);
+            generateAndSetDTOInfoIfAbsent(project, projectListVO);
             projectListVO.setFullPath(buildFullPath(project));
             return projectListVO;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * convert project entity to project list vo.
+     *
+     * @param project project entity
+     * @return project list vo.
+     */
+    public ProjectListVO convertToListVO(@NonNull Project project) {
+        Integer id = project.getId();
+        List<Tag> tags = postTagService.listTagsBy(id);
+        List<Category> categories = postCategoryService.listCategoriesBy(id);
+        List<Personnel> managers = postPersonnelService.listPersonnelListBy(id);
+        ProjectListVO projectListVO = new ProjectListVO().convertFrom(project);
+        projectListVO.setTags(tagService.convertTo(tags));
+        projectListVO.setCategories(categoryService.convertTo(categories));
+        projectListVO.setManagers(personnelService.convertTo(managers));
+        generateAndSetDTOInfoIfAbsent(project, projectListVO);
+        projectListVO.setFullPath(buildFullPath(project));
+        return projectListVO;
     }
 
     /**

@@ -136,6 +136,7 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
             List<PersonnelDTO> authors = Optional.ofNullable(authorListMap.get(paperId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
                 .map(personnelService::convertTo).collect(Collectors.toList());
             paperListVO.setAuthors(authors);
+            generateAndSetDTOInfoIfAbsent(paper, paperListVO);
             paperListVO.setFullPath(buildFullPath(paper));
             return paperListVO;
         }).collect(Collectors.toList());
@@ -156,6 +157,7 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
         paperListVO.setTags(tagService.convertTo(tags));
         paperListVO.setCategories(categoryService.convertTo(categories));
         paperListVO.setAuthors(personnelService.convertTo(personnelList));
+        generateAndSetDTOInfoIfAbsent(paper, paperListVO);
         paperListVO.setFullPath(buildFullPath(paper));
         return paperListVO;
     }
@@ -194,6 +196,7 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
         detailVO.setTags(tagService.convertTo(tags));
         detailVO.setCategories(categoryService.convertTo(categories));
         detailVO.setAuthors(personnelService.convertTo(authors));
+        generateAndSetDTOInfoIfAbsent(paper, detailVO);
         detailVO.setFullPath(buildFullPath(paper));
 
         Content.PatchedContent newsContent = paper.getContent();

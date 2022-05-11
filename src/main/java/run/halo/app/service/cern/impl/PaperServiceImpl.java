@@ -178,7 +178,7 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
         paper.setEditTime(DateUtils.now());
         PaperDetailVO detailVO = createOrUpdate(paper, tagIds, categoryIds, authorIds);
         if (!autoSave) {
-            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PAPER_PUBLISHED, detailVO.getTitle());
+            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PAPER_EDITED, detailVO.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return detailVO;
