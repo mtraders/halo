@@ -1,8 +1,9 @@
-package run.halo.app.model.params.cern;
+package run.halo.app.model.params.cern.news;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import run.halo.app.model.entity.cern.News;
+import run.halo.app.model.params.cern.CernPostQuery;
 
 /**
  * News query.

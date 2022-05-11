@@ -122,7 +122,6 @@ public class PaperController {
         return paperService.updateBy(paperToUpdate, tagIds, categoryIds, authorIds, autoSave);
     }
 
-
     /**
      * Update paper status.
      *

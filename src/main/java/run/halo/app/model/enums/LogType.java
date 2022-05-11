@@ -109,7 +109,6 @@ public enum LogType implements ValueEnum<Integer> {
      * Paper create.
      */
     PAPER_PUBLISHED(106),
-
     /**
      * Paper edited.
      */
@@ -118,6 +117,19 @@ public enum LogType implements ValueEnum<Integer> {
      * Paper deleted.
      */
     PAPER_DELETED(108),
+
+    /**
+     * Project create.
+     */
+    PROJECT_PUBLISHED(109),
+    /**
+     * Project edited.
+     */
+    PROJECT_EDITED(110),
+    /**
+     * Project deleted.
+     */
+    PROJECT_DELETED(111),
     ;
 
 

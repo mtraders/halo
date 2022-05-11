@@ -1,9 +1,10 @@
-package run.halo.app.model.params.cern;
+package run.halo.app.model.params.cern.notification;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.cern.Notification;
+import run.halo.app.model.params.cern.CernPostParam;
 
 /**
  * notification param.

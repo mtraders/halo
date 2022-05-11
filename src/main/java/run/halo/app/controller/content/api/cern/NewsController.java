@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.model.entity.cern.News;
 import run.halo.app.model.enums.PostStatus;
-import run.halo.app.model.params.cern.NewsQuery;
+import run.halo.app.model.params.cern.news.NewsQuery;
 import run.halo.app.model.vo.cern.news.NewsDetailVO;
 import run.halo.app.model.vo.cern.news.NewsListVO;
 import run.halo.app.service.PostService;

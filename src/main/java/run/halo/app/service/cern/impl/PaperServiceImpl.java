@@ -131,7 +131,6 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
      * @return paper page.
      */
     @Override
-    @Transactional(rollbackFor = Exception.class)
     @NonNull
     public Page<Paper> pageBy(@NonNull PaperQuery paperQuery, @NonNull Pageable pageable) {
         Assert.notNull(paperQuery, "Paper query must not be null");
@@ -179,7 +178,7 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
         paper.setEditTime(DateUtils.now());
         PaperDetailVO detailVO = createOrUpdate(paper, tagIds, categoryIds, authorIds);
         if (!autoSave) {
-            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PAPER_PUBLISHED, detailVO.getTitle());
+            LogEvent logEvent = new LogEvent(this, detailVO.getId().toString(), LogType.PAPER_EDITED, detailVO.getTitle());
             eventPublisher.publishEvent(logEvent);
         }
         return detailVO;
@@ -192,6 +191,7 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
      * @return delete papers.
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @NonNull
     public List<Paper> removeByIds(@Nullable Collection<Integer> ids) {
         if (CollectionUtils.isEmpty(ids)) {
