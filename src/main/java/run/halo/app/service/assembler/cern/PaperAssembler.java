@@ -133,15 +133,20 @@ public class PaperAssembler extends CernPostAssembler<Paper> {
                 Optional.ofNullable(categoryListMap.get(paperId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
                     .map(categoryService::convertTo).collect(Collectors.toList());
             paperListVO.setCategories(categories);
-            List<PersonnelDTO> authors =
-                Optional.ofNullable(authorListMap.get(paperId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
-                    .map(personnelService::convertTo).collect(Collectors.toList());
+            List<PersonnelDTO> authors = Optional.ofNullable(authorListMap.get(paperId)).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                .map(personnelService::convertTo).collect(Collectors.toList());
             paperListVO.setAuthors(authors);
             paperListVO.setFullPath(buildFullPath(paper));
             return paperListVO;
         }).collect(Collectors.toList());
     }
 
+    /**
+     * convert paper entity to paper list vo.
+     *
+     * @param paper paper entity.
+     * @return paper list vo.
+     */
     public PaperListVO convertToListVO(@NonNull Paper paper) {
         Integer id = paper.getId();
         List<Tag> tags = postTagService.listTagsBy(id);
