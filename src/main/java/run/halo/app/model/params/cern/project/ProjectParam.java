@@ -6,6 +6,8 @@ import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.cern.Project;
 import run.halo.app.model.params.cern.CernPostParam;
 
+import java.util.Set;
+
 /**
  * project param.
  *
@@ -14,6 +16,18 @@ import run.halo.app.model.params.cern.CernPostParam;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ProjectParam extends CernPostParam implements InputConverter<Project> {
+
+    private String period;
+    /**
+     * 项目来源.
+     */
+    private String source;
+
+    /**
+     * 项目经理
+     */
+    private Set<Integer> managerIds;
+
     /**
      * Convert to domain.(shallow)
      *

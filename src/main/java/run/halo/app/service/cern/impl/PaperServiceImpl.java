@@ -191,6 +191,7 @@ public class PaperServiceImpl extends BasePostServiceImpl<Paper> implements Pape
      * @return delete papers.
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     @NonNull
     public List<Paper> removeByIds(@Nullable Collection<Integer> ids) {
         if (CollectionUtils.isEmpty(ids)) {

@@ -26,6 +26,7 @@ import run.halo.app.service.cern.ProjectService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
@@ -89,7 +90,11 @@ public class ProjectController {
     @ApiOperation("create a project")
     public ProjectDetailVO createBy(@RequestBody @Valid ProjectParam projectParam,
                                     @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
-        return new ProjectDetailVO();
+        Project projectToCreate = projectParam.convertTo();
+        Set<Integer> tagIds = projectParam.getTagIds();
+        Set<Integer> categoryIds = projectParam.getCategoryIds();
+        Set<Integer> managerIds = projectParam.getManagerIds();
+        return projectService.createBy(projectToCreate, tagIds, categoryIds, managerIds, autoSave);
     }
 
     /**
