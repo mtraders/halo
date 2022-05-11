@@ -169,7 +169,7 @@ public class PaperController {
     @ApiOperation("Get next paper by current post id")
     public PaperDetailVO getNextPaperBy(@PathVariable("id") Integer paperId) {
         Paper paper = paperService.getById(paperId);
-        Paper prevPaper = paperService.getNextPost(paper).orElseThrow(() -> new NotFoundException("查询不到该论文信息"));
-        return paperAssembler.convertToDetailVO(prevPaper);
+        Paper nextPaper = paperService.getNextPost(paper).orElseThrow(() -> new NotFoundException("查询不到该论文信息"));
+        return paperAssembler.convertToDetailVO(nextPaper);
     }
 }
