@@ -64,4 +64,5 @@ public interface PaperService extends BasePostService<Paper> {
      */
     @NonNull
     List<Paper> removeByIds(@Nullable Collection<Integer> ids);
+
 }
