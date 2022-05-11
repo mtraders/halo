@@ -127,7 +127,7 @@ public class PaperController {
      * @return paper detail
      */
     @GetMapping("/slug")
-    @ApiOperation("Get a news by slug")
+    @ApiOperation("Get a paper by slug")
     public PaperDetailVO getBy(@RequestParam("slug") String slug,
                                @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                                @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
