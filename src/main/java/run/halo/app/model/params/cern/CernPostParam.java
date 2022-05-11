@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.entity.Content;
 import run.halo.app.model.enums.PostEditorType;
+import run.halo.app.model.enums.PostStatus;
 import run.halo.app.utils.MarkdownUtils;
 import run.halo.app.utils.SlugUtils;
 
@@ -40,6 +41,7 @@ public abstract class CernPostParam {
     protected String originalContent;
     protected Date createTime;
     protected Date editTime;
+    protected PostStatus status = PostStatus.DRAFT;
     /**
      * if {@code true}, it means is that do not let the back-end render the original content
      * because the content has been rendered, and you only need to store the original content.

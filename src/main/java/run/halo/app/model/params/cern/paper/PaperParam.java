@@ -6,6 +6,7 @@ import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.cern.Paper;
 import run.halo.app.model.params.cern.CernPostParam;
 
+import java.util.Date;
 import java.util.Set;
 
 /**
@@ -16,6 +17,8 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class PaperParam extends CernPostParam implements InputConverter<Paper> {
+    private String publisher;
+    private Date publishDate;
     private Set<Integer> authorIds;
 
     /**

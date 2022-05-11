@@ -143,8 +143,8 @@ public class PaperController {
      * @param contentParam content param
      * @return paper detail vo.
      */
-    @PutMapping("{id:\\d+}")
-    @ApiOperation("Update draft news")
+    @PutMapping("{id:\\d+}/status/draft/content")
+    @ApiOperation("Update draft paper")
     public PaperDetailVO updateDraftBy(@PathVariable("id") Integer paperId, @RequestBody PostContentParam contentParam) {
         Paper paperToUse = paperService.getById(paperId);
         String formattedContent = contentParam.decideContentBy(paperToUse.getEditorType());
@@ -171,7 +171,7 @@ public class PaperController {
      * @return deleted paper entities.
      */
     @DeleteMapping
-    @ApiOperation("Deletes news permanently in batch by id array")
+    @ApiOperation("Deletes paper permanently in batch by id array")
     public List<Paper> deletePermanentlyInBatch(@RequestBody List<Integer> ids) {
         return paperService.removeByIds(ids);
     }
@@ -183,7 +183,7 @@ public class PaperController {
      * @return preview content.
      */
     @GetMapping("preview/{id:\\d+}")
-    @ApiOperation("Get a news preview")
+    @ApiOperation("Get a paper preview")
     public String preview(@PathVariable("id") Integer paperId) {
         return paperId.toString();
     }
