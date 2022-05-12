@@ -1,9 +1,6 @@
 package run.halo.app.controller.admin.api;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
-import javax.validation.Valid;
-
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,29 +13,28 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
 import run.halo.app.annotation.DisableOnCondition;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.exception.BadRequestException;
 import run.halo.app.model.dto.UserDTO;
-import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.MFAType;
 import run.halo.app.model.params.MultiFactorAuthParam;
 import run.halo.app.model.params.PasswordParam;
-import run.halo.app.model.params.PostParam;
 import run.halo.app.model.params.UserParam;
 import run.halo.app.model.params.UserQuery;
 import run.halo.app.model.support.BaseResponse;
 import run.halo.app.model.support.UpdateCheck;
 import run.halo.app.model.vo.MultiFactorAuthVO;
-import run.halo.app.model.vo.PostDetailVO;
 import run.halo.app.service.UserService;
 import run.halo.app.service.assembler.UserAssembler;
 import run.halo.app.utils.HaloUtils;
 import run.halo.app.utils.TwoFactorAuthUtils;
 import run.halo.app.utils.ValidationUtils;
+
+import javax.validation.Valid;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * User controller.
@@ -61,9 +57,7 @@ public class UserController {
 
     @GetMapping
     @ApiOperation("Lists Users")
-    public Page<UserDTO> pageBy(
-        @PageableDefault(sort = "createTime", direction = DESC) Pageable pageable,
-        UserQuery userQuery) {
+    public Page<UserDTO> pageBy(@PageableDefault(sort = "createTime", direction = DESC) Pageable pageable, UserQuery userQuery) {
         Page<User> commentPage = userService.pageBy(userQuery, pageable);
         return userAssembler.convertToWithUserVo(commentPage);
     }
@@ -71,8 +65,7 @@ public class UserController {
     @PostMapping
     @ApiOperation("Creates a User")
     public User createBy(@Valid @RequestBody UserParam userParam,
-        @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave
-    ) {
+                         @RequestParam(value = "autoSave", required = false, defaultValue = "false") Boolean autoSave) {
         // Convert to
         return userService.createBy(userParam);
     }
@@ -100,26 +93,20 @@ public class UserController {
     @PutMapping("profiles/password")
     @ApiOperation("Updates user's password")
     @DisableOnCondition
-    public BaseResponse<String> updatePassword(@RequestBody @Valid PasswordParam passwordParam,
-        User user) {
-        userService.updatePassword(passwordParam.getOldPassword(), passwordParam.getNewPassword(),
-            user.getId());
+    public BaseResponse<String> updatePassword(@RequestBody @Valid PasswordParam passwordParam, User user) {
+        userService.updatePassword(passwordParam.getOldPassword(), passwordParam.getNewPassword(), user.getId());
         return BaseResponse.ok("密码修改成功");
     }
 
     @PutMapping("mfa/generate")
     @ApiOperation("Generate Multi-Factor Auth qr image")
     @DisableOnCondition
-    public MultiFactorAuthVO generateMFAQrImage(
-        @RequestBody MultiFactorAuthParam multiFactorAuthParam, User user) {
+    public MultiFactorAuthVO generateMFAQrImage(@RequestBody MultiFactorAuthParam multiFactorAuthParam, User user) {
         if (MFAType.NONE == user.getMfaType()) {
             if (MFAType.TFA_TOTP == multiFactorAuthParam.getMfaType()) {
                 String mfaKey = TwoFactorAuthUtils.generateTFAKey();
-                String optAuthUrl =
-                    TwoFactorAuthUtils.generateOtpAuthUrl(user.getNickname(), mfaKey);
-                String qrImageBase64 = "data:image/png;base64,"
-                    + Base64Utils.encodeToString(
-                    HaloUtils.generateQrCodeToPng(optAuthUrl, 128, 128));
+                String optAuthUrl = TwoFactorAuthUtils.generateOtpAuthUrl(user.getNickname(), mfaKey);
+                String qrImageBase64 = "data:image/png;base64," + Base64Utils.encodeToString(HaloUtils.generateQrCodeToPng(optAuthUrl, 128, 128));
                 return new MultiFactorAuthVO(qrImageBase64, optAuthUrl, mfaKey, MFAType.TFA_TOTP);
             } else {
                 throw new BadRequestException("暂不支持的 MFA 认证的方式");
@@ -133,23 +120,17 @@ public class UserController {
     @ApiOperation("Updates user's Multi Factor Auth")
     @CacheLock(autoDelete = false, prefix = "mfa")
     @DisableOnCondition
-    public MultiFactorAuthVO updateMFAuth(
-        @RequestBody @Valid MultiFactorAuthParam multiFactorAuthParam, User user) {
-        if (StringUtils.isNotBlank(user.getMfaKey())
-            && MFAType.useMFA(multiFactorAuthParam.getMfaType())) {
+    public MultiFactorAuthVO updateMFAuth(@RequestBody @Valid MultiFactorAuthParam multiFactorAuthParam, User user) {
+        if (StringUtils.isNotBlank(user.getMfaKey()) && MFAType.useMFA(multiFactorAuthParam.getMfaType())) {
             return new MultiFactorAuthVO(MFAType.TFA_TOTP);
-        } else if (StringUtils.isBlank(user.getMfaKey())
-            && !MFAType.useMFA(multiFactorAuthParam.getMfaType())) {
+        } else if (StringUtils.isBlank(user.getMfaKey()) && !MFAType.useMFA(multiFactorAuthParam.getMfaType())) {
             return new MultiFactorAuthVO(MFAType.NONE);
         } else {
-            final String mfaKey = StringUtils.isNotBlank(user.getMfaKey()) ? user.getMfaKey() :
-                multiFactorAuthParam.getMfaKey();
+            final String mfaKey = StringUtils.isNotBlank(user.getMfaKey()) ? user.getMfaKey() : multiFactorAuthParam.getMfaKey();
             TwoFactorAuthUtils.validateTFACode(mfaKey, multiFactorAuthParam.getAuthcode());
         }
         // update MFA key
-        User updateUser = userService
-            .updateMFA(multiFactorAuthParam.getMfaType(), multiFactorAuthParam.getMfaKey(),
-                user.getId());
+        User updateUser = userService.updateMFA(multiFactorAuthParam.getMfaType(), multiFactorAuthParam.getMfaKey(), user.getId());
 
         return new MultiFactorAuthVO(updateUser.getMfaType());
     }
