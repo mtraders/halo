@@ -1,6 +1,5 @@
 package run.halo.app.model.dto.post;
 
-import java.util.Date;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -8,6 +7,9 @@ import run.halo.app.model.dto.base.OutputConverter;
 import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.enums.PostEditorType;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.cern.PostType;
+
+import java.util.Date;
 
 /**
  * Base post minimal output dto.
@@ -42,4 +44,15 @@ public class BasePostMinimalDTO implements OutputConverter<BasePostMinimalDTO, B
     private String metaDescription;
 
     private String fullPath;
+
+    // cern fields
+    private PostType postType;
+    private String postSource;
+    private String postSourceLink;
+    private String projectPeriod;
+    private String projectSource;
+    private String projectManager;
+    private Date paperPublishDate;
+    private String paperPublisher;
+    private String paperAuthors;
 }

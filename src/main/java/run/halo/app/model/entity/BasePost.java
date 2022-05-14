@@ -1,6 +1,5 @@
 package run.halo.app.model.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -42,17 +41,15 @@ import java.util.Objects;
 @Setter
 @RequiredArgsConstructor
 @Entity(name = "BasePost")
-@Table(name = "posts", indexes = {
-        @Index(name = "posts_type_status", columnList = "type, status"),
-        @Index(name = "posts_create_time", columnList = "create_time") })
+@Table(name = "posts", indexes = {@Index(name = "posts_type_status", columnList = "type, status"),
+    @Index(name = "posts_create_time", columnList = "create_time")})
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.INTEGER, columnDefinition = "int default 0")
 @ToString(callSuper = true)
 public class BasePost extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
-    @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support"
-            + ".CustomIdGenerator")
+    @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support" + ".CustomIdGenerator")
     private Integer id;
 
     /**
@@ -212,13 +209,13 @@ public class BasePost extends BaseEntity {
     @Column(name = "project_manager")
     private String projectManager;
 
-    @Column(name = "publish_date")
+    @Column(name = "paper_publish_date")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date publishDate;
-    @Column(name = "publisher")
-    private String publisher;
-    @Column(name = "authors")
-    private String authors;
+    private Date paperPublishDate;
+    @Column(name = "paper_publisher")
+    private String paperPublisher;
+    @Column(name = "paper_authors")
+    private String paperAuthors;
 
 
     @Override
