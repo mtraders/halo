@@ -13,6 +13,7 @@ import org.springframework.lang.Nullable;
 import run.halo.app.model.entity.Content.PatchedContent;
 import run.halo.app.model.enums.PostEditorType;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.cern.PostType;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -193,6 +194,31 @@ public class BasePost extends BaseEntity {
      */
     @Transient
     private PatchedContent content;
+
+    //Cern Fields
+    @Column(name = "post_type")
+    @ColumnDefault("0")
+    private PostType postType;
+
+    @Column(name = "post_source", length = 1023)
+    private String postSource;
+    @Column(name = "post_source_link", length = 1023)
+    private String postSourceLink;
+
+    @Column(name = "project_period")
+    private String projectPeriod;
+    @Column(name = "project_source")
+    private String projectSource;
+    @Column(name = "project_manager")
+    private String projectManager;
+
+    @Column(name = "publish_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date publishDate;
+    @Column(name = "publisher")
+    private String publisher;
+    @Column(name = "authors")
+    private String authors;
 
 
     @Override
