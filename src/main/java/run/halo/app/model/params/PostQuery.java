@@ -5,6 +5,7 @@ import java.util.Set;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.cern.PostType;
 
 /**
  * Post query.
@@ -48,6 +49,11 @@ public class PostQuery {
     public PostStatus getStatus() {
         return status;
     }
+
+    /**
+     * cern post type.
+     */
+    private Set<PostType> postTypes;
 
     /**
      * In order to be compatible with status, this method will return the combined results

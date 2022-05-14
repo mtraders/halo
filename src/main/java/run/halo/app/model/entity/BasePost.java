@@ -239,7 +239,7 @@ public class BasePost extends BaseEntity {
         }
 
         if (disallowComment == null) {
-            disallowComment = false;
+            disallowComment = true;
         }
 
         if (password == null) {
@@ -263,7 +263,7 @@ public class BasePost extends BaseEntity {
         }
 
         if (editorType == null) {
-            editorType = PostEditorType.MARKDOWN;
+            editorType = PostEditorType.RICHTEXT;
         }
 
         if (wordCount == null || wordCount < 0) {
@@ -277,6 +277,32 @@ public class BasePost extends BaseEntity {
         // Clear the value of the deprecated attributes
         this.originalContent = "";
         this.formatContent = "";
+
+        // cern fields
+        if (postType == null) {
+            postType = PostType.BASE;
+        }
+        if (postSource == null) {
+            postSource = "";
+        }
+        if (postSourceLink == null) {
+            postSourceLink = "";
+        }
+        if (projectPeriod == null) {
+            projectPeriod = "";
+        }
+        if (projectSource == null) {
+            projectSource = "";
+        }
+        if (projectManager == null) {
+            projectManager = "";
+        }
+        if (paperPublisher == null) {
+            paperPublisher = "";
+        }
+        if (paperAuthors == null) {
+            paperAuthors = "";
+        }
     }
 
     @Override

@@ -60,7 +60,7 @@ public abstract class BasePostParam {
      * if {@code true}, it means is that do not let the back-end render the original content
      * because the content has been rendered, and you only need to store the original content.
      */
-    protected Boolean keepRaw = false;
+    protected Boolean keepRaw = true;
 
     protected <T extends BasePost> void populateContent(T post) {
         Assert.notNull(post, "The post must not be null.");

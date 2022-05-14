@@ -1,5 +1,6 @@
 package run.halo.app.model.params;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +13,7 @@ import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.enums.PostEditorType;
+import run.halo.app.model.enums.cern.PostType;
 import run.halo.app.model.support.NotAllowSpaceOnly;
 import run.halo.app.utils.SlugUtils;
 
@@ -32,6 +34,24 @@ public class PostParam extends BasePostParam implements InputConverter<Post> {
     private Set<Integer> categoryIds;
 
     private Set<PostMetaParam> metas;
+
+    // cern post fields
+    private PostType postType;
+    @Size(max = 1023, message = "文章来源的字符长度不能超过 {max}")
+    private String postSource;
+    @Size(max = 1023, message = "文章来源链接的字符长度不能超过 {max}")
+    private String postSourceLink;
+    @Size(max = 255, message = "项目周期长度不能超过 {max}")
+    private String projectPeriod;
+    @Size(max = 255, message = "项目来源长度不能超过 {max}")
+    private String projectSource;
+    @Size(max = 255, message = "项目经理长度不能超过 {max}")
+    private String projectManager;
+    private Date paperPublishDate;
+    @Size(max = 255, message = "出版社长度不能超过 {max}")
+    private String paperPublisher;
+    @Size(max = 255, message = "作者长度不能超过 {max}")
+    private String paperAuthors;
 
     @Override
     @NotBlank(message = "文章标题不能为空")
@@ -80,7 +100,23 @@ public class PostParam extends BasePostParam implements InputConverter<Post> {
         }
 
         if (null == editorType) {
-            editorType = PostEditorType.MARKDOWN;
+            editorType = PostEditorType.RICHTEXT;
+        }
+
+        // cern fields fill
+        if (postType != PostType.NEWS) {
+            postSource = "";
+            postSourceLink = "";
+        }
+        if (postType != PostType.PAPER) {
+            paperPublisher = "";
+            paperPublishDate = null;
+            paperAuthors = null;
+        }
+        if (postType != PostType.PROJECT) {
+            projectPeriod = "";
+            projectSource = "";
+            projectManager = "";
         }
 
         Post post = InputConverter.super.convertTo();
@@ -97,7 +133,7 @@ public class PostParam extends BasePostParam implements InputConverter<Post> {
         }
 
         if (null == editorType) {
-            editorType = PostEditorType.MARKDOWN;
+            editorType = PostEditorType.RICHTEXT;
         }
         populateContent(post);
         InputConverter.super.update(post);
