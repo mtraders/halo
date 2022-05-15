@@ -1,13 +1,6 @@
 package run.halo.app.controller.content.api;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
 import io.swagger.annotations.ApiOperation;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Set;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,6 +38,12 @@ import run.halo.app.service.PostCommentService;
 import run.halo.app.service.PostService;
 import run.halo.app.service.assembler.PostRenderAssembler;
 import run.halo.app.service.assembler.comment.PostCommentRenderAssembler;
+
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Set;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * Content post controller.
@@ -142,7 +141,7 @@ public class PostController {
     public PostDetailVO getBy(@PathVariable("postId") Integer postId,
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
-        Post post = postService.getById(postId);
+        Post post = postService.getBy(PostStatus.PUBLISHED, postId);
 
         checkAuthenticate(postId);
 
@@ -176,7 +175,7 @@ public class PostController {
     public PostDetailVO getBy(@RequestParam("slug") String slug,
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
-        Post post = postService.getBySlug(slug);
+        Post post = postService.getBy(PostStatus.PUBLISHED, slug);
 
         checkAuthenticate(post.getId());
 
@@ -206,7 +205,7 @@ public class PostController {
     @GetMapping("{postId:\\d+}/prev")
     @ApiOperation("Gets previous post by current post id.")
     public PostDetailVO getPrevPostBy(@PathVariable("postId") Integer postId) {
-        Post post = postService.getById(postId);
+        Post post = postService.getBy(PostStatus.PUBLISHED, postId);
         Post prevPost = postService.getPrevPost(post).orElseThrow(() -> new NotFoundException("查询不到该文章的信息"));
         checkAuthenticate(prevPost.getId());
         return postRenderAssembler.convertToDetailVo(prevPost);
@@ -221,7 +220,7 @@ public class PostController {
     @GetMapping("{postId:\\d+}/next")
     @ApiOperation("Gets next post by current post id.")
     public PostDetailVO getNextPostBy(@PathVariable("postId") Integer postId) {
-        Post post = postService.getById(postId);
+        Post post = postService.getBy(PostStatus.PUBLISHED, postId);
         Post nextPost = postService.getNextPost(post).orElseThrow(() -> new NotFoundException("查询不到该文章的信息"));
         checkAuthenticate(nextPost.getId());
         return postRenderAssembler.convertToDetailVo(nextPost);

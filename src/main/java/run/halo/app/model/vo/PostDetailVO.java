@@ -8,6 +8,7 @@ import lombok.ToString;
 import run.halo.app.model.dto.BaseMetaDTO;
 import run.halo.app.model.dto.CategoryDTO;
 import run.halo.app.model.dto.TagDTO;
+import run.halo.app.model.dto.UserDTO;
 import run.halo.app.model.dto.post.BasePostDetailDTO;
 
 /**
@@ -33,5 +34,8 @@ public class PostDetailVO extends BasePostDetailDTO {
     private Set<Long> metaIds;
 
     private List<BaseMetaDTO> metas;
+
+    private Set<Integer> userIds;
+    private List<UserDTO> users;
 }
 

@@ -1,5 +1,6 @@
 package run.halo.app.service;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -7,6 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import run.halo.app.exception.ForbiddenException;
 import run.halo.app.exception.NotFoundException;
+import run.halo.app.model.dto.UserDTO;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.MFAType;
 import run.halo.app.model.enums.UserType;
@@ -154,4 +156,22 @@ public interface UserService extends CrudService<User, Integer> {
 
     @NonNull
     Page<User> pageBy(@NonNull UserQuery userQuery, @NonNull Pageable pageable);
+
+    /**
+     * Convert user entity to user dto.
+     *
+     * @param user user entity. not null
+     * @return user dto.
+     */
+    @NonNull
+    UserDTO convertTo(@NonNull User user);
+
+    /**
+     * Convert user entity to user dto list.
+     *
+     * @param users user list.
+     * @return user dto list.
+     */
+    @NonNull
+    List<UserDTO> convertTo(List<User> users);
 }

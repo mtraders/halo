@@ -17,6 +17,7 @@ import run.halo.app.exception.BadRequestException;
 import run.halo.app.exception.ForbiddenException;
 import run.halo.app.exception.NotFoundException;
 import run.halo.app.exception.ServiceException;
+import run.halo.app.model.dto.UserDTO;
 import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.MFAType;
@@ -31,17 +32,20 @@ import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.HaloUtils;
 
 import javax.persistence.criteria.Predicate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * UserService implementation class.
  *
  * @author ryanwang
  * @author johnniang
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  * @date 2019-03-14
  */
 @Slf4j
@@ -220,6 +224,34 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
         Assert.notNull(userQuery, "user query must not be null");
         Assert.notNull(pageable, "Page info must not be null");
         return userRepository.findAll(buildSpecByQuery(userQuery), pageable);
+    }
+
+    /**
+     * Convert user entity to user dto.
+     *
+     * @param user user entity. not null
+     * @return user dto.
+     */
+    @Override
+    @NonNull
+    public UserDTO convertTo(@NonNull User user) {
+        Assert.notNull(user, "User must not be null");
+        return new UserDTO().convertFrom(user);
+    }
+
+    /**
+     * Convert user entity to user dto list.
+     *
+     * @param users user list.
+     * @return user dto list.
+     */
+    @Override
+    @NonNull
+    public List<UserDTO> convertTo(List<User> users) {
+        if (CollectionUtils.isEmpty(users)) {
+            return Collections.emptyList();
+        }
+        return users.stream().map(this::convertTo).collect(Collectors.toList());
     }
 
     @NonNull
