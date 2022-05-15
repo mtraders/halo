@@ -70,7 +70,7 @@ public class PostRefreshStatusListenerTest {
         // all articles belonging to this category and sub categories should be set
         // to draft status.
         PostDetailVO postDetailVO =
-            postService.createBy(post, Set.of(), Set.of(2), Set.of(), false);
+            postService.createBy(post, Set.of(), Set.of(2), Set.of(), Set.of(), false);
         assertThat(postDetailVO).isNotNull();
 
         category1.setPassword(null);

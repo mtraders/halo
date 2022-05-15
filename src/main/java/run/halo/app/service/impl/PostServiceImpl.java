@@ -5,10 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -26,6 +28,8 @@ import run.halo.app.model.entity.PostComment;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.PostTag;
 import run.halo.app.model.entity.Tag;
+import run.halo.app.model.entity.User;
+import run.halo.app.model.entity.cern.PostUser;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
 import run.halo.app.model.enums.cern.PostType;
@@ -48,7 +52,9 @@ import run.halo.app.service.PostMetaService;
 import run.halo.app.service.PostService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
+import run.halo.app.service.UserService;
 import run.halo.app.service.assembler.PostAssembler;
+import run.halo.app.service.cern.PostUserService;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.HaloUtils;
 import run.halo.app.utils.MarkdownUtils;
@@ -114,6 +120,9 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     private final ApplicationContext applicationContext;
 
+    private final PostUserService postUserService;
+    private final UserService userService;
+
     /**
      * post service impl.
      *
@@ -131,12 +140,14 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
      * @param contentService content service.
      * @param contentPatchLogService content patch log service.
      * @param applicationContext application context.
+     * @param postUserService post user service.
+     * @param userService user service.
      */
     public PostServiceImpl(BasePostRepository<Post> basePostRepository, PostAssembler postAssembler, OptionService optionService,
                            PostRepository postRepository, TagService tagService, CategoryService categoryService, PostTagService postTagService,
                            PostCategoryService postCategoryService, PostCommentService postCommentService, ApplicationEventPublisher eventPublisher,
                            PostMetaService postMetaService, ContentService contentService, ContentPatchLogService contentPatchLogService,
-                           ApplicationContext applicationContext) {
+                           ApplicationContext applicationContext, PostUserService postUserService, UserService userService) {
         super(basePostRepository, optionService, contentService, contentPatchLogService);
         this.postAssembler = postAssembler;
         this.postRepository = postRepository;
@@ -151,6 +162,8 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         this.postContentService = contentService;
         this.postContentPatchLogService = contentPatchLogService;
         this.applicationContext = applicationContext;
+        this.postUserService = postUserService;
+        this.userService = userService;
     }
 
     @Override
@@ -178,8 +191,9 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PostDetailVO createBy(@NonNull Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave) {
-        PostDetailVO createdPost = createOrUpdate(postToCreate, tagIds, categoryIds, metas);
+    public PostDetailVO createBy(@NonNull Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, Set<Integer> userIds,
+                                 boolean autoSave) {
+        PostDetailVO createdPost = createOrUpdate(postToCreate, tagIds, categoryIds, metas, userIds);
         if (!autoSave) {
             // Log the creation
             LogEvent logEvent = new LogEvent(this, createdPost.getId().toString(), LogType.POST_PUBLISHED, createdPost.getTitle());
@@ -190,8 +204,9 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @NonNull
     public PostDetailVO createBy(Post postToCreate, Set<Integer> tagIds, Set<Integer> categoryIds, boolean autoSave) {
-        PostDetailVO createdPost = createOrUpdate(postToCreate, tagIds, categoryIds, null);
+        PostDetailVO createdPost = createOrUpdate(postToCreate, tagIds, categoryIds, null, null);
         if (!autoSave) {
             // Log the creation
             LogEvent logEvent = new LogEvent(this, createdPost.getId().toString(), LogType.POST_PUBLISHED, createdPost.getTitle());
@@ -200,12 +215,25 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         return createdPost;
     }
 
+    /**
+     * update a post.
+     *
+     * @param postToUpdate post to update must not be null
+     * @param tagIds tag id set
+     * @param categoryIds category id set
+     * @param metas metas
+     * @param userIds user ids.
+     * @param autoSave autoSave
+     * @return post detail.
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public PostDetailVO updateBy(Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave) {
+    @NonNull
+    public PostDetailVO updateBy(Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, Set<Integer> userIds,
+                                 boolean autoSave) {
         // Set edit time
         postToUpdate.setEditTime(DateUtils.now());
-        PostDetailVO updatedPost = createOrUpdate(postToUpdate, tagIds, categoryIds, metas);
+        PostDetailVO updatedPost = createOrUpdate(postToUpdate, tagIds, categoryIds, metas, userIds);
         if (!autoSave) {
             // Log the creation
             LogEvent logEvent = new LogEvent(this, updatedPost.getId().toString(), LogType.POST_EDITED, updatedPost.getTitle());
@@ -567,6 +595,16 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
                 predicates.add(criteriaBuilder.exists(postSubquery));
             }
 
+            if (postQuery.getUserId() != null) {
+                Integer userId = postQuery.getUserId();
+                Subquery<Post> postSubquery = query.subquery(Post.class);
+                Root<PostUser> postUserRoot = postSubquery.from(PostUser.class);
+                postSubquery.select(postUserRoot.get("postId"));
+                postSubquery.where(criteriaBuilder.equal(root.get("id"), postUserRoot.get("postId")),
+                    criteriaBuilder.equal(postUserRoot.get("userId"), userId));
+                predicates.add(criteriaBuilder.exists(postSubquery));
+            }
+
             if (postQuery.getKeyword() != null) {
 
                 // Format like condition
@@ -592,7 +630,8 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         };
     }
 
-    private PostDetailVO createOrUpdate(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas) {
+    private PostDetailVO createOrUpdate(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas,
+                                        Set<Integer> userIds) {
         Assert.notNull(post, "Post param must not be null");
 
         post = super.createOrUpdateBy(post);
@@ -600,6 +639,8 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         postTagService.removeByPostId(post.getId());
 
         postCategoryService.removeByPostId(post.getId());
+
+        postUserService.removeByPostId(post.getId());
 
         // List all tags
         List<Tag> tags = tagService.listAllByIds(tagIds);
@@ -610,6 +651,9 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
             PostType categoryPostType = category.getPostType();
             return categoryPostType == currentPost.getPostType();
         }).collect(Collectors.toList());
+
+        // List all users
+        List<User> users = userService.listAllByIds(userIds);
 
         // Create post tags
         List<PostTag> postTags = postTagService.mergeOrCreateByIfAbsent(post.getId(), ServiceUtils.fetchProperty(tags, Tag::getId));
@@ -625,6 +669,10 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         // Create post meta data
         List<PostMeta> postMetaList = postMetaService.createOrUpdateByPostId(post.getId(), metas);
         log.debug("Created post metas: [{}]", postMetaList);
+
+        // create post users
+        List<PostUser> postUsers = postUserService.mergeOrCreateByIfAbsent(post.getId(), ServiceUtils.fetchProperty(users, User::getId));
+        log.debug("Created post users: [{}]", postUsers);
 
         // Publish post updated event.
         applicationContext.publishEvent(new PostUpdatedEvent(this, post));
@@ -657,6 +705,24 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
             result.add(convertToPostMarkdownVo(post));
         }
         return result;
+    }
+
+    /**
+     * page latest post by query info.
+     *
+     * @param top number
+     * @param postQuery query info.
+     * @return post list.
+     */
+    @Override
+    @NonNull
+    public Page<Post> pageLatestByQueryInfo(int top, @Nullable PostQuery postQuery) {
+        Assert.isTrue(top > 0, "Top number must not be less than 0");
+        if (postQuery == null) {
+            return pageLatest(top);
+        }
+        PageRequest latestPageable = PageRequest.of(0, top, Sort.by(DESC, "createTime"));
+        return pageBy(postQuery, latestPageable);
     }
 
     private PostMarkdownVO convertToPostMarkdownVo(Post post) {

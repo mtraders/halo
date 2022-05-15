@@ -133,7 +133,6 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
         User user = userParam.convertTo();
 
         setPassword(user, userParam.getPassword());
-        user.setUserType(UserType.ADMIN);
         return create(user);
     }
 
@@ -162,11 +161,6 @@ public class UserServiceImpl extends AbstractCrudService<User, Integer> implemen
     @Override
     @CacheLock
     public User create(User user) {
-        // Check user
-        // if (count() != 0) {
-        //     throw new BadRequestException("当前博客已有用户");
-        // }
-
         User createdUser = super.create(user);
 
         eventPublisher.publishEvent(new UserUpdatedEvent(this, createdUser.getId()));
