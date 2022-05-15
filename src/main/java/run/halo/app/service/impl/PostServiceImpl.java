@@ -681,7 +681,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         Content postContent = postContentService.getById(post.getId());
         post.setContent(postContentPatchLogService.getPatchedContentById(postContent.getHeadPatchLogId()));
         // Convert to post detail vo
-        return postAssembler.convertTo(post, tags, categories, postMetaList);
+        return postAssembler.convertTo(post, tags, categories, postMetaList, users);
     }
 
     @Override

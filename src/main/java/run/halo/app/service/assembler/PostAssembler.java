@@ -7,14 +7,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.model.dto.post.BasePostMinimalDTO;
-import run.halo.app.model.entity.BasePost;
 import run.halo.app.model.entity.Category;
 import run.halo.app.model.entity.Content.PatchedContent;
 import run.halo.app.model.entity.Post;
 import run.halo.app.model.entity.PostMeta;
 import run.halo.app.model.entity.Tag;
+import run.halo.app.model.entity.User;
 import run.halo.app.model.enums.CommentStatus;
-import run.halo.app.model.enums.PostPermalinkType;
 import run.halo.app.model.vo.ArchiveMonthVO;
 import run.halo.app.model.vo.ArchiveYearVO;
 import run.halo.app.model.vo.PostDetailVO;
@@ -27,6 +26,8 @@ import run.halo.app.service.PostCommentService;
 import run.halo.app.service.PostMetaService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
+import run.halo.app.service.UserService;
+import run.halo.app.service.cern.PostUserService;
 import run.halo.app.utils.DateUtils;
 import run.halo.app.utils.ServiceUtils;
 
@@ -40,8 +41,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static run.halo.app.model.support.HaloConst.URL_SEPARATOR;
 
 /**
  * Post assembler.
@@ -68,6 +67,9 @@ public class PostAssembler extends BasePostAssembler<Post> {
 
     private final OptionService optionService;
 
+    private final UserService userService;
+    private final PostUserService postUserService;
+
     /**
      * post assembler constructor.
      *
@@ -79,10 +81,12 @@ public class PostAssembler extends BasePostAssembler<Post> {
      * @param postCommentService post comment service.
      * @param tagService tag service.
      * @param categoryService category service.
+     * @param userService user service.
+     * @param postUserService post user service.
      */
     public PostAssembler(ContentService contentService, OptionService optionService, PostTagService postTagService,
                          PostCategoryService postCategoryService, PostMetaService postMetaService, PostCommentService postCommentService,
-                         TagService tagService, CategoryService categoryService) {
+                         TagService tagService, CategoryService categoryService, UserService userService, PostUserService postUserService) {
         super(contentService, optionService);
         this.postTagService = postTagService;
         this.postCategoryService = postCategoryService;
@@ -92,6 +96,8 @@ public class PostAssembler extends BasePostAssembler<Post> {
         this.categoryService = categoryService;
         this.contentService = contentService;
         this.optionService = optionService;
+        this.userService = userService;
+        this.postUserService = postUserService;
     }
 
     /**
@@ -140,8 +146,10 @@ public class PostAssembler extends BasePostAssembler<Post> {
         List<Category> categories = postCategoryService.listCategoriesBy(post.getId());
         // List metas
         List<PostMeta> metas = postMetaService.listBy(post.getId());
+        // List users
+        List<User> users = postUserService.listUsersBy(post.getId());
         // Convert to detail vo
-        return convertTo(post, tags, categories, metas);
+        return convertTo(post, tags, categories, metas, users);
     }
 
     /**
@@ -175,6 +183,9 @@ public class PostAssembler extends BasePostAssembler<Post> {
         // Get category list map
         Map<Integer, List<Category>> categoryListMap = postCategoryService.listCategoryListMap(postIds);
 
+        // Get user list map
+        Map<Integer, List<User>> userListMap = postUserService.listUserListMap(postIds);
+
         // Get comment count
         Map<Integer, Long> commentCountMap = postCommentService.countByStatusAndPostIds(CommentStatus.PUBLISHED, postIds);
 
@@ -200,6 +211,10 @@ public class PostAssembler extends BasePostAssembler<Post> {
             // Set post metas
             List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(post.getId())).orElseGet(LinkedList::new);
             postListVO.setMetas(postMetaService.convertToMap(metas));
+
+            // set users
+            postListVO.setUsers(Optional.ofNullable(userListMap.get(post.getId())).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                .map(userService::convertTo).collect(Collectors.toList()));
 
             // Set comment count
             postListVO.setCommentCount(commentCountMap.getOrDefault(post.getId(), 0L));
@@ -231,6 +246,9 @@ public class PostAssembler extends BasePostAssembler<Post> {
         // Get category list map
         Map<Integer, List<Category>> categoryListMap = postCategoryService.listCategoryListMap(postIds);
 
+        // Get user list map
+        Map<Integer, List<User>> userListMap = postUserService.listUserListMap(postIds);
+
         // Get comment count
         Map<Integer, Long> commentCountMap = postCommentService.countByStatusAndPostIds(CommentStatus.PUBLISHED, postIds);
 
@@ -257,6 +275,10 @@ public class PostAssembler extends BasePostAssembler<Post> {
             List<PostMeta> metas = Optional.ofNullable(postMetaListMap.get(post.getId())).orElseGet(LinkedList::new);
             postListVO.setMetas(postMetaService.convertToMap(metas));
 
+            // set users
+            postListVO.setUsers(Optional.ofNullable(userListMap.get(post.getId())).orElseGet(LinkedList::new).stream().filter(Objects::nonNull)
+                .map(userService::convertTo).collect(Collectors.toList()));
+
             // Set comment count
             postListVO.setCommentCount(commentCountMap.getOrDefault(post.getId(), 0L));
 
@@ -277,7 +299,8 @@ public class PostAssembler extends BasePostAssembler<Post> {
      * @return post detail vo
      */
     @NonNull
-    public PostDetailVO convertTo(@NonNull Post post, @Nullable List<Tag> tags, @Nullable List<Category> categories, List<PostMeta> postMetaList) {
+    public PostDetailVO convertTo(@NonNull Post post, @Nullable List<Tag> tags, @Nullable List<Category> categories, List<PostMeta> postMetaList,
+                                  List<User> users) {
         Assert.notNull(post, "Post must not be null");
 
         // Convert to base detail vo
@@ -300,6 +323,11 @@ public class PostAssembler extends BasePostAssembler<Post> {
         // Get post meta ids
         postDetailVO.setMetaIds(metaIds);
         postDetailVO.setMetas(postMetaService.convertTo(postMetaList));
+
+        // get post user ids
+        Set<Integer> userIds = ServiceUtils.fetchProperty(users, User::getId);
+        postDetailVO.setUserIds(userIds);
+        postDetailVO.setUsers(userService.convertTo(users));
 
         postDetailVO.setCommentCount(postCommentService.countByStatusAndPostId(CommentStatus.PUBLISHED, post.getId()));
 
