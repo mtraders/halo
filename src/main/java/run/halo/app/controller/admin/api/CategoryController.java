@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import run.halo.app.model.dto.CategoryDTO;
 import run.halo.app.model.entity.Category;
+import run.halo.app.model.enums.cern.PostType;
 import run.halo.app.model.params.CategoryParam;
 import run.halo.app.model.vo.CategoryVO;
 import run.halo.app.service.CategoryService;

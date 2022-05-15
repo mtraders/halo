@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +36,9 @@ public class PostParam extends BasePostParam implements InputConverter<Post> {
     private Set<Integer> categoryIds;
 
     private Set<PostMetaParam> metas;
+
+    // add user ids
+    private Set<Integer> userIds = Sets.newHashSet();
 
     // cern post fields
     private PostType postType;
