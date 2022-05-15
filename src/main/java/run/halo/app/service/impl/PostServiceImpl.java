@@ -1,22 +1,5 @@
 package run.halo.app.service.impl;
 
-import static org.springframework.data.domain.Sort.Direction.DESC;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import javax.validation.constraints.NotNull;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.ApplicationContext;
@@ -45,6 +28,7 @@ import run.halo.app.model.entity.PostTag;
 import run.halo.app.model.entity.Tag;
 import run.halo.app.model.enums.LogType;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.cern.PostType;
 import run.halo.app.model.params.PostParam;
 import run.halo.app.model.params.PostQuery;
 import run.halo.app.model.properties.PostProperties;
@@ -70,6 +54,23 @@ import run.halo.app.utils.HaloUtils;
 import run.halo.app.utils.MarkdownUtils;
 import run.halo.app.utils.ServiceUtils;
 import run.halo.app.utils.SlugUtils;
+
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 /**
  * Post service implementation.
@@ -354,7 +355,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
                 for (String ele : elementValue) {
                     ele = HaloUtils.strip(ele, "[", "]");
                     ele = StringUtils.strip(ele, "\"");
-                    ele = StringUtils.strip(ele, "\'");
+                    ele = StringUtils.strip(ele, "'");
                     if ("".equals(ele)) {
                         continue;
                     }
@@ -382,7 +383,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
                             for (String tagName : ele.split(",")) {
                                 tagName = tagName.trim();
                                 tagName = StringUtils.strip(tagName, "\"");
-                                tagName = StringUtils.strip(tagName, "\'");
+                                tagName = StringUtils.strip(tagName, "'");
                                 tag = tagService.getByName(tagName);
                                 String slug = SlugUtils.slug(tagName);
                                 if (null == tag) {
@@ -402,7 +403,7 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
                             for (String categoryName : ele.split(",")) {
                                 categoryName = categoryName.trim();
                                 categoryName = StringUtils.strip(categoryName, "\"");
-                                categoryName = StringUtils.strip(categoryName, "\'");
+                                categoryName = StringUtils.strip(categoryName, "'");
                                 Category category = categoryService.getByName(categoryName);
                                 if (null == category) {
                                     category = new Category();
@@ -581,6 +582,12 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
                 predicates.add(criteriaBuilder.or(titleLike, criteriaBuilder.in(root).value(postSubquery)));
             }
 
+            // add post type fields
+            Set<PostType> postTypes = postQuery.getPostTypes();
+            if (!CollectionUtils.isEmpty(postTypes)) {
+                predicates.add(root.get("postType").in(postTypes));
+            }
+
             return query.where(predicates.toArray(new Predicate[0])).getRestriction();
         };
     }
@@ -598,7 +605,11 @@ public class PostServiceImpl extends BasePostServiceImpl<Post> implements PostSe
         List<Tag> tags = tagService.listAllByIds(tagIds);
 
         // List all categories
-        List<Category> categories = categoryService.listAllByIds(categoryIds);
+        Post currentPost = post;
+        List<Category> categories = categoryService.listAllByIds(categoryIds).stream().filter(category -> {
+            PostType categoryPostType = category.getPostType();
+            return categoryPostType == currentPost.getPostType();
+        }).collect(Collectors.toList());
 
         // Create post tags
         List<PostTag> postTags = postTagService.mergeOrCreateByIfAbsent(post.getId(), ServiceUtils.fetchProperty(tags, Tag::getId));

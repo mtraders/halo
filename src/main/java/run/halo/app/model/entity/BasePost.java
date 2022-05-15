@@ -1,6 +1,5 @@
 package run.halo.app.model.entity;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -13,6 +12,7 @@ import org.springframework.lang.Nullable;
 import run.halo.app.model.entity.Content.PatchedContent;
 import run.halo.app.model.enums.PostEditorType;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.cern.PostType;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -41,17 +41,15 @@ import java.util.Objects;
 @Setter
 @RequiredArgsConstructor
 @Entity(name = "BasePost")
-@Table(name = "posts", indexes = {
-        @Index(name = "posts_type_status", columnList = "type, status"),
-        @Index(name = "posts_create_time", columnList = "create_time") })
+@Table(name = "posts", indexes = {@Index(name = "posts_type_status", columnList = "type, status"),
+    @Index(name = "posts_create_time", columnList = "create_time")})
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.INTEGER, columnDefinition = "int default 0")
 @ToString(callSuper = true)
 public class BasePost extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "custom-id")
-    @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support"
-            + ".CustomIdGenerator")
+    @GenericGenerator(name = "custom-id", strategy = "run.halo.app.model.entity.support" + ".CustomIdGenerator")
     private Integer id;
 
     /**
@@ -194,6 +192,31 @@ public class BasePost extends BaseEntity {
     @Transient
     private PatchedContent content;
 
+    //Cern Fields
+    @Column(name = "post_type")
+    @ColumnDefault("0")
+    private PostType postType;
+
+    @Column(name = "post_source", length = 1023)
+    private String postSource;
+    @Column(name = "post_source_link", length = 1023)
+    private String postSourceLink;
+
+    @Column(name = "project_period")
+    private String projectPeriod;
+    @Column(name = "project_source")
+    private String projectSource;
+    @Column(name = "project_manager")
+    private String projectManager;
+
+    @Column(name = "paper_publish_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date paperPublishDate;
+    @Column(name = "paper_publisher")
+    private String paperPublisher;
+    @Column(name = "paper_authors")
+    private String paperAuthors;
+
 
     @Override
     public void prePersist() {
@@ -216,7 +239,7 @@ public class BasePost extends BaseEntity {
         }
 
         if (disallowComment == null) {
-            disallowComment = false;
+            disallowComment = true;
         }
 
         if (password == null) {
@@ -240,7 +263,7 @@ public class BasePost extends BaseEntity {
         }
 
         if (editorType == null) {
-            editorType = PostEditorType.MARKDOWN;
+            editorType = PostEditorType.RICHTEXT;
         }
 
         if (wordCount == null || wordCount < 0) {
@@ -254,6 +277,32 @@ public class BasePost extends BaseEntity {
         // Clear the value of the deprecated attributes
         this.originalContent = "";
         this.formatContent = "";
+
+        // cern fields
+        if (postType == null) {
+            postType = PostType.BASE;
+        }
+        if (postSource == null) {
+            postSource = "";
+        }
+        if (postSourceLink == null) {
+            postSourceLink = "";
+        }
+        if (projectPeriod == null) {
+            projectPeriod = "";
+        }
+        if (projectSource == null) {
+            projectSource = "";
+        }
+        if (projectManager == null) {
+            projectManager = "";
+        }
+        if (paperPublisher == null) {
+            paperPublisher = "";
+        }
+        if (paperAuthors == null) {
+            paperAuthors = "";
+        }
     }
 
     @Override
