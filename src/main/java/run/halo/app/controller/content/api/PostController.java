@@ -52,6 +52,7 @@ import run.halo.app.service.assembler.comment.PostCommentRenderAssembler;
  * @author johnniang
  * @author ryanwang
  * @author guqing
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  * @date 2019-04-02
  */
 @RestController("ApiContentPostController")

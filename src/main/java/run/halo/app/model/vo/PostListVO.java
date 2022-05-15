@@ -27,4 +27,5 @@ public class PostListVO extends BasePostSimpleDTO {
     private List<CategoryDTO> categories;
 
     private Map<String, Object> metas;
+
 }
