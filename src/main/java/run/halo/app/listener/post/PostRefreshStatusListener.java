@@ -15,8 +15,6 @@ import run.halo.app.service.CategoryService;
 import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.PostService;
 
-import javax.ws.rs.POST;
-
 /**
  * Post status management.
  *
@@ -66,7 +64,7 @@ public class PostRefreshStatusListener {
                 return;
             }
             // Cancel the encryption status of the posts
-            changeStatusToPublishIfNecessary(posts, beforeUpdated.getId());
+            changeStatusToPublishIfNecessary(posts);
             return;
         }
 
@@ -83,11 +81,11 @@ public class PostRefreshStatusListener {
             postService.updateInBatch(postsToUpdate);
         } else if (beforeIsPrivate && RecordState.UPDATED.equals(recordState)) {
             // Cancel the encryption status of the posts
-            changeStatusToPublishIfNecessary(posts, category.getId());
+            changeStatusToPublishIfNecessary(posts);
         }
     }
 
-    private void changeStatusToPublishIfNecessary(List<Post> posts, Integer categoryId) {
+    private void changeStatusToPublishIfNecessary(List<Post> posts) {
         List<Post> postsToUpdate = new ArrayList<>();
         for (Post post : posts) {
             boolean belongsToEncryptedCategory = postBelongsToEncryptedCategory(post.getId());
