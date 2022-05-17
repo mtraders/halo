@@ -241,7 +241,7 @@ public class BasePostAssembler<POST extends BasePost> {
         } else if (permalinkType.equals(PostPermalinkType.ID_SLUG)) {
             fullPath.append(archivesPrefix).append(URL_SEPARATOR).append(post.getId()).append(pathSuffix);
         } else if (permalinkType.equals(PostPermalinkType.CERN_ID)) {
-            fullPath.append("/post/").append(post.getId());
+            fullPath.append("post").append(URL_SEPARATOR).append(post.getId());
         }
         return fullPath.toString();
     }
