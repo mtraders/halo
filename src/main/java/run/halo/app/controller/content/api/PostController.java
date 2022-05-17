@@ -1,6 +1,7 @@
 package run.halo.app.controller.content.api;
 
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.HtmlUtils;
+import run.halo.app.cache.AbstractStringCacheStore;
 import run.halo.app.cache.lock.CacheLock;
 import run.halo.app.cache.lock.CacheParam;
 import run.halo.app.controller.content.auth.PostAuthentication;
@@ -70,6 +72,8 @@ public class PostController {
 
     private final PostAuthentication postAuthentication;
 
+    private final AbstractStringCacheStore cacheStore;
+
     /**
      * post controller constructor.
      *
@@ -79,15 +83,18 @@ public class PostController {
      * @param optionService option service.
      * @param postRenderAssembler post render assembler.
      * @param postAuthentication post authentication.
+     * @param cacheStore cacheStore
      */
     public PostController(PostService postService, PostCommentRenderAssembler postCommentRenderAssembler, PostCommentService postCommentService,
-                          OptionService optionService, PostRenderAssembler postRenderAssembler, PostAuthentication postAuthentication) {
+                          OptionService optionService, PostRenderAssembler postRenderAssembler, PostAuthentication postAuthentication,
+                          AbstractStringCacheStore cacheStore) {
         this.postService = postService;
         this.postCommentRenderAssembler = postCommentRenderAssembler;
         this.postCommentService = postCommentService;
         this.optionService = optionService;
         this.postRenderAssembler = postRenderAssembler;
         this.postAuthentication = postAuthentication;
+        this.cacheStore = cacheStore;
     }
 
     //CS304 issue for https://github.com/halo-dev/halo/issues/1351
@@ -138,10 +145,26 @@ public class PostController {
      */
     @GetMapping("{postId:\\d+}")
     @ApiOperation("Gets a post")
-    public PostDetailVO getBy(@PathVariable("postId") Integer postId,
+    public PostDetailVO getBy(@PathVariable("postId") Integer postId, @RequestParam("token") String token,
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         Post post = postService.getBy(PostStatus.PUBLISHED, postId);
+
+        if (StringUtils.isNotBlank(token)) {
+            // If the token is not empty, it means it is an admin request,
+            // then verify the token.
+
+            // verify token
+            String cachedToken = cacheStore.getAny(token, String.class).orElseThrow(() -> new ForbiddenException("您没有该文章的访问权限"));
+            if (!cachedToken.equals(token)) {
+                throw new ForbiddenException("您没有该文章的访问权限");
+            }
+            post = postService.getById(postId);
+            if (PostStatus.RECYCLE.equals(post.getStatus())) {
+                // Articles in the recycle bin are not allowed to be accessed.
+                throw new NotFoundException("查询不到该文章的信息");
+            }
+        }
 
         checkAuthenticate(postId);
 
