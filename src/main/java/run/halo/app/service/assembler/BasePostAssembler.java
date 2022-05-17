@@ -240,6 +240,8 @@ public class BasePostAssembler<POST extends BasePost> {
             fullPath.append(DateUtils.year(post.getCreateTime())).append(URL_SEPARATOR).append(post.getSlug()).append(pathSuffix);
         } else if (permalinkType.equals(PostPermalinkType.ID_SLUG)) {
             fullPath.append(archivesPrefix).append(URL_SEPARATOR).append(post.getId()).append(pathSuffix);
+        } else if (permalinkType.equals(PostPermalinkType.CERN_ID)) {
+            fullPath.append("/post/").append(post.getId());
         }
         return fullPath.toString();
     }
