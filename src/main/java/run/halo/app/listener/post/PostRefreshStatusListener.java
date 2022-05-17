@@ -15,6 +15,8 @@ import run.halo.app.service.CategoryService;
 import run.halo.app.service.PostCategoryService;
 import run.halo.app.service.PostService;
 
+import javax.ws.rs.POST;
+
 /**
  * Post status management.
  *
@@ -28,6 +30,13 @@ public class PostRefreshStatusListener {
     private final CategoryService categoryService;
     private final PostCategoryService postCategoryService;
 
+    /**
+     * post refresh status listener.
+     *
+     * @param postService post service.
+     * @param categoryService category service.
+     * @param postCategoryService post category service.
+     */
     public PostRefreshStatusListener(PostService postService,
         CategoryService categoryService,
         PostCategoryService postCategoryService) {
@@ -147,7 +156,7 @@ public class PostRefreshStatusListener {
         }
 
         PostStatus status = post.getStatus();
-        if (PostStatus.RECYCLE.equals(status)) {
+        if (PostStatus.RECYCLE.equals(status) || PostStatus.AUDITING.equals(status)) {
             return;
         }
         boolean isPrivate = postCategoryService.listByPostId(post.getId())

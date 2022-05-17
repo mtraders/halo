@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 import lombok.Data;
 import run.halo.app.model.dto.base.InputConverter;
 import run.halo.app.model.entity.User;
+import run.halo.app.model.enums.UserType;
 import run.halo.app.model.support.CreateCheck;
 import run.halo.app.model.support.UpdateCheck;
 
@@ -45,5 +46,7 @@ public class UserParam implements InputConverter<User> {
     @Size(max = 1023, message = "用户描述的字符长度不能超过 {max}", groups = {CreateCheck.class,
         UpdateCheck.class})
     private String description;
+
+    private UserType userType = UserType.ADMIN;
 
 }

@@ -1,10 +1,6 @@
 package run.halo.app.service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import javax.validation.constraints.NotNull;
-
+import io.micrometer.core.lang.Nullable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +14,11 @@ import run.halo.app.model.vo.ArchiveYearVO;
 import run.halo.app.model.vo.PostDetailVO;
 import run.halo.app.model.vo.PostMarkdownVO;
 import run.halo.app.service.base.BasePostService;
+
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Post service interface.
@@ -56,11 +57,13 @@ public interface PostService extends BasePostService<Post> {
      * @param tagIds tag id set
      * @param categoryIds category id set
      * @param metas metas
+     * @param userIds user id set.
      * @param autoSave autoSave
      * @return post created
      */
     @NonNull
-    PostDetailVO createBy(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave);
+    PostDetailVO createBy(@NonNull Post post, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, Set<Integer> userIds,
+                          boolean autoSave);
 
     /**
      * Creates post by post param.
@@ -81,11 +84,13 @@ public interface PostService extends BasePostService<Post> {
      * @param tagIds tag id set
      * @param categoryIds category id set
      * @param metas metas
+     * @param userIds user ids.
      * @param autoSave autoSave
      * @return updated post
      */
     @NonNull
-    PostDetailVO updateBy(@NonNull Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, boolean autoSave);
+    PostDetailVO updateBy(@NonNull Post postToUpdate, Set<Integer> tagIds, Set<Integer> categoryIds, Set<PostMeta> metas, Set<Integer> userIds,
+                          boolean autoSave);
 
     /**
      * Gets post by post status and slug.
@@ -221,7 +226,7 @@ public interface PostService extends BasePostService<Post> {
      *
      * @return post default sort
      * @description contains three parts. First, Top Priority; Second, From Custom index sort;
-     *      Third, basic id sort
+     * Third, basic id sort
      */
     @NotNull Sort getPostDefaultSort();
 
@@ -233,4 +238,14 @@ public interface PostService extends BasePostService<Post> {
      */
     @NonNull
     List<PostMarkdownVO> listPostMarkdowns();
+
+    /**
+     * page latest post by query info.
+     *
+     * @param top number
+     * @param postQuery query info.
+     * @return post list page.
+     */
+    @NonNull
+    Page<Post> pageLatestByQueryInfo(int top, @Nullable PostQuery postQuery);
 }

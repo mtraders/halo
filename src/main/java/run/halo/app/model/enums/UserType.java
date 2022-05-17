@@ -1,7 +1,10 @@
 package run.halo.app.model.enums;
 
 /**
- * @author mite.chen mite@mtrading.io
+ * User type.
+ *
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
+ * @author <a href="mailto:mite@fists.cn">mite.chen</a>
  */
 public enum UserType implements ValueEnum<Integer> {
     /**

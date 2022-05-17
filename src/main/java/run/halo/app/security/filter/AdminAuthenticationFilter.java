@@ -43,6 +43,16 @@ public class AdminAuthenticationFilter extends AbstractAuthenticationFilter {
 
     private final UserService userService;
 
+    /**
+     * Admin authentication filter.
+     *
+     * @param cacheStore cache store.
+     * @param userService user service.
+     * @param haloProperties halo properties.
+     * @param optionService option service.
+     * @param oneTimeTokenService one time token service.
+     * @param objectMapper object mapper.
+     */
     public AdminAuthenticationFilter(AbstractStringCacheStore cacheStore,
         UserService userService,
         HaloProperties haloProperties,
@@ -102,7 +112,7 @@ public class AdminAuthenticationFilter extends AbstractAuthenticationFilter {
         Optional<Integer> optionalUserId =
             cacheStore.getAny(SecurityUtils.buildTokenAccessKey(token), Integer.class);
 
-        if (!optionalUserId.isPresent()) {
+        if (optionalUserId.isEmpty()) {
             throw new AuthenticationException("Token 已过期或不存在").setErrorData(token);
         }
 

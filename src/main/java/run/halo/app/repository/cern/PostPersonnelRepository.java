@@ -13,7 +13,7 @@ import java.util.Set;
 /**
  * post personnel repository.
  *
- * @author <a href="mailto:lizc@fists.cn"><lizc</a>
+ * @author <a href="mailto:lizc@fists.cn">lizc</a>
  */
 public interface PostPersonnelRepository extends BaseRepository<PostPersonnel, Integer> {
     @Query(value = "select personnel_id, count(post_id) as post_count, `type` as post_type from post_personnel pp inner join posts p "

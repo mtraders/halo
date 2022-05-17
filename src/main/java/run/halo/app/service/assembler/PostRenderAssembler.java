@@ -17,6 +17,8 @@ import run.halo.app.service.PostCommentService;
 import run.halo.app.service.PostMetaService;
 import run.halo.app.service.PostTagService;
 import run.halo.app.service.TagService;
+import run.halo.app.service.UserService;
+import run.halo.app.service.cern.PostUserService;
 
 /**
  * Post assembler for theme render.
@@ -43,17 +45,12 @@ public class PostRenderAssembler extends PostAssembler {
      * @param categoryService category service
      * @param contentPatchLogService content patch log service
      */
-    public PostRenderAssembler(ContentService contentService,
-            OptionService optionService,
-            PostTagService postTagService,
-            PostCategoryService postCategoryService,
-            PostMetaService postMetaService,
-            PostCommentService postCommentService,
-            TagService tagService,
-            CategoryService categoryService,
-            ContentPatchLogService contentPatchLogService) {
-        super(contentService, optionService, postTagService, postCategoryService, postMetaService,
-                postCommentService, tagService, categoryService);
+    public PostRenderAssembler(ContentService contentService, OptionService optionService, PostTagService postTagService,
+                               PostCategoryService postCategoryService, PostMetaService postMetaService, PostCommentService postCommentService,
+                               TagService tagService, CategoryService categoryService, ContentPatchLogService contentPatchLogService,
+                               UserService userService, PostUserService postUserService) {
+        super(contentService, optionService, postTagService, postCategoryService, postMetaService, postCommentService, tagService, categoryService,
+            userService, postUserService);
         this.contentService = contentService;
         this.contentPatchLogService = contentPatchLogService;
     }

@@ -1,10 +1,12 @@
 package run.halo.app.model.params;
 
-import java.util.HashSet;
-import java.util.Set;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 import run.halo.app.model.enums.PostStatus;
+import run.halo.app.model.enums.cern.PostType;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Post query.
@@ -38,11 +40,20 @@ public class PostQuery {
     private Integer categoryId;
 
     /**
+     * User id.
+     */
+    private Integer userId;
+    /**
+     * cern post type.
+     */
+    private Set<PostType> postTypes;
+
+    /**
      * This method is deprecated in version 1.5.0, and it is recommended to use
      * <code>getStatuses()</code> method.
      *
-     * @see #getStatuses()
      * @return post status.
+     * @see #getStatuses()
      */
     @Deprecated
     public PostStatus getStatus() {
