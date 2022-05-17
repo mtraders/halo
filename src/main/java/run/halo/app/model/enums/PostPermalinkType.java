@@ -36,7 +36,14 @@ public enum PostPermalinkType implements ValueEnum<Integer> {
     /**
      * archives/${id}.
      */
-    ID_SLUG(5);
+    ID_SLUG(5),
+
+    /**
+     * /post/${id}.
+     */
+    CERN_ID(6),
+    ;
+
 
     private final Integer value;
 
