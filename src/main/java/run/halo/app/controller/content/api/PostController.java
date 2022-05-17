@@ -145,7 +145,8 @@ public class PostController {
      */
     @GetMapping("{postId:\\d+}")
     @ApiOperation("Gets a post")
-    public PostDetailVO getBy(@PathVariable("postId") Integer postId, @RequestParam("token") String token,
+    public PostDetailVO getBy(@PathVariable("postId") Integer postId,
+                              @RequestParam(value = "token", required = false, defaultValue = "") String token,
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
         PostDetailVO postDetailVO;
@@ -159,7 +160,7 @@ public class PostController {
             if (!cachedToken.equals(token)) {
                 throw new ForbiddenException("您没有该文章的访问权限");
             }
-            Post post = postService.getWithLatestContentById(postId);;
+            Post post = postService.getWithLatestContentById(postId);
             if (PostStatus.RECYCLE.equals(post.getStatus())) {
                 // Articles in the recycle bin are not allowed to be accessed.
                 throw new NotFoundException("查询不到该文章的信息");
