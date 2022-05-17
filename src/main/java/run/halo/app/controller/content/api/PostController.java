@@ -148,7 +148,7 @@ public class PostController {
     public PostDetailVO getBy(@PathVariable("postId") Integer postId, @RequestParam("token") String token,
                               @RequestParam(value = "formatDisabled", required = false, defaultValue = "true") Boolean formatDisabled,
                               @RequestParam(value = "sourceDisabled", required = false, defaultValue = "false") Boolean sourceDisabled) {
-        Post post = postService.getBy(PostStatus.PUBLISHED, postId);
+        PostDetailVO postDetailVO;
 
         if (StringUtils.isNotBlank(token)) {
             // If the token is not empty, it means it is an admin request,
@@ -159,16 +159,18 @@ public class PostController {
             if (!cachedToken.equals(token)) {
                 throw new ForbiddenException("您没有该文章的访问权限");
             }
-            post = postService.getById(postId);
+            Post post = postService.getWithLatestContentById(postId);;
             if (PostStatus.RECYCLE.equals(post.getStatus())) {
                 // Articles in the recycle bin are not allowed to be accessed.
                 throw new NotFoundException("查询不到该文章的信息");
             }
+            postDetailVO = postRenderAssembler.convertToPreviewDetailVo(post);
+        } else {
+            Post post = postService.getBy(PostStatus.PUBLISHED, postId);
+            postDetailVO = postRenderAssembler.convertToDetailVo(post);
         }
 
         checkAuthenticate(postId);
-
-        PostDetailVO postDetailVO = postRenderAssembler.convertToDetailVo(post);
 
         if (formatDisabled) {
             // Clear the format content
